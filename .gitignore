@@ -1,9 +1,9 @@
-# Ignorar archivos compilados de Java
+
 /bin/
 *.class
 
-# Ignorar librerías y dependencias
+
 /lib/
 
-# Ignorar configuración del editor VS Code
+
 .vscode/
