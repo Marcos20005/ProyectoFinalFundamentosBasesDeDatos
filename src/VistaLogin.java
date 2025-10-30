@@ -24,6 +24,7 @@ public class VistaLogin  {
         UIManager.put("Button.foreground", Color.WHITE);    
         UIManager.put("Button.background", new Color(30, 144, 255));
 
+        
         //Creacion de ventana para loguerce
   JFrame frameLogin = new JFrame("Ingrese sus credenciales");
    Container conte = new Container();
