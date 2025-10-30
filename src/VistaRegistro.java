@@ -3,15 +3,17 @@ import java.awt.Color;
 
 import javax.swing.JFrame;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 
 
+
 public class VistaRegistro extends JFrame{
 
-    public VistaRegistro() {
+    public VistaRegistro() throws UnsupportedLookAndFeelException {
          //Ajustes de FlatLaf
-    UIManager.setLookAndFeel(new FlatMacLightLaf());
+   UIManager.setLookAndFeel(new FlatMacLightLaf());
       UIManager.put("Button.arc", 80);
         UIManager.put("Component.arc", 20);
         UIManager.put("TextComponent.arc", 20);
