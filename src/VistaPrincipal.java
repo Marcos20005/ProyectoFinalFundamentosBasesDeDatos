@@ -12,14 +12,14 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import com.formdev.flatlaf.FlatLaf;
+import com.formdev.flatlaf.FlatLaf; 
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.ImageIcon;
+import javax.swing.ImageIcon;   
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
@@ -35,7 +35,7 @@ public class VistaPrincipal extends JFrame {
     public VistaPrincipal() throws ClassNotFoundException, UnsupportedLookAndFeelException, SQLException {
 
         Class.forName("com.mysql.cj.jdbc.Driver");
-        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", "root", "cRojas34");
+        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", "root", "erpalacios");
         //Ajustes flatlaf
         UIManager.setLookAndFeel(new FlatMacLightLaf());
         UIManager.put("Button.arc", 80);
@@ -43,7 +43,7 @@ public class VistaPrincipal extends JFrame {
         UIManager.put("TextComponent.arc", 20);
         UIManager.put("Button.foreground", Color.WHITE);
 
-        UIManager.put("Button.background", new Color(30, 144, 255));
+        UIManager.put("Button.background", new Color(130, 90, 160));
 
         this.setTitle("Multicines S.A");
 
@@ -54,205 +54,101 @@ public class VistaPrincipal extends JFrame {
         JTabbedPane pestanias = new JTabbedPane();
         pestanias.setSize(800, 600);
         // pestanias.setLayout(null);
+
         JPanel panel1 = new JPanel();
         panel1.setLayout(null);
-        JButton opcion1 = crearBoton("<html>Ver<br><center>Cartelera</center></html>", 200, 100, 200, 40, "Ia a pestaña de cartelera disponible", "Iconos/mostrar-contrasena.png");
+        panel1.setBackground(new Color(245,245,245));
 
-        panel1.add(opcion1);
+        //Panel central de opciones 
+        JPanel tarjeta = new JPanel();
+        tarjeta.setLayout(null);
+        tarjeta.setBounds(200, 100, 400,420);
+        tarjeta.setBackground(Color.WHITE);
+        tarjeta.setBorder(javax.swing.BorderFactory.createLineBorder(new Color(130, 90, 160), 2, true));
+        panel1.add(tarjeta);
 
-        //Declaracion de evento de boton opcion1
-        opcion1.addActionListener(new ActionListener() {
+        //Titulo de panel de opciones
+        JLabel tituloOpciones = new JLabel("Sistema Multicines S.A", SwingConstants.CENTER);
+        tituloOpciones.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 24));
+        tituloOpciones.setForeground(new Color(90,60,120));
+        tituloOpciones.setBounds(0,20,400,40);
+        tarjeta.add(tituloOpciones);
+
+        //Botones de las opciones
+
+        JButton btnEmpleado = crearBoton("<html><center>Registrar<br>Empleado</center></html>", 80,80,240,45 , "Registrar empleado nuevo", "Iconos/anadir.png");
+        tarjeta.add(btnEmpleado);
+        btnEmpleado.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                pestanias.setSelectedIndex(1);
+                pestanias.setSelectedIndex(1); // suponiendo que es la 2da pestaña
             }
         });
 
-        JButton opcion2 = crearBoton("<html>Registrar venta<br><center>de boletos</center></html>", 200, 160, 200, 40, "Registrar venta de boleto", "Iconos/anadir.png");
-        panel1.add(opcion2);
-
-        //Declaracion de evento de boton opcion2
-        opcion2.addActionListener(new ActionListener() {
+        JButton btnCliente = crearBoton("<html><center>Registrar<br>Cliente</center></html>", 80, 140, 240, 45, "Registrar cliente", "Iconos/anadir.png");
+        tarjeta.add(btnCliente);
+        btnCliente.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                pestanias.setSelectedIndex(2);
+                pestanias.setSelectedIndex(2); // suponiendo que es la 3ra pestaña
             }
         });
 
-        JButton opcion3 = crearBoton("<html>Cancelar<br><center>Reservaciones</center></html>", 200, 220, 200, 40, "Cancelar reservacion de boleto", "Iconos/eliminar.png");
-        panel1.add(opcion3);
-
-        //Declaracion de evento de boton opcion2
-        opcion3.addActionListener(new ActionListener() {
+        JButton btnCartelera = crearBoton("<html><center>Ver<br>Cartelera</center></html>", 80, 200, 240, 45, "Ver cartelera", "Iconos/mostrar-contrasena.png");
+        tarjeta.add(btnCartelera);
+        btnCartelera.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                pestanias.setSelectedIndex(3);
+                pestanias.setSelectedIndex(3); // suponiendo que es la 4ta pestaña
             }
         });
 
-        JButton opcion4 = crearBoton("<html><center>Salir</center></html>", 200, 280, 200, 40, "Cerrar la secion", "Iconos/cerrar-sesion.png");
-        panel1.add(opcion4);
-
-        //Declaracion de evento de boton opcion4
-        opcion4.addActionListener(new ActionListener() {
+        JButton btnBoleto = crearBoton("<html><center>Registrar<br>Boleto</center></html>", 80, 260, 240, 45, "Registrar venta de boletos", "Iconos/anadir.png");
+        tarjeta.add(btnBoleto);
+        btnBoleto.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                VistaPrincipal.this.dispose();
+                pestanias.setSelectedIndex(4); // suponiendo que es la 5ta pestaña
             }
         });
 
-        JPanel panel2 = new JPanel();
-        panel2.setLayout(null);
-
-        JButton atras1 = crearBoton("", 30, 580, 80, 30, "Anterior pestaña", "Iconos/paso-atras.png");
-        panel2.add(atras1);
-        atras1.addActionListener(new ActionListener() {
+        JButton btnCancelar = crearBoton("<html><center>Cancelar<br>Boleto</center></html>", 80, 320, 240, 45, "Cancelar boleto", "Iconos/eliminar.png");
+        tarjeta.add(btnCancelar);
+        btnCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                pestanias.setSelectedIndex(0);
+                pestanias.setSelectedIndex(5); // suponiendo que es la 6ta pestaña
             }
         });
 
-        JButton Guardar1 = crearBoton("<html>Guardar<br><center>Informacion</center></html>", 370, 530, 150, 40, "Guardar Informacion", "Iconos/guardar-el-archivo.png");
-        panel2.add(Guardar1);
-        Guardar1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+       PanelBoleto panel3 = new PanelBoleto(pestanias, con);
+       PanelCartelera panel2 = new PanelCartelera(pestanias, con, panel3);
+       PanelEmpleado panel5 = new PanelEmpleado(pestanias, con);
+       PanelCliente panel6 = new PanelCliente(pestanias, con);
+       PanelCancelarBoleto panel4 = new PanelCancelarBoleto(pestanias, con);
 
-            }
-        });
-        JButton siguiente1 = crearBoton("", 690, 580, 80, 30, "Siguiente Pestaña", "Iconos/un-paso-adelante.png");
-        panel2.add(siguiente1);
-        siguiente1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                pestanias.setSelectedIndex(2);
-            }
-        });
 
-        JPanel panel3 = new JPanel();
-        panel3.setLayout(null);
-        JLabel titulo1 = crearEtiqueta("Ingrese la informacion necesaria", 240, 40, 200, 20);
-        panel3.add(titulo1);
-        JLabel eti1 = crearEtiqueta("Empleado encargado de venta", 30, 70, 250, 20);
-        panel3.add(eti1);
-        JLabel eti2 = crearEtiqueta("ID de Empleado", 40, 100, 200, 20);
-        panel3.add(eti2);
-        JTextField campo1 = crearCampoTexto("", 40, 120, 100, 30, "Ingrese el ID del empleado");
-        panel3.add(campo1);
-        JLabel eti3 = crearEtiqueta("Ingrese el primer nombre", 40, 160, 200, 20);
-        panel3.add(eti3);
-        JTextField campo2 = crearCampoTexto("", 40, 180, 150, 30, "Ingrese el primer nombre");
-        panel3.add(campo2);
-        JLabel eti4 = crearEtiqueta("Ingrese el segundo nombre", 40, 220, 200, 20);
-        panel3.add(eti4);
-        JTextField campo3 = crearCampoTexto("", 40, 240, 150, 30, "Ingrese el segundo nombre");
-        panel3.add(campo3);
-        JLabel eti5 = crearEtiqueta("Ingrese el primer apellido", 40, 280, 200, 20);
-        panel3.add(eti5);
-        JTextField campo4 = crearCampoTexto("", 40, 300, 150, 30, "Ingrese el primer apellido");
-        panel3.add(campo4);
-        JLabel eti6 = crearEtiqueta("Ingrese el segundo apellido", 40, 340, 200, 20);
-        panel3.add(eti6);
-        JTextField campo5 = crearCampoTexto("", 40, 360, 150, 30, "Ingrese el segundo apellido");
-        panel3.add(campo5);
-        JLabel eti7 = crearEtiqueta("Ingrese el ID de trabajo", 40, 400, 200, 20);
-        panel3.add(eti7);
-        JTextField campo6 = crearCampoTexto("", 40, 420, 150, 30, "Ingrese el ID de trabajo");
-        panel3.add(campo6);
+       JButton opcionEmpleado = crearBoton("<html>Registrar<br><center>Empleado</center></html>", 200, 340, 200, 40, "Registrar empleado nuevo", "Iconos/anadir.png");
+        panel1.add(opcionEmpleado);
 
-        //Informacion de clientes
-        JLabel eti8 = crearEtiqueta("Informacion de clientes", 270, 70, 250, 20);
-        panel3.add(eti8);
-        JLabel eti9 = crearEtiqueta("Cedula del cliente", 280, 100, 200, 20);
-        panel3.add(eti9);
-        JTextField campo7 = crearCampoTexto("", 280, 120, 150, 30, "Ingrese la cedula del cliente");
-        panel3.add(campo7);
-        JLabel eti10 = crearEtiqueta("Primer nombre", 280, 160, 200, 20);
-        panel3.add(eti10);
-        JTextField campo8 = crearCampoTexto("", 280, 180, 150, 30, "Ingrese el primer nombre");
-        panel3.add(campo8);
-        JLabel eti11 = crearEtiqueta("Segundo nombre", 280, 220, 200, 20);
-        panel3.add(eti11);
-        JTextField campo9 = crearCampoTexto("", 280, 240, 150, 30, "Ingrese el segundo nombre");
-        panel3.add(campo9);
-        JLabel eti12 = crearEtiqueta("Primer apellido", 280, 280, 200, 20);
-        panel3.add(eti12);
-        JTextField campo10 = crearCampoTexto("", 280, 300, 150, 30, "Ingrese el primer apellido");
-        panel3.add(campo10);
-        JLabel eti13 = crearEtiqueta("Segundo apellido", 280, 340, 200, 20);
-        panel3.add(eti13);
-        JTextField campo11 = crearCampoTexto("", 280, 360, 150, 30, "Ingrese el segundo apellido");
-        panel3.add(campo11);
-        JButton Guardar2 = crearBoton("<html>Guardar<br><center>Informacion</center></html>", 370, 530, 150, 40, "Guardar Informacion", "Iconos/guardar-el-archivo.png");
-        panel3.add(Guardar2);
-        Guardar2.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                try {
-                    stmt = con.createStatement();
-                    stmt.executeUpdate("INSERT INTO empleado (id,primer_nombre,segundo_nombre,primer_apellido,segundo_apellido,id_puesto) VALUES ('" + campo1.getText() + "','" + campo2.getText() + "','" + campo3.getText() + "','" + campo4.getText() + "','" + campo5.getText() + "','" + campo6.getText() + "');");
-                    stmt.executeUpdate("INSERT INTO cliente (cedula,primer_nombre,segundo_nombre,primer_apellido,segundo_apellido) VALUES ('" + campo7.getText() + "','" + campo8.getText() + "','" + campo9.getText() + "','" + campo10.getText() + "','" + campo11.getText() + "');");
-                } catch (SQLException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                }
-                campo1.setText("");
-                campo2.setText("");
-                campo3.setText("");
-                campo4.setText("");
-                campo5.setText("");
-                campo6.setText("");
-                campo7.setText("");
-                campo8.setText("");
-                campo9.setText("");
-                campo10.setText("");
-                campo11.setText("");
-
-            }
+        opcionEmpleado.addActionListener(new ActionListener() {
+         @Override
+        public void actionPerformed(ActionEvent e) {
+        pestanias.setSelectedIndex(4); // suponiendo que es la 5ta pestaña
+    }
         });
 
-        JButton atras2 = crearBoton("", 30, 580, 80, 30, "Anterior pestaña", "Iconos/paso-atras.png");
-        panel3.add(atras2);
-        atras2.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                pestanias.setSelectedIndex(1);
-            }
-        });
-        JButton siguiente2 = crearBoton("", 690, 580, 80, 30, "Siguiente pestaña", "Iconos/un-paso-adelante.png");
-        panel3.add(siguiente2);
-        siguiente2.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                pestanias.setSelectedIndex(3);
-            }
-        });
-
-        JPanel panel4 = new JPanel();
-        panel4.setLayout(null);
-        JButton atras3 = crearBoton("", 30, 580, 80, 30, "Anterior pestaña", "Iconos/paso-atras.png");
-        panel4.add(atras3);
-        atras3.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                pestanias.setSelectedIndex(2);
-            }
-        });
-        JButton siguiente3 = crearBoton("", 690, 580, 80, 30, "Siguiente pestaña", "Iconos/un-paso-adelante.png");
-        panel4.add(siguiente3);
-        siguiente3.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                pestanias.setSelectedIndex(0);
-            }
-        });
+        JButton opcionCliente = crearBoton("<html>Registrar<br><center>Cliente</center></html>", 200, 400, 200, 40, "Registrar cliente nuevo", "Iconos/anadir.png");
+        panel1.add(opcionCliente);
+        opcionCliente.addActionListener(e -> pestanias.setSelectedIndex(5)); // según el orden de tus pestañas
 
         pestanias.addTab("Opciones", panel1);
+        pestanias.addTab("Registrar Empleado", panel5);
+        pestanias.addTab("Registrar Cliente", panel6);
         pestanias.addTab("Ver Cartelera", panel2);
         pestanias.addTab("Registrar boleto", panel3);
         pestanias.addTab("Cancelar boleto", panel4);
+
 
         this.add(pestanias);
         this.setLocationRelativeTo(null);
