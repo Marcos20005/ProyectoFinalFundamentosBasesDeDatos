@@ -42,7 +42,7 @@ public class VistaRegistro extends JFrame {
 
         //Ajustes de conexion con base de datos
         Class.forName("com.mysql.cj.jdbc.Driver");
-        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", "root", "erpalacios");
+        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", "root", "cRojas34");
 
         //Declaracion de ajustes para la vista de la ventana
         JLabel eti1 = crearEtiqueta("Informacion de nueva cuenta", 100, 30, 200, 30);

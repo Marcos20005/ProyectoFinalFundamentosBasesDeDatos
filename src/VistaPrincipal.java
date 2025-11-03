@@ -35,7 +35,7 @@ public class VistaPrincipal extends JFrame {
     public VistaPrincipal() throws ClassNotFoundException, UnsupportedLookAndFeelException, SQLException {
 
         Class.forName("com.mysql.cj.jdbc.Driver");
-        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", "root", "erpalacios");
+        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", "root", "cRojas34");
         //Ajustes flatlaf
         UIManager.setLookAndFeel(new FlatMacLightLaf());
         UIManager.put("Button.arc", 80);
@@ -62,7 +62,7 @@ public class VistaPrincipal extends JFrame {
         //Panel central de opciones 
         JPanel tarjeta = new JPanel();
         tarjeta.setLayout(null);
-        tarjeta.setBounds(200, 100, 400,420);
+        tarjeta.setBounds(200, 80, 400,500);
         tarjeta.setBackground(Color.WHITE);
         tarjeta.setBorder(javax.swing.BorderFactory.createLineBorder(new Color(130, 90, 160), 2, true));
         panel1.add(tarjeta);
@@ -112,6 +112,15 @@ public class VistaPrincipal extends JFrame {
             }
         });
 
+        JButton btnMantenimiento = crearBoton("Mantenimientos", 80, 380, 240, 45, "Ver tablas mantenimientos", "Iconos/module.png");
+        tarjeta.add(btnMantenimiento);
+       btnMantenimiento.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                pestanias.setSelectedIndex(6); // suponiendo que es la 6ta pestaña
+            }
+        });
+
         JButton btnCancelar = crearBoton("<html><center>Cancelar<br>Boleto</center></html>", 80, 320, 240, 45, "Cancelar boleto", "Iconos/eliminar.png");
         tarjeta.add(btnCancelar);
         btnCancelar.addActionListener(new ActionListener() {
@@ -121,26 +130,24 @@ public class VistaPrincipal extends JFrame {
             }
         });
 
-       PanelBoleto panel3 = new PanelBoleto(pestanias, con);
+       PanelBoletos panel3 = new PanelBoletos(pestanias, con);
        PanelCartelera panel2 = new PanelCartelera(pestanias, con, panel3);
-       PanelEmpleado panel5 = new PanelEmpleado(pestanias, con);
-       PanelCliente panel6 = new PanelCliente(pestanias, con);
+       PanelEmpleados panel5 = new PanelEmpleados(pestanias, con);
+       PanelClientes panel6 = new PanelClientes(pestanias, con);
        PanelCancelarBoleto panel4 = new PanelCancelarBoleto(pestanias, con);
+       PanelMantenimiento panel7 = new PanelMantenimiento(pestanias, con);
 
+     
 
-       JButton opcionEmpleado = crearBoton("<html>Registrar<br><center>Empleado</center></html>", 200, 340, 200, 40, "Registrar empleado nuevo", "Iconos/anadir.png");
-        panel1.add(opcionEmpleado);
-
-        opcionEmpleado.addActionListener(new ActionListener() {
-         @Override
-        public void actionPerformed(ActionEvent e) {
-        pestanias.setSelectedIndex(4); // suponiendo que es la 5ta pestaña
-    }
+        JButton opcionCancelar = crearBoton("<html>Cerrar<br><center>secion</center></html>", 80, 440, 240, 40, "Regresar a vista login", "Iconos/cerrar-sesion.png");
+        tarjeta.add(opcionCancelar);
+        opcionCancelar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e){
+             VistaPrincipal.this.setVisible(false);
+            }
         });
 
-        JButton opcionCliente = crearBoton("<html>Registrar<br><center>Cliente</center></html>", 200, 400, 200, 40, "Registrar cliente nuevo", "Iconos/anadir.png");
-        panel1.add(opcionCliente);
-        opcionCliente.addActionListener(e -> pestanias.setSelectedIndex(5)); // según el orden de tus pestañas
 
         pestanias.addTab("Opciones", panel1);
         pestanias.addTab("Registrar Empleado", panel5);
@@ -148,11 +155,11 @@ public class VistaPrincipal extends JFrame {
         pestanias.addTab("Ver Cartelera", panel2);
         pestanias.addTab("Registrar boleto", panel3);
         pestanias.addTab("Cancelar boleto", panel4);
+        pestanias.addTab("Mantenimiento de tablas",panel7);
 
 
         this.add(pestanias);
         this.setLocationRelativeTo(null);
-        this.setVisible(true);
 
     }
 

@@ -1,154 +1,126 @@
+
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 public class PanelCliente extends JPanel {
-    private JTextField campoCedula, campoNombre1, campoNombre2, campoApellido1, campoApellido2;
-    private JTextField campoTelefono, campoDescripcionTelefono, campoCorreo, campoDescripcionCorreo;
+    // Objetos de conexion SQL
+    Statement stmt = null;
+    Connection con = null;
 
-    public PanelCliente(JTabbedPane pestanias, Connection con) {
-        this.setLayout(null);
-        this.setBackground(new Color(245, 245, 245));
+    public PanelCliente(MantenimientoCliente controlOriginal) throws SQLException, ClassNotFoundException {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        con = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true",
+                "root",
+                "cRojas34");
+        stmt = con.createStatement();
 
-        //Tarjeta de cliente
-        JPanel tarjetaCliente = new JPanel();
-        tarjetaCliente.setLayout(null);
-        tarjetaCliente.setBounds(100, 60, 600, 520);
-        tarjetaCliente.setBackground(Color.WHITE);
-        tarjetaCliente.setBorder(javax.swing.BorderFactory.createLineBorder(new Color(130, 90, 160), 2, true));
-        this.add(tarjetaCliente);
+        JLabel lBlcodigo = crearEtiqueta("Datos de nuevo cliente", 200, 20, 300, 30);
+        lBlcodigo.setHorizontalAlignment(SwingConstants.CENTER);
+        this.add(lBlcodigo);
 
-        //Titulo de la tarjeta
-        JLabel titulo = new JLabel("Datos del Cliente", JLabel.CENTER);
-        titulo.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 24));
-        titulo.setForeground(new Color(90, 60, 120));
-        titulo.setBounds(0, 20, 600, 40);
-        tarjetaCliente.add(titulo);
+        JLabel lblCedula = crearEtiqueta("Cédula:", 150, 70, 140, 30);
+        JTextField txtCedula = crearCampoTexto(300, 70, 200, 30, "Ingrese cédula");
+        this.add(lblCedula);
+        this.add(txtCedula);
 
-        //Etiquetas y campos de texto dentro de la tarjeta
-        JLabel etiCedula = VistaPrincipal.crearEtiqueta("Cédula:", 100, 80, 200, 25);
-        tarjetaCliente.add(etiCedula);
-        campoCedula = VistaPrincipal.crearCampoTexto("", 300, 80, 200, 25, "Cédula del cliente");
-        tarjetaCliente.add(campoCedula);
+        JLabel lblPrimerNombre = crearEtiqueta("Primer Nombre:", 150, 120, 140, 30);
+        JTextField txtPrimerNombre = crearCampoTexto(300, 120, 200, 30, "Ingrese primer nombre");
+        this.add(lblPrimerNombre);
+        this.add(txtPrimerNombre);
 
-        JLabel etiNombre1 = VistaPrincipal.crearEtiqueta("Primer nombre:", 100, 120, 200, 25);
-        tarjetaCliente.add(etiNombre1);
-        campoNombre1 = VistaPrincipal.crearCampoTexto("", 300, 120, 200, 25, "Primer nombre");
-        tarjetaCliente.add(campoNombre1);
+        JLabel lblSegundoNombre = crearEtiqueta("Segundo Nombre:", 150, 170, 140, 30);
+        JTextField txtSegundoNombre = crearCampoTexto(300, 170, 200, 30, "Ingrese segundo nombre");
+        this.add(lblSegundoNombre);
+        this.add(txtSegundoNombre);
 
-        JLabel etiNombre2 = VistaPrincipal.crearEtiqueta("Segundo nombre:", 100, 160, 200, 25);
-        tarjetaCliente.add(etiNombre2);
-        campoNombre2 = VistaPrincipal.crearCampoTexto("", 300, 160, 200, 25, "Segundo nombre");
-        tarjetaCliente.add(campoNombre2);
+        JLabel lblPrimerApellido = crearEtiqueta("Primer Apellido:", 150, 220, 140, 30);
+        JTextField txtPrimerApellido = crearCampoTexto(300, 220, 200, 30, "Ingrese primer apellido");
+        this.add(lblPrimerApellido);
+        this.add(txtPrimerApellido);
 
-        JLabel etiApellido1 = VistaPrincipal.crearEtiqueta("Primer apellido:", 100, 200, 200, 25);
-        tarjetaCliente.add(etiApellido1);
-        campoApellido1 = VistaPrincipal.crearCampoTexto("", 300, 200, 200, 25, "Primer apellido");
-        tarjetaCliente.add(campoApellido1);
+        JLabel lblSegundoApellido = crearEtiqueta("Segundo Apellido:", 150, 270, 140, 30);
+        JTextField txtSegundoApellido = crearCampoTexto(300, 270, 200, 30, "Ingrese segundo apellido");
+        this.add(lblSegundoApellido);
+        this.add(txtSegundoApellido);
 
-        JLabel etiApellido2 = VistaPrincipal.crearEtiqueta("Segundo apellido:", 100, 240, 200, 25);
-        tarjetaCliente.add(etiApellido2);
-        campoApellido2 = VistaPrincipal.crearCampoTexto("", 300, 240, 200, 25, "Segundo apellido");
-        tarjetaCliente.add(campoApellido2);
+        JButton botonGuardar = crearBoton("Guardar", 300, 320, 100, 40, "Guardar nuevo cliente", "src/imagenes/guardar.png");
+        botonGuardar.setBackground(new Color(46, 204, 113));
+        botonGuardar.setForeground(Color.WHITE);
+        this.add(botonGuardar);
 
-        JLabel etiTelefono = VistaPrincipal.crearEtiqueta("Teléfono:", 100, 280, 200, 25);
-        tarjetaCliente.add(etiTelefono);
-        campoTelefono = VistaPrincipal.crearCampoTexto("", 300, 280, 200, 25, "Número de teléfono");
-        tarjetaCliente.add(campoTelefono);
+        botonGuardar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    int eleccion = JOptionPane.showConfirmDialog(null, "¿Desea confirmar nuevo registro?", "Confirmar acción", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                    if (eleccion == 0) {
+                        stmt.executeUpdate("INSERT INTO cliente (cedula, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido) VALUES ('"
+                                + txtCedula.getText() + "', '" + txtPrimerNombre.getText() + "', '" + txtSegundoNombre.getText() + "', '"
+                                + txtPrimerApellido.getText() + "', '" + txtSegundoApellido.getText() + "');");
+                    }
+                } catch (SQLException e1) {
+                     JOptionPane.showMessageDialog(null, "Hubo un error por favor vuelva a intentar","Advertencia",JOptionPane.WARNING_MESSAGE);
+                }
 
-        JLabel etiDescripcionTelefono = VistaPrincipal.crearEtiqueta("Descripción teléfono:", 100, 320, 200, 25);
-        tarjetaCliente.add(etiDescripcionTelefono);
-        campoDescripcionTelefono = VistaPrincipal.crearCampoTexto("", 300, 320, 200, 25, "Ejemplo: Personal / Trabajo");
-        tarjetaCliente.add(campoDescripcionTelefono);
+                txtCedula.setText("");
+                txtPrimerNombre.setText("");
+                txtSegundoNombre.setText("");
+                txtPrimerApellido.setText("");
+                txtSegundoApellido.setText("");
 
-        JLabel etiCorreo = VistaPrincipal.crearEtiqueta("Correo electrónico:", 100, 360, 200, 25);
-        tarjetaCliente.add(etiCorreo);
-        campoCorreo = VistaPrincipal.crearCampoTexto("", 300, 360, 200, 25, "Correo electrónico");
-        tarjetaCliente.add(campoCorreo);
-
-        JLabel etiDescripcionCorreo = VistaPrincipal.crearEtiqueta("Descripción correo:", 100, 400, 200, 25);
-        tarjetaCliente.add(etiDescripcionCorreo);
-        campoDescripcionCorreo = VistaPrincipal.crearCampoTexto("", 300, 400, 200, 25, "Ejemplo: Personal / Trabajo");
-        tarjetaCliente.add(campoDescripcionCorreo);
-
-        //Botones dentro de la tarjeta
-        JButton btnAtras = VistaPrincipal.crearBoton("<--", 100, 460, 60, 40, "Volver", "Iconos/paso-atras.png");
-        tarjetaCliente.add(btnAtras);
-        btnAtras.setToolTipText("Volver al registro de empleado");
-        btnAtras.addActionListener(e -> pestanias.setSelectedIndex(0));
-
-        JButton btnGuardar = VistaPrincipal.crearBoton("Guardar", 220, 460, 160, 40, "Guardar cliente", "Iconos/guardar-el-archivo.png");
-        tarjetaCliente.add(btnGuardar);
-        btnGuardar.setToolTipText("Guardar los datos del cliente");
-        btnGuardar.addActionListener(e -> {
-            try {
-                registrarCliente(con);
-            } catch (SQLException ex) {
-                ex.printStackTrace();
+                // Regresar a panel principal de mantenimiento
+                controlOriginal.add(controlOriginal.botonActualizar);
+                controlOriginal.add(controlOriginal.botonInsertar);
+                controlOriginal.add(controlOriginal.botonEliminar);
+                controlOriginal.add(controlOriginal.botonConsultar);
+                controlOriginal.add(controlOriginal.scroll);
+                controlOriginal.add(controlOriginal.combo);
+                controlOriginal.remove(controlOriginal.panel);
+                controlOriginal.recargarTabla();
+                controlOriginal.revalidate();
+                controlOriginal.repaint();
             }
         });
-
-        JButton btnSiguiente = VistaPrincipal.crearBoton("-->", 440, 460, 60, 40, "Siguiente", "Iconos/paso-siguiente.png");
-        tarjetaCliente.add(btnSiguiente);
-        btnSiguiente.setToolTipText("Ir al registro de vehículo");
-        btnSiguiente.addActionListener(e -> pestanias.setSelectedIndex(2));
     }
 
-    private void registrarCliente(Connection con) throws SQLException {
-        if (campoCedula.getText().isEmpty() || campoNombre1.getText().isEmpty() || campoApellido1.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Complete los campos obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+    // Métodos utilitarios
+    static public JButton crearBoton(String texto, int x, int y, int ancho, int alto, String toolTip, String ruta) {
+        JButton boton = new JButton(texto);
+        boton.setBounds(x, y, ancho, alto);
+        boton.setToolTipText(toolTip);
+        ImageIcon iconoOriginal = new ImageIcon(ruta);
+        boton.setIcon(iconoOriginal);
+        boton.setHorizontalAlignment(SwingConstants.LEFT);
+        if (texto.equals("")) {
+            boton.setHorizontalAlignment(SwingConstants.CENTER);
         }
+        return boton;
+    }
 
-        Statement stmt = con.createStatement();
+    static public JTextField crearCampoTexto(int x, int y, int ancho, int alto, String toolTip) {
+        JTextField campoTexto = new JTextField();
+        campoTexto.setBounds(x, y, ancho, alto);
+        campoTexto.setToolTipText(toolTip);
+        return campoTexto;
+    }
 
-        // Insertar cliente
-        String sqlCliente = "INSERT INTO cliente (cedula, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido) VALUES ('"
-                + campoCedula.getText() + "', '"
-                + campoNombre1.getText() + "', '"
-                + campoNombre2.getText() + "', '"
-                + campoApellido1.getText() + "', '"
-                + campoApellido2.getText() + "')";
-        stmt.executeUpdate(sqlCliente);
-
-        // Insertar teléfono (si hay)
-        if (!campoTelefono.getText().isEmpty()) {
-            String sqlTelefono = "INSERT INTO telefono_cliente (id, telefono, descripcion, cedula_cliente) VALUES (UUID(), '"
-                    + campoTelefono.getText() + "', '"
-                    + campoDescripcionTelefono.getText() + "', '"
-                    + campoCedula.getText() + "')";
-            stmt.executeUpdate(sqlTelefono);
-        }
-
-        // Insertar correo (si hay)
-        if (!campoCorreo.getText().isEmpty()) {
-            String sqlCorreo = "INSERT INTO correo_cliente (id, correo, descripcion, cedula_cliente2) VALUES (UUID(), '"
-                    + campoCorreo.getText() + "', '"
-                    + campoDescripcionCorreo.getText() + "', '"
-                    + campoCedula.getText() + "')";
-            stmt.executeUpdate(sqlCorreo);
-        }
-
-        stmt.close();
-
-        JOptionPane.showMessageDialog(this, "Cliente registrado correctamente con teléfono y correo.");
-
-        // Limpiar campos
-        campoCedula.setText("");
-        campoNombre1.setText("");
-        campoNombre2.setText("");
-        campoApellido1.setText("");
-        campoApellido2.setText("");
-        campoTelefono.setText("");
-        campoDescripcionTelefono.setText("");
-        campoCorreo.setText("");
-        campoDescripcionCorreo.setText("");
+    static public JLabel crearEtiqueta(String texto, int x, int y, int ancho, int alto) {
+        JLabel etiqueta = new JLabel(texto);
+        etiqueta.setBounds(x, y, ancho, alto);
+        return etiqueta;
     }
 }

@@ -16,9 +16,9 @@ public class PanelCartelera extends JPanel {
 
     private DefaultTableModel modeloTabla;
     private JTable tablaPeliculas;
-    private PanelBoleto panelBoleto;
+    private PanelBoletos panelBoleto;
 
-    public PanelCartelera(JTabbedPane pestanias, Connection con, PanelBoleto panelBoleto) {
+    public PanelCartelera(JTabbedPane pestanias, Connection con, PanelBoletos panelBoleto) {
         this.panelBoleto = panelBoleto;
         this.setLayout(null);
         this.setBackground(new Color(245, 245, 245));

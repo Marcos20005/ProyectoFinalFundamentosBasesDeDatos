@@ -2,13 +2,18 @@
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -16,12 +21,26 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
-
-//import com.formdev.flatlaf.FlatLightLaf;
-//import com.formdev.flatlaf.themes.FlatMacLightLaf;
 public class VistaLogin {
+      //Objetos de conexion
+     static ResultSet rs;
+    static Connection con ;
+   static   Statement stmt;
 
     public static void main(String[] args) throws Exception {
+    
+Class.forName("com.mysql.cj.jdbc.Driver");
+        try {
+            con = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", 
+                    "root", "cRojas34");
+                     stmt = con.createStatement();
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+       
+
         //Ajustes de FlatLaf
         UIManager.setLookAndFeel(new FlatMacLightLaf());
 
@@ -88,14 +107,34 @@ public class VistaLogin {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent e) {
                 VistaPrincipal vistaPrincipal = null;
+                 boolean encontrado= false;
                 try {
                     vistaPrincipal = new VistaPrincipal();
+                   
+                    rs = stmt.executeQuery("SELECT *FROM usuario");
+                    while (rs.next()) {
+                        if(rs.getString("login").equals(campoNombreUsuario.getText()) && rs.getString("clave").equals(campoContrasena.getText())){
+                          
+                          encontrado=true;
+                        }
+                          System.out.println(rs.getString("login")+":"+rs.getString("clave"));
+                          System.out.println(campoContrasena.getText()+":"+campoNombreUsuario.getText());
+
+                        
+                    }
                 } catch (ClassNotFoundException | UnsupportedLookAndFeelException | SQLException e1) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
                 }
-
-                vistaPrincipal.setVisible(true);
+                 if(encontrado==true){
+                    JOptionPane.showMessageDialog(null, "Inicio de secion exitoso");
+                    vistaPrincipal.setVisible(true);
+                 }else{
+                     JOptionPane.showMessageDialog(null, "No se encontro el usuario intente nuevamente");
+                 }
+                 campoNombreUsuario.setText("");
+                 campoContrasena.setText("");
+                
             }
         });
         frameLogin.add(conte);
