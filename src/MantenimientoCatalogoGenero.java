@@ -64,27 +64,29 @@ public class MantenimientoCatalogoGenero extends JPanel {
         scroll.setBounds(30, 70, 600, 200);
         this.add(scroll);
 
-        // Botones
-        botonInsertar = crearBoton("Insertar", 40, 300, 100, 40, "Insertar nuevo genero", "src/imagenes/insertar.png");
+       botonInsertar = crearBoton("Insertar", 40, 360, 100, 40, "Insertar nuevo registro",
+                "Iconos/insertar-cuadrado.png");
         botonInsertar.setBackground(new Color(46, 204, 113));
         botonInsertar.setForeground(Color.WHITE);
         this.add(botonInsertar);
 
-        botonActualizar = crearBoton("Actualizar", 200, 300, 100, 40, "Actualizar genero existente", "src/imagenes/actualizar.png");
+        botonActualizar = crearBoton("Actualizar", 200, 360, 100, 40, "Actualizar registro existente",
+                "Iconos/boton-editar.png");
         botonActualizar.setBackground(new Color(255, 179, 71));
         botonActualizar.setForeground(Color.WHITE);
         this.add(botonActualizar);
 
-        botonEliminar = crearBoton("Eliminar", 360, 300, 100, 40, "Eliminar genero existente", "src/imagenes/eliminar.png");
+        botonEliminar = crearBoton("Eliminar", 360, 360, 100, 40, "Eliminar registro existente",
+                "Iconos/eliminar.png");
         botonEliminar.setBackground(new Color(240, 128, 128));
         botonEliminar.setForeground(Color.WHITE);
         this.add(botonEliminar);
 
-        botonConsultar = crearBoton("Consultar", 520, 300, 100, 40, "Consultar genero existente", "src/imagenes/consultar.png");
+        botonConsultar = crearBoton("Consultar", 520, 360, 100, 40, "Consultar registro existente",
+                "Iconos/buscar.png");
         botonConsultar.setBackground(new Color(135, 206, 250));
         botonConsultar.setForeground(Color.WHITE);
         this.add(botonConsultar);
-
         // Combo para actualizar
         String lista[] = {"ID Genero", "Nombre Genero"};
         combo = new JComboBox<>(lista);

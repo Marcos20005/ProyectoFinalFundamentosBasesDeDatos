@@ -42,12 +42,13 @@ public class PanelCancelarBoleto extends JPanel {
         JButton botonCancelar = VistaPrincipal.crearBoton("Cancelar Boleto", 325, 460, 200, 40, "Cancelar boleto seleccionado", "Iconos/eliminar.png");
         this.add(botonCancelar);
 
-        JButton botonRegresar = VistaPrincipal.crearBoton("Regresar", 560, 460, 150, 40, "Volver al menú principal", "Iconos/paso-atras.png");
-        this.add(botonRegresar);
+        JButton botonSiguiente = VistaPrincipal.crearBoton("", 560, 460, 150, 40, "Siguiente tabla", "Iconos/un-paso-adelante.png");
+        this.add(botonSiguiente);
+     
 
         botonActualizar.addActionListener(e -> cargarBoletos());
         botonCancelar.addActionListener(e -> eliminarBoleto());
-        botonRegresar.addActionListener(e -> pestanias.setSelectedIndex(0));
+        botonSiguiente.addActionListener(e -> pestanias.setSelectedIndex(6));
 
         // Cargar los datos inicialmente
         cargarBoletos();

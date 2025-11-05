@@ -88,7 +88,7 @@ public class PanelBoletos extends JPanel {
         tarjeta.add(comboFuncion);
 
         //Botones de la tarjeta
-        JButton btnAtras = VistaPrincipal.crearBoton("<--", 120, 400, 60, 40, "Volver", "Iconos/paso-atras.png");
+        JButton btnAtras = VistaPrincipal.crearBoton("", 120, 400, 60, 40, "Volver", "Iconos/paso-atras.png");
         tarjeta.add(btnAtras);
         btnAtras.addActionListener(e -> pestanias.setSelectedIndex(3));
 

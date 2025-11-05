@@ -1,12 +1,9 @@
 import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -59,23 +56,27 @@ public class MantenimientoBoleto extends JPanel {
         scroll.setBounds(30, 70, 700, 250); // Ajustado para un mejor tamaño
         this.add(scroll);
 
-        // --- FILA DE BOTONES ---
-        botonInsertar = crearBoton("Insertar", 40, 360, 120, 40, "Insertar nuevo boleto", "src/imagenes/insertar.png");
+          // Botones
+        botonInsertar = crearBoton("Insertar", 40, 360, 100, 40, "Insertar nuevo registro",
+                "Iconos/insertar-cuadrado.png");
         botonInsertar.setBackground(new Color(46, 204, 113));
         botonInsertar.setForeground(Color.WHITE);
         this.add(botonInsertar);
 
-        botonActualizar = crearBoton("Actualizar", 220, 360, 120, 40, "Actualizar boleto existente", "src/imagenes/actualizar.png");
+        botonActualizar = crearBoton("Actualizar", 200, 360, 100, 40, "Actualizar registro existente",
+                "Iconos/boton-editar.png");
         botonActualizar.setBackground(new Color(255, 179, 71));
         botonActualizar.setForeground(Color.WHITE);
         this.add(botonActualizar);
 
-        botonEliminar = crearBoton("Eliminar", 400, 360, 120, 40, "Eliminar boleto existente", "src/imagenes/eliminar.png");
+        botonEliminar = crearBoton("Eliminar", 360, 360, 100, 40, "Eliminar registro existente",
+                "Iconos/eliminar.png");
         botonEliminar.setBackground(new Color(240, 128, 128));
         botonEliminar.setForeground(Color.WHITE);
         this.add(botonEliminar);
 
-        botonConsultar = crearBoton("Consultar", 580, 360, 120, 40, "Consultar boleto existente", "src/imagenes/consultar.png");
+        botonConsultar = crearBoton("Consultar", 520, 360, 100, 40, "Consultar registro existente",
+                "Iconos/buscar.png");
         botonConsultar.setBackground(new Color(135, 206, 250));
         botonConsultar.setForeground(Color.WHITE);
         this.add(botonConsultar);

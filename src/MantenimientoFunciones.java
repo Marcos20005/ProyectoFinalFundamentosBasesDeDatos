@@ -22,7 +22,7 @@ public class MantenimientoFunciones extends JPanel {
     Connection con = null;
     ResultSet rs = null;
 
-    JButton botonInsertar, botonActualizar, botonEliminar, botonConcultar;
+    JButton botonInsertar, botonActualizar, botonEliminar, botonConsultar;
     JScrollPane scroll;
     JComboBox<Object> combo;
     PanelFunciones panel;
@@ -58,25 +58,29 @@ public class MantenimientoFunciones extends JPanel {
         this.add(scroll);
 
         // Botones
-        botonInsertar = crearBoton("Insertar", 40, 300, 100, 40, "Insertar nueva función", "src/imagenes/insertar.png");
+        botonInsertar = crearBoton("Insertar", 40, 360, 100, 40, "Insertar nuevo registro",
+                "Iconos/insertar-cuadrado.png");
         botonInsertar.setBackground(new Color(46, 204, 113));
         botonInsertar.setForeground(Color.WHITE);
         this.add(botonInsertar);
 
-        botonActualizar = crearBoton("Actualizar", 200, 300, 100, 40, "Actualizar función existente", "src/imagenes/actualizar.png");
+        botonActualizar = crearBoton("Actualizar", 200, 360, 100, 40, "Actualizar registro existente",
+                "Iconos/boton-editar.png");
         botonActualizar.setBackground(new Color(255, 179, 71));
         botonActualizar.setForeground(Color.WHITE);
         this.add(botonActualizar);
 
-        botonEliminar = crearBoton("Eliminar", 360, 300, 100, 40, "Eliminar función existente", "src/imagenes/eliminar.png");
+        botonEliminar = crearBoton("Eliminar", 360, 360, 100, 40, "Eliminar registro existente",
+                "Iconos/eliminar.png");
         botonEliminar.setBackground(new Color(240, 128, 128));
         botonEliminar.setForeground(Color.WHITE);
         this.add(botonEliminar);
 
-        botonConcultar = crearBoton("Consultar", 520, 300, 100, 40, "Consultar función existente", "src/imagenes/consultar.png");
-        botonConcultar.setBackground(new Color(135, 206, 250));
-        botonConcultar.setForeground(Color.WHITE);
-        this.add(botonConcultar);
+        botonConsultar = crearBoton("Consultar", 520, 360, 100, 40, "Consultar registro existente",
+                "Iconos/buscar.png");
+        botonConsultar.setBackground(new Color(135, 206, 250));
+        botonConsultar.setForeground(Color.WHITE);
+        this.add(botonConsultar);
 
         // Combo box para actualizar
         String lista[] = {"Código", "Fecha", "Hora", "Precio base"};
@@ -103,7 +107,7 @@ public class MantenimientoFunciones extends JPanel {
                 this.remove(botonInsertar);
                 this.remove(botonActualizar);
                 this.remove(botonEliminar);
-                this.remove(botonConcultar);
+                this.remove(botonConsultar);
                 this.remove(combo);
                 this.remove(campoActualizar);
                 this.remove(campoValorActualizar);
@@ -233,7 +237,7 @@ public class MantenimientoFunciones extends JPanel {
         });
 
         // Acción Consultar
-        botonConcultar.addActionListener(e -> {
+        botonConsultar.addActionListener(e -> {
             modelo.setRowCount(0);
             boolean encontrado = false;
 

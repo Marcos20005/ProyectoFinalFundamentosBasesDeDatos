@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.JButton;
@@ -12,10 +13,17 @@ import javax.swing.JTextField;
 public class PanelClientes extends JPanel {
     private JTextField campoCedula, campoNombre1, campoNombre2, campoApellido1, campoApellido2;
     private JTextField campoTelefono, campoDescripcionTelefono, campoCorreo, campoDescripcionCorreo;
+     int idContador = 1;
 
-    public PanelClientes(JTabbedPane pestanias, Connection con) {
+    public PanelClientes(JTabbedPane pestanias, Connection con) throws SQLException {
         this.setLayout(null);
         this.setBackground(new Color(245, 245, 245));
+
+        Statement stmt = con.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT *FROM telefono_cliente");
+        while (rs.next()) { 
+            idContador++;
+        }
 
         //Tarjeta de cliente
         JPanel tarjetaCliente = new JPanel();
@@ -95,10 +103,10 @@ public class PanelClientes extends JPanel {
             }
         });
 
-        JButton btnSiguiente = VistaPrincipal.crearBoton("-->", 440, 460, 60, 40, "Siguiente", "Iconos/paso-siguiente.png");
+        JButton btnSiguiente = VistaPrincipal.crearBoton("-->", 440, 460, 60, 40, "Siguiente", "Iconos/un-paso-adelante.png");
         tarjetaCliente.add(btnSiguiente);
         btnSiguiente.setToolTipText("Ir al registro de vehículo");
-        btnSiguiente.addActionListener(e -> pestanias.setSelectedIndex(2));
+        btnSiguiente.addActionListener(e -> pestanias.setSelectedIndex(3));
     }
 
     private void registrarCliente(Connection con) throws SQLException {
@@ -120,7 +128,7 @@ public class PanelClientes extends JPanel {
 
         // Insertar teléfono (si hay)
         if (!campoTelefono.getText().isEmpty()) {
-            String sqlTelefono = "INSERT INTO telefono_cliente (id, telefono, descripcion, cedula_cliente) VALUES (UUID(), '"
+            String sqlTelefono = "INSERT INTO telefono_cliente (id, telefono, descripcion, cedula_cliente) VALUES ('"+idContador+"', '"
                     + campoTelefono.getText() + "', '"
                     + campoDescripcionTelefono.getText() + "', '"
                     + campoCedula.getText() + "')";
@@ -129,7 +137,7 @@ public class PanelClientes extends JPanel {
 
         // Insertar correo (si hay)
         if (!campoCorreo.getText().isEmpty()) {
-            String sqlCorreo = "INSERT INTO correo_cliente (id, correo, descripcion, cedula_cliente2) VALUES (UUID(), '"
+            String sqlCorreo = "INSERT INTO correo_cliente (id, correo, descripcion, cedula_cliente2) VALUES ('"+idContador+"', '"
                     + campoCorreo.getText() + "', '"
                     + campoDescripcionCorreo.getText() + "', '"
                     + campoCedula.getText() + "')";

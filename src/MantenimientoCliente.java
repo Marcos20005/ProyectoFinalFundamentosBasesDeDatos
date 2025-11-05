@@ -66,15 +66,29 @@ public class MantenimientoCliente extends JPanel {
         scroll.setBounds(30, 70, 700, 200);
         this.add(scroll);
 
-        // Botones
-        botonInsertar = PanelCliente.crearBoton("Insertar", 40, 300, 100, 40, "Insertar nuevo cliente", "src/imagenes/insertar.png");
-        botonInsertar.setBackground(new Color(46, 204, 113)); botonInsertar.setForeground(Color.WHITE); this.add(botonInsertar);
-        botonActualizar = PanelCliente.crearBoton("Actualizar", 200, 300, 100, 40, "Actualizar cliente existente", "src/imagenes/actualizar.png");
-        botonActualizar.setBackground(new Color(255, 179, 71)); botonActualizar.setForeground(Color.WHITE); this.add(botonActualizar);
-        botonEliminar = PanelCliente.crearBoton("Eliminar", 360, 300, 100, 40, "Eliminar cliente existente", "src/imagenes/eliminar.png");
-        botonEliminar.setBackground(new Color(240, 128, 128)); botonEliminar.setForeground(Color.WHITE); this.add(botonEliminar);
-        botonConsultar = PanelCliente.crearBoton("Consultar", 520, 300, 100, 40, "Consultar cliente existente", "src/imagenes/consultar.png");
-        botonConsultar.setBackground(new Color(135, 206, 250)); botonConsultar.setForeground(Color.WHITE); this.add(botonConsultar);
+        botonInsertar = crearBoton("Insertar", 40, 360, 100, 40, "Insertar nuevo registro",
+                "Iconos/insertar-cuadrado.png");
+        botonInsertar.setBackground(new Color(46, 204, 113));
+        botonInsertar.setForeground(Color.WHITE);
+        this.add(botonInsertar);
+
+        botonActualizar = crearBoton("Actualizar", 200, 360, 100, 40, "Actualizar registro existente",
+                "Iconos/boton-editar.png");
+        botonActualizar.setBackground(new Color(255, 179, 71));
+        botonActualizar.setForeground(Color.WHITE);
+        this.add(botonActualizar);
+
+        botonEliminar = crearBoton("Eliminar", 360, 360, 100, 40, "Eliminar registro existente",
+                "Iconos/eliminar.png");
+        botonEliminar.setBackground(new Color(240, 128, 128));
+        botonEliminar.setForeground(Color.WHITE);
+        this.add(botonEliminar);
+
+        botonConsultar = crearBoton("Consultar", 520, 360, 100, 40, "Consultar registro existente",
+                "Iconos/buscar.png");
+        botonConsultar.setBackground(new Color(135, 206, 250));
+        botonConsultar.setForeground(Color.WHITE);
+        this.add(botonConsultar);
 
         // Combo y campos
         combo = new JComboBox<>(new String[]{"Cedula","Primer Nombre","Segundo Nombre","Primer Apellido","Segundo Apellido"});

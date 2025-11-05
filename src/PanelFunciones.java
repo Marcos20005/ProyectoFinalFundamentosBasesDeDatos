@@ -81,7 +81,7 @@ public class PanelFunciones extends JPanel {
                 controlOriginal.add(controlOriginal.botonActualizar);
                 controlOriginal.add(controlOriginal.botonInsertar);
                 controlOriginal.add(controlOriginal.botonEliminar);
-                controlOriginal.add(controlOriginal.botonConcultar);
+                controlOriginal.add(controlOriginal.botonConsultar);
                 controlOriginal.add(controlOriginal.scroll);
                 controlOriginal.remove(controlOriginal.panel);
 

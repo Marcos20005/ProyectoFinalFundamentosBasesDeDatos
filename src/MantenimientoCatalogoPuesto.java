@@ -55,13 +55,13 @@ public class MantenimientoCatalogoPuesto extends JPanel {
         scroll.setBounds(30,70,600,200); this.add(scroll);
 
         // Botones
-        botonInsertar = PanelCatalogoPuesto.crearBoton("Insertar", 40,300,100,40,"Insertar nuevo puesto","src/imagenes/insertar.png");
+        botonInsertar = PanelCatalogoPuesto.crearBoton("Insertar", 40,300,100,40,"Insertar nuevo puesto","Iconos/insertar-cuadrado.png");
         botonInsertar.setBackground(new Color(46,204,113)); botonInsertar.setForeground(Color.WHITE); this.add(botonInsertar);
-        botonActualizar = PanelCatalogoPuesto.crearBoton("Actualizar", 200,300,100,40,"Actualizar puesto existente","src/imagenes/actualizar.png");
+        botonActualizar = PanelCatalogoPuesto.crearBoton("Actualizar", 200,300,100,40,"Actualizar puesto existente","Iconos/boton-editar.png");
         botonActualizar.setBackground(new Color(255,179,71)); botonActualizar.setForeground(Color.WHITE); this.add(botonActualizar);
-        botonEliminar = PanelCatalogoPuesto.crearBoton("Eliminar", 360,300,100,40,"Eliminar puesto existente","src/imagenes/eliminar.png");
+        botonEliminar = PanelCatalogoPuesto.crearBoton("Eliminar", 360,300,100,40,"Eliminar puesto existente","Iconos/eliminar.png");
         botonEliminar.setBackground(new Color(240,128,128)); botonEliminar.setForeground(Color.WHITE); this.add(botonEliminar);
-        botonConsultar = PanelCatalogoPuesto.crearBoton("Consultar", 520,300,100,40,"Consultar puesto existente","src/imagenes/consultar.png");
+        botonConsultar = PanelCatalogoPuesto.crearBoton("Consultar", 520,300,100,40,"Consultar puesto existente","Iconos/buscar.png");
         botonConsultar.setBackground(new Color(135,206,250)); botonConsultar.setForeground(Color.WHITE); this.add(botonConsultar);
 
         // Combo y campos

@@ -95,7 +95,7 @@ public class PanelEmpleados extends JPanel {
         try {
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT nombre_puesto FROM catalogo_puesto");
-
+        
             while (rs.next()) {
                 comboPuesto.addItem(rs.getString("nombre_puesto"));
             }

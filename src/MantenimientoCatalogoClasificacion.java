@@ -61,16 +61,16 @@ public class MantenimientoCatalogoClasificacion extends JPanel {
         this.add(scroll);
 
         // Botones
-        botonInsertar = PanelCatalogoClasificacion.crearBoton("Insertar", 40, 300, 100, 40, "Insertar nueva clasificación", "src/imagenes/insertar.png");
+        botonInsertar = PanelCatalogoClasificacion.crearBoton("Insertar", 40, 300, 100, 40, "Insertar nueva clasificación", "Iconos/insertar-cuadrado.png");
         botonInsertar.setBackground(new Color(46, 204, 113)); botonInsertar.setForeground(Color.WHITE); this.add(botonInsertar);
 
-        botonActualizar = PanelCatalogoClasificacion.crearBoton("Actualizar", 200, 300, 100, 40, "Actualizar clasificación existente", "src/imagenes/actualizar.png");
+        botonActualizar = PanelCatalogoClasificacion.crearBoton("Actualizar", 200, 300, 100, 40, "Actualizar clasificación existente", "Iconos/boton-editar.png");
         botonActualizar.setBackground(new Color(255, 179, 71)); botonActualizar.setForeground(Color.WHITE); this.add(botonActualizar);
 
-        botonEliminar = PanelCatalogoClasificacion.crearBoton("Eliminar", 360, 300, 100, 40, "Eliminar clasificación existente", "src/imagenes/eliminar.png");
+        botonEliminar = PanelCatalogoClasificacion.crearBoton("Eliminar", 360, 300, 100, 40, "Eliminar clasificación existente", "Iconos/eliminar.png");
         botonEliminar.setBackground(new Color(240, 128, 128)); botonEliminar.setForeground(Color.WHITE); this.add(botonEliminar);
 
-        botonConsultar = PanelCatalogoClasificacion.crearBoton("Consultar", 520, 300, 100, 40, "Consultar clasificación existente", "src/imagenes/consultar.png");
+        botonConsultar = PanelCatalogoClasificacion.crearBoton("Consultar", 520, 300, 100, 40, "Consultar clasificación existente", "Iconos/buscar.png");
         botonConsultar.setBackground(new Color(135, 206, 250)); botonConsultar.setForeground(Color.WHITE); this.add(botonConsultar);
 
         // Combo y campos
