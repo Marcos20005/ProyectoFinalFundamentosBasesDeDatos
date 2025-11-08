@@ -18,7 +18,7 @@ public class PanelSala extends JPanel{
   //Objetos de conexion SQL
     Statement stmt = null;
     Connection con = null;
-    public PanelSala(MantenimientoSala controlOriginal) throws SQLException, ClassNotFoundException {
+    public PanelSala(MantenimientoSala controlOriginal,int funcion) throws SQLException, ClassNotFoundException {
            //MantenimientoSala control = controlOriginal;
 
         Class.forName("com.mysql.cj.jdbc.Driver");
@@ -27,9 +27,16 @@ public class PanelSala extends JPanel{
                 "root", "cRojas34");
         stmt = con.createStatement();
 
-        JLabel lblTitulo = crearEtiqueta("Datos de nueva sala", 200, 20, 300, 30);
+        if(funcion==0){
+            JLabel lblTitulo = crearEtiqueta("Datos de nueva sala", 200, 20, 300, 30);
         lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
         this.add(lblTitulo);
+        }else{
+            JLabel lblTitulo = crearEtiqueta("Actualizar registro", 200, 20, 300, 30);
+        lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
+        this.add(lblTitulo);
+        }
+        
 
        
         JLabel lblNumeroSala = crearEtiqueta("Numero de Sala:", 150, 70, 140, 30);
@@ -47,9 +54,32 @@ public class PanelSala extends JPanel{
         JTextField txtIdTipo = crearCampoTexto(300, 170, 200, 30, "Ingrese el ID del tipo de la sala");
         this.add(lbliDtipo);
         this.add(txtIdTipo);
-
+        
+          JButton botonCancelar = crearBoton("Cancelar", 420, 220, 100, 40, "Regresar atras", "Iconos/cancelar.png");
+botonCancelar.setBackground(new Color(240, 128, 128));
+botonCancelar.setForeground(Color.WHITE);
+this.add(botonCancelar);
+botonCancelar.addActionListener(new ActionListener() {
+   @Override
+   public void actionPerformed(ActionEvent e){
+  txtNumeroSala.setText("");
+                txtCapacidad.setText("");
+                txtIdTipo.setText("");
+              
+                  
+                controlOriginal.add(controlOriginal.botonActualizar);
+                controlOriginal.add(controlOriginal.botonInsertar);
+                controlOriginal.add(controlOriginal.botonEliminar);
+                controlOriginal.add(controlOriginal.botonConsultar);
+                controlOriginal.add(controlOriginal.scroll);
+                controlOriginal.remove(controlOriginal.panel);
+                controlOriginal.recargarTabla();
+                controlOriginal.revalidate();
+                controlOriginal.repaint();
+   } 
+});
        
-        JButton botonGuardar = crearBoton("Guardar", 300, 220, 100, 40, "Guardar nuevo teléfono", "Iconos/guardar.png");
+        JButton botonGuardar = crearBoton("Guardar", 300, 220, 100, 40, "Guardar nuevo teléfono", "Iconos/guardar-el-archivo.png");
         botonGuardar.setBackground(new Color(46, 204, 113));
         botonGuardar.setForeground(Color.WHITE);
         this.add(botonGuardar);
@@ -82,7 +112,6 @@ public class PanelSala extends JPanel{
                 controlOriginal.add(controlOriginal.botonEliminar);
                 controlOriginal.add(controlOriginal.botonConsultar);
                 controlOriginal.add(controlOriginal.scroll);
-                controlOriginal.add(controlOriginal.combo);
                 controlOriginal.remove(controlOriginal.panel);
 
                 

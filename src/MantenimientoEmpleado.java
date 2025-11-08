@@ -16,14 +16,15 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
+import java.sql.CallableStatement;
 
 public class MantenimientoEmpleado extends JPanel {
-    Statement stmt = null;
+    CallableStatement stmt = null;
+    CallableStatement stmt1 = null;
     Connection con = null;
     ResultSet rs = null;
     JButton botonInsertar, botonActualizar, botonEliminar, botonConsultar;
     JScrollPane scroll;
-    JComboBox<Object> combo;
     PanelEmpleado panel;
 
     public MantenimientoEmpleado() throws SQLException, ClassNotFoundException {
@@ -31,7 +32,7 @@ public class MantenimientoEmpleado extends JPanel {
         con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", 
                 "root", "cRojas34");
-        stmt = con.createStatement();
+        stmt = con.prepareCall("{Call listar_empleado}");
 
         JLabel label = new JLabel("Mantenimiento de tabla empleado");
         label.setBounds(200, 20, 250, 30);
@@ -42,7 +43,7 @@ public class MantenimientoEmpleado extends JPanel {
         DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
         tabla.setModel(modelo);
 
-        rs = stmt.executeQuery("SELECT * FROM empleado");
+        rs = stmt.executeQuery();
         while (rs.next()) {
             String id = rs.getString("id");
             String primerNombre = rs.getString("primer_nombre");
@@ -84,22 +85,14 @@ public class MantenimientoEmpleado extends JPanel {
         botonConsultar.setForeground(Color.WHITE);
         this.add(botonConsultar);
 
-        // Combo box para actualizar
-        String lista[] = {"ID", "Primer Nombre", "Segundo Nombre", "Primer Apellido", "Segundo Apellido", "ID Puesto"};
-        combo = new JComboBox<>(lista);
-        combo.setBounds(200, 360, 140, 30);
-        this.add(combo);
-
                 // Campos de texto para actualizar, eliminar y consultar
-        JTextField campoActualizar = crearCampoTexto(200, 400, 100, 30, "Ingrese Código a actualizar");
+        JTextField campoActualizar = crearCampoTexto(200, 410, 100, 30, "Ingrese Código a actualizar");
         this.add(campoActualizar);
-        JTextField campoValorActualizar = crearCampoTexto(200, 440, 100, 30, "Ingrese nuevo valor");
-        this.add(campoValorActualizar);
 
-        JTextField campoEliminar = crearCampoTexto(360, 360, 100, 30, "Ingrese Código a eliminar");
+        JTextField campoEliminar = crearCampoTexto(360, 410, 100, 30, "Ingrese Código a eliminar");
         this.add(campoEliminar);
 
-        JTextField campoConsultar = crearCampoTexto(520, 360, 100, 30, "Ingrese Código a consultar");
+        JTextField campoConsultar = crearCampoTexto(520, 410, 100, 30, "Ingrese Código a consultar");
         this.add(campoConsultar);
         // Acción Insertar
         botonInsertar.addActionListener(e -> {
@@ -109,13 +102,11 @@ public class MantenimientoEmpleado extends JPanel {
                 this.remove(botonActualizar);
                 this.remove(botonEliminar);
                 this.remove(botonConsultar);
-                this.remove(combo);
-                this.remove(campoActualizar);
-                this.remove(campoValorActualizar);
-                this.remove(campoEliminar);
-                this.remove(campoConsultar);
+                // this.remove(campoActualizar);
+                // this.remove(campoEliminar);
+                // this.remove(campoConsultar);
 
-                panel = new PanelEmpleado(MantenimientoEmpleado.this);
+                panel = new PanelEmpleado(MantenimientoEmpleado.this,0,"");
                 panel.setLayout(null);
                 panel.setBounds(10, 70, 700, 500);
                 this.add(panel);
@@ -135,33 +126,39 @@ public class MantenimientoEmpleado extends JPanel {
                 tabla.getCellEditor().stopCellEditing();
             }
             try {
-                rs = stmt.executeQuery("SELECT * FROM empleado");
+                rs = stmt.executeQuery();
                 while (rs.next()) {
                     if (rs.getString("id").equals(campoActualizar.getText())) {
                         encontrado = true;
                     }
                 }
                 if (encontrado) {
-                    int eleccion = JOptionPane.showConfirmDialog(null, "¿Desea guardar los cambios?", "Confirmar acción", 
-                            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                    if (eleccion == 0) {
-                        String columna = "";
-                        switch (combo.getSelectedIndex()) {
-                            case 0: columna = "id"; break;
-                            case 1: columna = "primer_nombre"; break;
-                            case 2: columna = "segundo_nombre"; break;
-                            case 3: columna = "primer_apellido"; break;
-                            case 4: columna = "segundo_apellido"; break;
-                            case 5: columna = "id_puesto"; break;
-                        }
-                        stmt.executeUpdate("UPDATE empleado SET " + columna + "='" + campoValorActualizar.getText() + "' WHERE id='" + campoActualizar.getText() + "';");
-                    }
+ try {
+                this.remove(scroll);
+                this.remove(botonInsertar);
+                this.remove(botonActualizar);
+                this.remove(botonEliminar);
+                this.remove(botonConsultar);
+                //this.remove(campoActualizar);
+               // this.remove(campoEliminar);
+              //  this.remove(campoConsultar);
+
+                panel = new PanelEmpleado(MantenimientoEmpleado.this,1,campoActualizar.getText());
+                panel.setLayout(null);
+                panel.setBounds(10, 70, 700, 500);
+                this.add(panel);
+                this.setComponentZOrder(panel, 0);
+                this.revalidate();
+                this.repaint();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
                 } else {
                     JOptionPane.showMessageDialog(null, "Registro no encontrado");
                 }
 
                 // Recargar tabla
-                rs = stmt.executeQuery("SELECT * FROM empleado");
+                rs = stmt.executeQuery();
                 while (rs.next()) {
                     String id = rs.getString("id");
                     String primerNombre = rs.getString("primer_nombre");
@@ -176,7 +173,7 @@ public class MantenimientoEmpleado extends JPanel {
                 ex.printStackTrace();
             }
             campoActualizar.setText("");
-            campoValorActualizar.setText("");
+            
         });
 
         // Acción Eliminar
@@ -187,7 +184,7 @@ public class MantenimientoEmpleado extends JPanel {
                 tabla.getCellEditor().stopCellEditing();
             }
             try {
-                rs = stmt.executeQuery("SELECT * FROM empleado");
+                rs = stmt.executeQuery();
                 while (rs.next()) {
                     if (rs.getString("id").equals(campoEliminar.getText())) {
                         encontrado = true;
@@ -197,14 +194,16 @@ public class MantenimientoEmpleado extends JPanel {
                     int eleccion = JOptionPane.showConfirmDialog(null, "¿Desea confirmar la eliminación del registro?", "Confirmación",
                             JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                     if (eleccion == 0) {
-                        stmt.executeUpdate("DELETE FROM empleado WHERE id='" + campoEliminar.getText() + "';");
+                        stmt1 = con.prepareCall("{CALL eliminar_empleado(?)}");
+                        stmt1.setString(1, campoEliminar.getText());
+                        stmt1.executeUpdate();
                     }
                 } else {
                     JOptionPane.showMessageDialog(null, "Registro no encontrado");
                 }
 
                 // Recargar tabla
-                rs = stmt.executeQuery("SELECT * FROM empleado");
+                rs = stmt.executeQuery();
                 while (rs.next()) {
                     String id = rs.getString("id");
                     String primerNombre = rs.getString("primer_nombre");
@@ -230,7 +229,7 @@ public class MantenimientoEmpleado extends JPanel {
             }
             try {
                 if (!campoConsultar.getText().isEmpty()) {
-                    rs = stmt.executeQuery("SELECT * FROM empleado");
+                    rs = stmt.executeQuery();
                     while (rs.next()) {
                         if (rs.getString("id").equals(campoConsultar.getText())) {
                             encontrado = true;
@@ -241,7 +240,7 @@ public class MantenimientoEmpleado extends JPanel {
                     }
                     if (!encontrado) {
                         JOptionPane.showMessageDialog(null, "Registro no encontrado");
-                        rs = stmt.executeQuery("SELECT * FROM empleado");
+                        rs = stmt.executeQuery();
                         while (rs.next()) {
                             String fila[] = {rs.getString("id"), rs.getString("primer_nombre"), rs.getString("segundo_nombre"),
                                     rs.getString("primer_apellido"), rs.getString("segundo_apellido"), rs.getString("id_puesto")};
@@ -249,7 +248,7 @@ public class MantenimientoEmpleado extends JPanel {
                         }
                     }
                 } else {
-                    rs = stmt.executeQuery("SELECT * FROM empleado");
+                    rs = stmt.executeQuery();
                     while (rs.next()) {
                         String fila[] = {rs.getString("id"), rs.getString("primer_nombre"), rs.getString("segundo_nombre"),
                                 rs.getString("primer_apellido"), rs.getString("segundo_apellido"), rs.getString("id_puesto")};
@@ -267,7 +266,7 @@ public class MantenimientoEmpleado extends JPanel {
         try {
             DefaultTableModel modelo = (DefaultTableModel) ((JTable) ((JScrollPane) scroll).getViewport().getView()).getModel();
             modelo.setRowCount(0);
-            rs = stmt.executeQuery("SELECT * FROM empleado");
+            rs = stmt.executeQuery();
             while (rs.next()) {
                 String fila[] = {rs.getString("id"), rs.getString("primer_nombre"), rs.getString("segundo_nombre"),
                         rs.getString("primer_apellido"), rs.getString("segundo_apellido"), rs.getString("id_puesto")};

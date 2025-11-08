@@ -24,7 +24,6 @@ public class MantenimientoCatalogoGenero extends JPanel {
     ResultSet rs = null;
     JButton botonInsertar, botonActualizar, botonEliminar, botonConsultar;
     JScrollPane scroll;
-    JComboBox<Object> combo;
     PanelCatalogoGenero panel;
 
     public MantenimientoCatalogoGenero() {
@@ -87,23 +86,16 @@ public class MantenimientoCatalogoGenero extends JPanel {
         botonConsultar.setBackground(new Color(135, 206, 250));
         botonConsultar.setForeground(Color.WHITE);
         this.add(botonConsultar);
-        // Combo para actualizar
-        String lista[] = {"ID Genero", "Nombre Genero"};
-        combo = new JComboBox<>(lista);
-        combo.setBounds(200, 360, 140, 30);
-        this.add(combo);
 
         
        
-        JTextField campoActualizar = crearCampoTexto(200, 400, 140, 30, "Ingrese ID a actualizar");
+        JTextField campoActualizar = crearCampoTexto(200, 410, 100, 30, "Ingrese ID a actualizar");
         this.add(campoActualizar);
-        JTextField campoValorActualizar = crearCampoTexto(200, 440, 140, 30, "Ingrese nuevo valor");
-        this.add(campoValorActualizar);
 
-        JTextField campoEliminar = crearCampoTexto(360,360,100,30, "Ingrese ID a eliminar");
+        JTextField campoEliminar = crearCampoTexto(360,410,100,30, "Ingrese ID a eliminar");
         this.add(campoEliminar);
 
-        JTextField campoConsultar = crearCampoTexto(520,360,100,30, "Ingrese ID a consultar");
+        JTextField campoConsultar = crearCampoTexto(520,410,100,30, "Ingrese ID a consultar");
         this.add(campoConsultar);
 
         // Accion Insertar
@@ -111,12 +103,12 @@ public class MantenimientoCatalogoGenero extends JPanel {
             try {
                 this.remove(scroll);
                 this.remove(botonInsertar); this.remove(botonActualizar); this.remove(botonEliminar); this.remove(botonConsultar);
-                this.remove(combo); this.remove(campoActualizar); this.remove(campoValorActualizar);
-                this.remove(campoEliminar); this.remove(campoConsultar);
+             //   this.remove(campoActualizar);
+               // this.remove(campoEliminar); this.remove(campoConsultar);
 
-                panel = new PanelCatalogoGenero(MantenimientoCatalogoGenero.this); 
+                panel = new PanelCatalogoGenero(MantenimientoCatalogoGenero.this,0); 
                 panel.setLayout(null);
-                panel.setBounds(10, 70, 700, 300);
+                panel.setBounds(10, 70, 700, 400);
                 this.add(panel);
                 this.setComponentZOrder(panel, 0);
                 this.revalidate(); this.repaint();
@@ -138,12 +130,23 @@ public class MantenimientoCatalogoGenero extends JPanel {
                     if (rs.getString("id_genero").equals(campoActualizar.getText())) { encontrado = true; }
                 }
                 if (encontrado) {
-                    int eleccion = JOptionPane.showConfirmDialog(null, "¿Desea guardar los cambios?", "Confirmar acción", JOptionPane.YES_NO_OPTION);
-                    if (eleccion == 0) {
-                        String columna = combo.getSelectedIndex() == 0 ? "id_genero" : "nombre_genero";
-                        stmt.executeUpdate("UPDATE catalogo_genero SET " + columna + "='" + campoValorActualizar.getText() +
-                                "' WHERE id_genero='" + campoActualizar.getText() + "';");
-                    }
+                 try {
+                this.remove(scroll);
+                this.remove(botonInsertar); this.remove(botonActualizar); this.remove(botonEliminar); this.remove(botonConsultar);
+                //this.remove(campoActualizar);
+                //this.remove(campoEliminar); this.remove(campoConsultar);
+
+                panel = new PanelCatalogoGenero(MantenimientoCatalogoGenero.this,1); 
+                panel.setLayout(null);
+                panel.setBounds(10, 70, 700, 400);
+                this.add(panel);
+                this.setComponentZOrder(panel, 0);
+                this.revalidate(); this.repaint();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null,
+                        "Hubo un error por favor vuelva a intentar",
+                        "Advertencia", JOptionPane.WARNING_MESSAGE);
+            }
                 } else { JOptionPane.showMessageDialog(null, "Registro no encontrado"); }
 
                 rs = stmt.executeQuery("SELECT * FROM catalogo_genero");
@@ -151,7 +154,7 @@ public class MantenimientoCatalogoGenero extends JPanel {
                     modelo.addRow(new String[]{rs.getString("id_genero"), rs.getString("nombre_genero")});
                 }
             } catch (SQLException ex) { ex.printStackTrace(); }
-            campoActualizar.setText(""); campoValorActualizar.setText("");
+            campoActualizar.setText(""); 
         });
 
         // Accion Eliminar
@@ -208,7 +211,7 @@ public class MantenimientoCatalogoGenero extends JPanel {
             DefaultTableModel modelo = (DefaultTableModel)((JTable)((JScrollPane)scroll).getViewport().getView()).getModel();
             modelo.setRowCount(0);
             rs = stmt.executeQuery("SELECT * FROM catalogo_genero");
-            while(rs.next()) modelo.addRow(new String[]{rs.getString("id_puesto"), rs.getString("nombre_puesto")});
+            while(rs.next()) modelo.addRow(new String[]{rs.getString("id_genero"), rs.getString("nombre_genero")});
         } catch(SQLException e){ e.printStackTrace(); }
     }
 

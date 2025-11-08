@@ -1,4 +1,6 @@
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
@@ -17,24 +19,33 @@ public class PanelCatalogoPuesto extends JPanel {
     JButton botonGuardar, botonCancelar;
     MantenimientoCatalogoPuesto parent;
 
-    public PanelCatalogoPuesto(MantenimientoCatalogoPuesto parent) {
+    public PanelCatalogoPuesto(MantenimientoCatalogoPuesto parent, int funcion) {
         this.parent = parent;
         setLayout(null);
+        if (funcion==0) {
+              JLabel labelTitulo = new JLabel("Registro de puesto");
+        labelTitulo.setBounds(100, 20, 120, 30);
+        this.add(labelTitulo);
+        }else{
+                  JLabel labelTitulo = new JLabel("Actualizar registro");
+        labelTitulo.setBounds(100, 20, 120, 30);
+        this.add(labelTitulo);
+        }
 
         // Etiquetas
         JLabel labelId = new JLabel("ID Puesto:");
-        labelId.setBounds(100, 50, 120, 30);
+        labelId.setBounds(100, 60, 120, 30);
         this.add(labelId);
 
         JLabel labelNombre = new JLabel("Nombre Puesto:");
-        labelNombre.setBounds(100, 100, 120, 30);
+        labelNombre.setBounds(100, 110, 120, 30);
         this.add(labelNombre);
 
         // Campos de texto
-        campoId = crearCampoTexto(230, 50, 150, 30, "Ingrese ID del puesto");
+        campoId = crearCampoTexto(230, 60, 150, 30, "Ingrese ID del puesto");
         this.add(campoId);
 
-        campoNombre = crearCampoTexto(230, 100, 150, 30, "Ingrese nombre del puesto");
+        campoNombre = crearCampoTexto(230, 110, 150, 30, "Ingrese nombre del puesto");
         this.add(campoNombre);
 
         // Botones
@@ -43,10 +54,24 @@ public class PanelCatalogoPuesto extends JPanel {
         botonGuardar.setForeground(Color.WHITE);
         this.add(botonGuardar);
 
-        botonCancelar = crearBoton("Cancelar", 260, 180, 120, 40, "Cancelar inserción","Iconos/paso-atras.png");
+        botonCancelar = crearBoton("Cancelar", 260, 180, 120, 40, "Cancelar inserción","Iconos/cancelar.png");
         botonCancelar.setBackground(new Color(240, 128, 128));
         botonCancelar.setForeground(Color.WHITE);
         this.add(botonCancelar);
+        botonCancelar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e){
+ parent.add(parent.botonActualizar);
+                parent.add(parent.botonInsertar);
+                parent.add(parent.botonEliminar);
+                parent.add(parent.botonConsultar);
+                parent.add(parent.scroll);
+                parent.remove(PanelCatalogoPuesto.this);
+                parent.revalidate();
+                parent.repaint();
+                parent.recargarTabla();
+            }
+        });
 
         // Funcionalidad botones
         botonGuardar.addActionListener(e -> {
@@ -73,7 +98,6 @@ public class PanelCatalogoPuesto extends JPanel {
                 parent.add(parent.botonEliminar);
                 parent.add(parent.botonConsultar);
                 parent.add(parent.scroll);
-                parent.add(parent.combo);
                 parent.remove(this);
                 parent.revalidate();
                 parent.repaint();
@@ -92,7 +116,6 @@ public class PanelCatalogoPuesto extends JPanel {
                 parent.add(parent.botonEliminar);
                 parent.add(parent.botonConsultar);
                 parent.add(parent.scroll);
-                parent.add(parent.combo);
             parent.remove(this);
             parent.revalidate();
             parent.repaint();

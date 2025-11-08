@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -14,23 +15,32 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import java.sql.CallableStatement;
+
+
 
 public class PanelCliente extends JPanel {
     // Objetos de conexion SQL
-    Statement stmt = null;
+    CallableStatement stmt = null;
     Connection con = null;
 
-    public PanelCliente(MantenimientoCliente controlOriginal) throws SQLException, ClassNotFoundException {
+    public PanelCliente(MantenimientoCliente controlOriginal, int funcion, String cedula) throws SQLException, ClassNotFoundException {
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true",
                 "root",
                 "cRojas34");
-        stmt = con.createStatement();
-
-        JLabel lBlcodigo = crearEtiqueta("Datos de nuevo cliente", 200, 20, 300, 30);
+    
+       if(funcion==0){
+   JLabel lBlcodigo = crearEtiqueta("Datos de nuevo cliente", 200, 20, 300, 30);
         lBlcodigo.setHorizontalAlignment(SwingConstants.CENTER);
         this.add(lBlcodigo);
+       }else{
+         JLabel lBlcodigo = crearEtiqueta("Actualizar registro", 200, 20, 300, 30);
+        lBlcodigo.setHorizontalAlignment(SwingConstants.CENTER);
+        this.add(lBlcodigo);
+       }
+       
 
         JLabel lblCedula = crearEtiqueta("Cédula:", 150, 70, 140, 30);
         JTextField txtCedula = crearCampoTexto(300, 70, 200, 30, "Ingrese cédula");
@@ -56,8 +66,50 @@ public class PanelCliente extends JPanel {
         JTextField txtSegundoApellido = crearCampoTexto(300, 270, 200, 30, "Ingrese segundo apellido");
         this.add(lblSegundoApellido);
         this.add(txtSegundoApellido);
+        
 
-        JButton botonGuardar = crearBoton("Guardar", 300, 320, 100, 40, "Guardar nuevo cliente", "src/imagenes/guardar.png");
+        //Porcion de codigo para llenar los campos cuando se desee actualizar un registro
+        stmt = (CallableStatement) con.prepareCall("{CALL listar_cliente}");
+        ResultSet rs = stmt.executeQuery();
+
+     if (funcion==1) {
+            while (rs.next()) { 
+            if (rs.getString("cedula").equals(cedula)) {
+              txtCedula.setText(rs.getString("cedula"));  
+              txtPrimerNombre.setText(rs.getString("primer_nombre"));
+              txtSegundoNombre.setText(rs.getString("segundo_Nombre"));
+              txtPrimerApellido.setText(rs.getString("primer_apellido"));
+              txtSegundoApellido.setText(rs.getString("segundo_apellido"));
+            }
+        }
+
+     }
+
+                  JButton botonCancelar = crearBoton("Cancelar", 400, 320, 100, 40, "Regresar atras", "Iconos/cancelar.png");
+botonCancelar.setBackground(new Color(240, 128, 128));
+botonCancelar.setForeground(Color.WHITE);
+this.add(botonCancelar);
+botonCancelar.addActionListener(new ActionListener() {
+    @Override
+    public void actionPerformed(ActionEvent e){
+txtCedula.setText("");
+                txtPrimerNombre.setText("");
+                txtSegundoNombre.setText("");
+                txtPrimerApellido.setText("");
+                txtSegundoApellido.setText("");
+                controlOriginal.add(controlOriginal.botonActualizar);
+                controlOriginal.add(controlOriginal.botonInsertar);
+                controlOriginal.add(controlOriginal.botonEliminar);
+                controlOriginal.add(controlOriginal.botonConsultar);
+                controlOriginal.add(controlOriginal.scroll);
+                controlOriginal.remove(controlOriginal.panel);
+                controlOriginal.recargarTabla();
+                controlOriginal.revalidate();
+                controlOriginal.repaint();
+    }
+});
+
+        JButton botonGuardar = crearBoton("Guardar", 280, 320, 100, 40, "Guardar nuevo cliente", "Iconos/guardar-el-archivo.png");
         botonGuardar.setBackground(new Color(46, 204, 113));
         botonGuardar.setForeground(Color.WHITE);
         this.add(botonGuardar);
@@ -65,30 +117,44 @@ public class PanelCliente extends JPanel {
         botonGuardar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                int eleccion;
                 try {
-                    int eleccion = JOptionPane.showConfirmDialog(null, "¿Desea confirmar nuevo registro?", "Confirmar acción", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                    if(funcion==0){
+                         eleccion = JOptionPane.showConfirmDialog(null, "¿Desea confirmar nuevo registro?", "Confirmar acción", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+   stmt = (CallableStatement) con.prepareCall("{CALL insertar_cliente(?, ?, ?, ?, ?)}");
+                }  else{
+                    eleccion = JOptionPane.showConfirmDialog(null, "¿Desea confirmar cambios?", "Confirmar acción", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                    stmt = (CallableStatement) con.prepareCall("{CALL actualizar_cliente(?, ?, ?, ?, ?,?)}");
+                }           
+                    
                     if (eleccion == 0) {
-                        stmt.executeUpdate("INSERT INTO cliente (cedula, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido) VALUES ('"
-                                + txtCedula.getText() + "', '" + txtPrimerNombre.getText() + "', '" + txtSegundoNombre.getText() + "', '"
-                                + txtPrimerApellido.getText() + "', '" + txtSegundoApellido.getText() + "');");
+                         stmt.setString(1, txtCedula.getText());      // cédula
+         stmt.setString(2, txtPrimerNombre.getText());   // nombre1
+         stmt.setString(3, txtSegundoNombre.getText());   // nombre1
+         stmt.setString(4, txtPrimerApellido.getText());        // apellido1
+         stmt.setString(5, txtSegundoApellido.getText());        // apellido2
+         if (funcion==1) {
+           
+             stmt.setString(6, cedula);        // apellido2
+         }
+        stmt.executeUpdate();
+       
                     }
                 } catch (SQLException e1) {
-                     JOptionPane.showMessageDialog(null, "Hubo un error por favor vuelva a intentar","Advertencia",JOptionPane.WARNING_MESSAGE);
-                }
+                     JOptionPane.showMessageDialog(null, "Hubo un error por favor vuelva a intentar: "+e1.getMessage(),"Advertencia",JOptionPane.WARNING_MESSAGE);
+               System.out.println(e1.getMessage());
+                    }
 
                 txtCedula.setText("");
                 txtPrimerNombre.setText("");
                 txtSegundoNombre.setText("");
                 txtPrimerApellido.setText("");
                 txtSegundoApellido.setText("");
-
-                // Regresar a panel principal de mantenimiento
                 controlOriginal.add(controlOriginal.botonActualizar);
                 controlOriginal.add(controlOriginal.botonInsertar);
                 controlOriginal.add(controlOriginal.botonEliminar);
                 controlOriginal.add(controlOriginal.botonConsultar);
                 controlOriginal.add(controlOriginal.scroll);
-                controlOriginal.add(controlOriginal.combo);
                 controlOriginal.remove(controlOriginal.panel);
                 controlOriginal.recargarTabla();
                 controlOriginal.revalidate();

@@ -27,7 +27,6 @@ public class MantenimientoBoleto extends JPanel {
     JButton botonEliminar;
     JButton botonConsultar;
     JScrollPane scroll;
-    JComboBox<Object> combo;
     PanelBoleto panel;
     DefaultTableModel modelo;
     JTable tabla;
@@ -80,24 +79,17 @@ public class MantenimientoBoleto extends JPanel {
         botonConsultar.setBackground(new Color(135, 206, 250));
         botonConsultar.setForeground(Color.WHITE);
         this.add(botonConsultar);
-
-        // --- CAMPOS PARA ACTUALIZAR ---
-        String lista[] = {"asiento", "precio_final", "fecha_emicion"};
-        combo = new JComboBox<>(lista);
-        combo.setBounds(220, 410, 120, 30);
-        this.add(combo);
+;
         
-        JTextField campoActualizarId = crearCampoTexto(220, 450, 120, 30, "Ingrese CÓDIGO a actualizar");
+        JTextField campoActualizarId = crearCampoTexto(200, 410, 100, 30, "Ingrese CÓDIGO a actualizar");
         this.add(campoActualizarId);
-        JTextField campoValorActualizar = crearCampoTexto(220, 490, 120, 30, "Ingrese nuevo valor");
-        this.add(campoValorActualizar);
 
         // --- CAMPO PARA ELIMINAR ---
-        JTextField campoEliminar = crearCampoTexto(400, 410, 120, 30, "Ingrese CÓDIGO a eliminar");
+        JTextField campoEliminar = crearCampoTexto(360, 410, 120, 30, "Ingrese CÓDIGO a eliminar");
         this.add(campoEliminar);
 
         // --- CAMPO PARA CONSULTAR ---
-        JTextField campoConsultar = crearCampoTexto(580, 410, 120, 30, "Ingrese CÓDIGO a consultar");
+        JTextField campoConsultar = crearCampoTexto(520, 410, 120, 30, "Ingrese CÓDIGO a consultar");
         this.add(campoConsultar);
 
 
@@ -110,15 +102,12 @@ public class MantenimientoBoleto extends JPanel {
                 this.remove(botonActualizar);
                 this.remove(botonEliminar);
                 this.remove(botonConsultar);
-                // Ocultar todos los campos de texto y combo
-                this.remove(combo);
-                this.remove(campoActualizarId);
-                this.remove(campoValorActualizar);
-                this.remove(campoEliminar);
-                this.remove(campoConsultar);
+               // this.remove(campoActualizarId);
+                //this.remove(campoEliminar);
+                //this.remove(campoConsultar);
 
 
-                panel = new PanelBoleto(this);
+                panel = new PanelBoleto(this,0);
                 panel.setLayout(null);
                 panel.setBounds(10, 70, 700, 500);
                 this.add(panel);
@@ -132,7 +121,7 @@ public class MantenimientoBoleto extends JPanel {
         
         botonActualizar.addActionListener(e -> {
             boolean encontrado = false;
-            if (campoActualizarId.getText().isEmpty() || campoValorActualizar.getText().isEmpty()) {
+            if (campoActualizarId.getText().isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Debe ingresar el código a buscar y el nuevo valor.", "Advertencia", JOptionPane.WARNING_MESSAGE);
                 return;
             }
@@ -144,11 +133,28 @@ public class MantenimientoBoleto extends JPanel {
                 }
 
                 if (encontrado) {
-                    int eleccion = JOptionPane.showConfirmDialog(null, "¿Desea guardar los cambios?", "Confirmar acción", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                    if (eleccion == 0) {
-                        String columna = combo.getSelectedItem().toString();
-                        stmt.executeUpdate("UPDATE boleto SET " + columna + "='" + campoValorActualizar.getText() + "' WHERE codigo = '" + campoActualizarId.getText() + "';");
-                    }
+                     try {
+                this.remove(scroll);
+                this.remove(botonInsertar);
+                this.remove(botonActualizar);
+                this.remove(botonEliminar);
+                this.remove(botonConsultar);
+               // this.remove(campoActualizarId);
+                //this.remove(campoEliminar);
+                //this.remove(campoConsultar);
+
+
+                panel = new PanelBoleto(this,1);
+                panel.setLayout(null);
+                panel.setBounds(10, 70, 700, 500);
+                this.add(panel);
+                this.setComponentZOrder(panel, 0);
+                this.revalidate();
+                this.repaint();
+            } catch (ClassNotFoundException | SQLException e1) {
+                e1.printStackTrace();
+            }
+                 
                 } else {
                     JOptionPane.showMessageDialog(null, "No se encontró el registro buscado");
                 }
@@ -157,7 +163,7 @@ public class MantenimientoBoleto extends JPanel {
             }
             recargarTabla();
             campoActualizarId.setText("");
-            campoValorActualizar.setText("");
+            
         });
         
         botonEliminar.addActionListener(e -> {

@@ -1,9 +1,12 @@
+
 import java.awt.Color;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.CallableStatement;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -18,13 +21,14 @@ import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 
 public class MantenimientoFunciones extends JPanel {
-    Statement stmt = null;
+
+    CallableStatement stmt = null;
+    CallableStatement stmt1 = null;
     Connection con = null;
     ResultSet rs = null;
 
     JButton botonInsertar, botonActualizar, botonEliminar, botonConsultar;
     JScrollPane scroll;
-    JComboBox<Object> combo;
     PanelFunciones panel;
 
     public MantenimientoFunciones() throws SQLException, ClassNotFoundException {
@@ -42,8 +46,8 @@ public class MantenimientoFunciones extends JPanel {
         DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
         tabla.setModel(modelo);
 
-        stmt = con.createStatement();
-        rs = stmt.executeQuery("SELECT * FROM funciones");
+        stmt = con.prepareCall("{CALL listar_funciones()}");
+        rs = stmt.executeQuery();
         while (rs.next()) {
             String codigo = rs.getString("codigo");
             String fecha = rs.getString("fecha");
@@ -82,22 +86,14 @@ public class MantenimientoFunciones extends JPanel {
         botonConsultar.setForeground(Color.WHITE);
         this.add(botonConsultar);
 
-        // Combo box para actualizar
-        String lista[] = {"Código", "Fecha", "Hora", "Precio base"};
-        combo = new JComboBox<>(lista);
-        combo.setBounds(200, 360, 140, 30);
-        this.add(combo);
-
         // Campos de texto para actualizar, eliminar y consultar
-        JTextField campoActualizar = crearCampoTexto(200, 400, 100, 30, "Ingrese Código a actualizar");
+        JTextField campoActualizar = crearCampoTexto(200, 410, 100, 30, "Ingrese Código a actualizar");
         this.add(campoActualizar);
-        JTextField campoValorActualizar = crearCampoTexto(200, 440, 100, 30, "Ingrese nuevo valor");
-        this.add(campoValorActualizar);
 
-        JTextField campoEliminar = crearCampoTexto(360, 360, 100, 30, "Ingrese Código a eliminar");
+        JTextField campoEliminar = crearCampoTexto(360, 410, 100, 30, "Ingrese Código a eliminar");
         this.add(campoEliminar);
 
-        JTextField campoConsultar = crearCampoTexto(520, 360, 100, 30, "Ingrese Código a consultar");
+        JTextField campoConsultar = crearCampoTexto(520, 410, 100, 30, "Ingrese Código a consultar");
         this.add(campoConsultar);
 
         // Acción Insertar -> muestra panel de inserción
@@ -108,15 +104,13 @@ public class MantenimientoFunciones extends JPanel {
                 this.remove(botonActualizar);
                 this.remove(botonEliminar);
                 this.remove(botonConsultar);
-                this.remove(combo);
-                this.remove(campoActualizar);
-                this.remove(campoValorActualizar);
-                this.remove(campoEliminar);
-                this.remove(campoConsultar);
+                // this.remove(campoActualizar);
+                // this.remove(campoEliminar);
+                // this.remove(campoConsultar);
 
-                panel = new PanelFunciones(MantenimientoFunciones.this);
+                panel = new PanelFunciones(MantenimientoFunciones.this, 0, "");
                 panel.setLayout(null);
-                panel.setBounds(10, 70, 700, 350);
+                panel.setBounds(10, 70, 700, 400);
                 this.add(panel);
                 this.setComponentZOrder(panel, 0);
                 this.revalidate();
@@ -136,7 +130,7 @@ public class MantenimientoFunciones extends JPanel {
             }
 
             try {
-                rs = stmt.executeQuery("SELECT * FROM funciones");
+                rs = stmt.executeQuery();
                 while (rs.next()) {
                     if (rs.getString("codigo").equals(campoActualizar.getText())) {
                         encontrado = true;
@@ -144,38 +138,32 @@ public class MantenimientoFunciones extends JPanel {
                 }
 
                 if (encontrado) {
-                    int eleccion = javax.swing.JOptionPane.showConfirmDialog(null,
-                            "¿Desea guardar los cambios?", "Confirmar acción",
-                            javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE);
-                    if (eleccion == 0) {
-                String columna = "";
-                switch (combo.getSelectedIndex()) {
-                    case 0: columna = "codigo"; break;
-                    case 1: columna = "fecha"; break;
-                    case 2: columna = "hora"; break;
-                    case 3: columna = "precio_base"; break;
-                }
-
-                if (columna.equals("precio_base")) {
                     try {
-                        double precio = Double.parseDouble(campoValorActualizar.getText());
-                        stmt.executeUpdate("UPDATE funciones SET " + columna + "='" + precio
-                                + "' WHERE codigo='" + campoActualizar.getText() + "';");
-                    } catch (NumberFormatException ex) {
-                        JOptionPane.showMessageDialog(null, "Debe ingresar un número válido para el precio base");
-                        return;
+                        this.remove(scroll);
+                        this.remove(botonInsertar);
+                        this.remove(botonActualizar);
+                        this.remove(botonEliminar);
+                        this.remove(botonConsultar);
+                        // this.remove(campoActualizar);
+                        // this.remove(campoEliminar);
+                        // this.remove(campoConsultar);
+
+                        panel = new PanelFunciones(MantenimientoFunciones.this, 1, campoActualizar.getText());
+                        panel.setLayout(null);
+                        panel.setBounds(10, 70, 700, 400);
+                        this.add(panel);
+                        this.setComponentZOrder(panel, 0);
+                        this.revalidate();
+                        this.repaint();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
                     }
                 } else {
-                    stmt.executeUpdate("UPDATE funciones SET " + columna + "='" + campoValorActualizar.getText()
-                            + "' WHERE codigo='" + campoActualizar.getText() + "';");
+                    javax.swing.JOptionPane.showMessageDialog(null, "Registro no encontrado");
                 }
-            }
-        } else {
-            javax.swing.JOptionPane.showMessageDialog(null, "Registro no encontrado");
-        }
 
                 // Recargar tabla
-                rs = stmt.executeQuery("SELECT * FROM funciones");
+                rs = stmt.executeQuery();
                 while (rs.next()) {
                     String codigo = rs.getString("codigo");
                     String fecha = rs.getString("fecha");
@@ -189,7 +177,6 @@ public class MantenimientoFunciones extends JPanel {
             }
 
             campoActualizar.setText("");
-            campoValorActualizar.setText("");
         });
 
         // Acción Eliminar
@@ -202,7 +189,7 @@ public class MantenimientoFunciones extends JPanel {
             }
 
             try {
-                rs = stmt.executeQuery("SELECT * FROM funciones");
+                rs = stmt.executeQuery();
                 while (rs.next()) {
                     if (rs.getString("codigo").equals(campoEliminar.getText())) {
                         encontrado = true;
@@ -214,13 +201,15 @@ public class MantenimientoFunciones extends JPanel {
                             "¿Desea confirmar la eliminación del registro?", "Confirmación",
                             javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE);
                     if (eleccion == 0) {
-                        stmt.executeUpdate("DELETE FROM funciones WHERE codigo='" + campoEliminar.getText() + "';");
+                        stmt1 = con.prepareCall("{CALL eliminar_funciones(?)}");
+                        stmt1.setString(1, campoEliminar.getText());
+                        stmt1.executeUpdate();
                     }
                 } else {
                     javax.swing.JOptionPane.showMessageDialog(null, "Registro no encontrado");
                 }
 
-                rs = stmt.executeQuery("SELECT * FROM funciones");
+                rs = stmt.executeQuery();
                 while (rs.next()) {
                     String codigo = rs.getString("codigo");
                     String fecha = rs.getString("fecha");
@@ -247,29 +236,29 @@ public class MantenimientoFunciones extends JPanel {
 
             try {
                 if (!campoConsultar.getText().isEmpty()) {
-                    rs = stmt.executeQuery("SELECT * FROM funciones");
+                    rs = stmt.executeQuery();
                     while (rs.next()) {
                         if (rs.getString("codigo").equals(campoConsultar.getText())) {
                             encontrado = true;
                             String fila[] = {rs.getString("codigo"), rs.getString("fecha"),
-                                    rs.getString("hora"), rs.getString("precio_base")};
+                                rs.getString("hora"), rs.getString("precio_base")};
                             modelo.addRow(fila);
                         }
                     }
                     if (!encontrado) {
                         javax.swing.JOptionPane.showMessageDialog(null, "Registro no encontrado");
-                        rs = stmt.executeQuery("SELECT * FROM funciones");
+                        rs = stmt.executeQuery();
                         while (rs.next()) {
                             String fila[] = {rs.getString("codigo"), rs.getString("fecha"),
-                                    rs.getString("hora"), rs.getString("precio_base")};
+                                rs.getString("hora"), rs.getString("precio_base")};
                             modelo.addRow(fila);
                         }
                     }
                 } else {
-                    rs = stmt.executeQuery("SELECT * FROM funciones");
+                    rs = stmt.executeQuery();
                     while (rs.next()) {
                         String fila[] = {rs.getString("codigo"), rs.getString("fecha"),
-                                rs.getString("hora"), rs.getString("precio_base")};
+                            rs.getString("hora"), rs.getString("precio_base")};
                         modelo.addRow(fila);
                     }
                 }
@@ -287,7 +276,7 @@ public class MantenimientoFunciones extends JPanel {
                     .getModel();
             modelo.setRowCount(0);
 
-            rs = stmt.executeQuery("SELECT * FROM funciones");
+            rs = stmt.executeQuery();
             while (rs.next()) {
                 String codigo = rs.getString("codigo");
                 String fecha = rs.getString("fecha");

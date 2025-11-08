@@ -1,8 +1,11 @@
+
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -15,19 +18,25 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 public class PanelFunciones extends JPanel {
-    Statement stmt = null;
+
+    CallableStatement stmt = null;
     Connection con = null;
 
-    public PanelFunciones(MantenimientoFunciones controlOriginal) throws SQLException, ClassNotFoundException {
+    public PanelFunciones(MantenimientoFunciones controlOriginal, int funcion, String codigo) throws SQLException, ClassNotFoundException {
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true",
                 "root", "cRojas34");
-        stmt = con.createStatement();
 
-        JLabel lBlcodigo = crearEtiqueta("Datos de nueva función", 200, 20, 300, 30);
-        lBlcodigo.setHorizontalAlignment(SwingConstants.CENTER);
-        this.add(lBlcodigo);
+        if (funcion == 0) {
+            JLabel lBlcodigo = crearEtiqueta("Datos de nueva función", 200, 20, 300, 30);
+            lBlcodigo.setHorizontalAlignment(SwingConstants.CENTER);
+            this.add(lBlcodigo);
+        } else {
+            JLabel lBlcodigo = crearEtiqueta("Actualizar registro", 200, 20, 300, 30);
+            lBlcodigo.setHorizontalAlignment(SwingConstants.CENTER);
+            this.add(lBlcodigo);
+        }
 
         JLabel lblCodigo = crearEtiqueta("Código de función:", 150, 70, 140, 30);
         JTextField txtCodigo = crearCampoTexto(300, 70, 200, 30, "Ingrese código de función");
@@ -49,7 +58,47 @@ public class PanelFunciones extends JPanel {
         this.add(lblPrecio);
         this.add(txtPrecio);
 
-        JButton botonGuardar = crearBoton("Guardar", 300, 270, 100, 40, "Guardar nueva función", "Iconos/guardar.png");
+        //Fragmento de codigo para llenar los campos de texto en caso de que se desee actualizar un registro porder ver los valores que estan dentro de la base de datos
+        if (funcion == 1) {
+            stmt = con.prepareCall("{CALL listar_funciones()}");
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                if (rs.getString("codigo").equals(codigo)) {
+                    txtCodigo.setText(rs.getString("codigo"));
+                    txtFecha.setText(rs.getString("fecha"));
+                    txtHora.setText(rs.getString("hora"));
+                    txtPrecio.setText(rs.getString("precio_base"));
+
+                }
+            }
+
+        }
+
+        JButton botonCancelar = crearBoton("Cancelar", 410, 270, 100, 40, "Regresar atras", "Iconos/cancelar.png");
+        botonCancelar.setBackground(new Color(240, 128, 128));
+        botonCancelar.setForeground(Color.WHITE);
+        this.add(botonCancelar);
+        botonCancelar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                txtCodigo.setText("");
+                txtFecha.setText("");
+                txtHora.setText("");
+                txtPrecio.setText("");
+                controlOriginal.add(controlOriginal.botonActualizar);
+                controlOriginal.add(controlOriginal.botonInsertar);
+                controlOriginal.add(controlOriginal.botonEliminar);
+                controlOriginal.add(controlOriginal.botonConsultar);
+                controlOriginal.add(controlOriginal.scroll);
+                controlOriginal.remove(controlOriginal.panel);
+
+                controlOriginal.recargarTabla();
+                controlOriginal.revalidate();
+                controlOriginal.repaint();
+            }
+        });
+
+        JButton botonGuardar = crearBoton("Guardar", 290, 270, 100, 40, "Guardar nueva función", "Iconos/guardar-el-archivo.png");
         botonGuardar.setBackground(new Color(46, 204, 113));
         botonGuardar.setForeground(Color.WHITE);
         this.add(botonGuardar);
@@ -57,27 +106,39 @@ public class PanelFunciones extends JPanel {
         botonGuardar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                int eleccion;
                 try {
-                    int eleccion = JOptionPane.showConfirmDialog(null,
-                            "¿Desea confirmar nuevo registro?", "Confirmar acción",
-                            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                    if (funcion == 0) {
+                        eleccion = JOptionPane.showConfirmDialog(null,
+                                "¿Desea confirmar nuevo registro?", "Confirmar acción",
+                                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                        stmt = con.prepareCall("{CALL insertar_funciones(?,?,?,?)}");
+
+                    } else {
+                        eleccion = JOptionPane.showConfirmDialog(null,
+                                "¿Desea confirmar cambios?", "Confirmar acción",
+                                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                        stmt = con.prepareCall("{CALL actualizar_funciones(?,?,?,?,?)}");
+                    }
+
                     if (eleccion == 0) {
-                        stmt.executeUpdate("INSERT INTO funciones (codigo, fecha, hora, precio_base) VALUES ('"
-                                + txtCodigo.getText() + "', '"
-                                + txtFecha.getText() + "', '"
-                                + txtHora.getText() + "', '"
-                                + txtPrecio.getText() + "');");
+                        stmt.setString(1, txtCodigo.getText());
+                        stmt.setString(2, txtFecha.getText());
+                        stmt.setString(3, txtHora.getText());
+                        stmt.setString(4, txtPrecio.getText());
+                        if (funcion == 1) {
+                            stmt.setString(5, codigo);
+                        }
+                        stmt.executeUpdate();
                     }
                 } catch (SQLException e1) {
-                JOptionPane.showMessageDialog(null, "Hubo un error por favor vuelva a intentar","Advertencia",JOptionPane.WARNING_MESSAGE);    
+                    JOptionPane.showMessageDialog(null, "Hubo un error por favor vuelva a intentar", "Advertencia", JOptionPane.WARNING_MESSAGE);
                 }
 
                 txtCodigo.setText("");
                 txtFecha.setText("");
                 txtHora.setText("");
                 txtPrecio.setText("");
-
-                // Regresar al panel de mantenimiento
                 controlOriginal.add(controlOriginal.botonActualizar);
                 controlOriginal.add(controlOriginal.botonInsertar);
                 controlOriginal.add(controlOriginal.botonEliminar);

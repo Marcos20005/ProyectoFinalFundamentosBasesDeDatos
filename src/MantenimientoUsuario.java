@@ -7,7 +7,6 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -20,18 +19,21 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 
+import com.mysql.cj.jdbc.CallableStatement;
+
 public class MantenimientoUsuario extends JPanel {
 
 //Objetos de conexion SQL
-    Statement stmt = null;
+    //Statement stmt = null;
     Connection con = null;
+    CallableStatement stmt = null;
+
     ResultSet rs = null;
     JButton botonInsertar;
     JButton botonActualizar;
     JButton botonEliminar;
     JButton botonConsultar;
     JScrollPane scroll;
-    JComboBox<Object> combo;
     PanelUsuario panel;
 
     public MantenimientoUsuario() throws ClassNotFoundException, SQLException {
@@ -47,7 +49,8 @@ public class MantenimientoUsuario extends JPanel {
         Object columnas[] = {"ID", "Primer Nombre", "Segundo Nombre", "Primer Apellido", "Segundo Apellido", "Usuario", "Contraseña"};
         DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
         tabla.setModel(modelo);
-        stmt = (Statement) con.createStatement();
+        stmt = (CallableStatement) con.prepareCall("{CALL insertarDatosEstudiantes(?, ?, ?, ?, ?, ?, ?)}");
+        
 
 
         rs = ((java.sql.Statement) stmt).executeQuery("SELECT * FROM usuario");
@@ -83,15 +86,10 @@ public class MantenimientoUsuario extends JPanel {
         this.add(botonActualizar);
 
         
-        String lista[] = {"ID", "Primer Nombre", "Segundo Nombre", "Primer Apellido", "Segundo Apellido", "Usuario", "Contraseña"};
-         combo = new JComboBox<>(lista);
-        combo.setBounds(200,410,140,30);
-        this.add(combo);
 
-        JTextField campoActualizar = crearCampoTexto(200,450,100,30,"Ingrese cedula de registro a actualizar");
+        JTextField campoActualizar = crearCampoTexto(200,410,100,30,"Ingrese cedula de registro a actualizar");
         this.add(campoActualizar);
-       JTextField campoValorActualizar = crearCampoTexto(200,490,100,30,"Ingrese nuevo valor");
-        this.add(campoValorActualizar);
+
 
 
         botonActualizar.addActionListener(new ActionListener() {
@@ -128,32 +126,7 @@ public class MantenimientoUsuario extends JPanel {
             }
 
             }else{
-                String columnaParaActualizar = "";
-                switch (combo.getSelectedIndex()) {
-                    case 0:
-                columnaParaActualizar = "cedula";
-                        break;
-                     case 1:
-                columnaParaActualizar = "nombre1";
-                        break;   
-                         case 2:
-                columnaParaActualizar = "nombre2";
-                        break;
-                            case 3:
-                columnaParaActualizar = "apellido1";
-                        break;
-                            case 4:
-                columnaParaActualizar = "apellido2";
-                        break;
-                            case 5:
-                columnaParaActualizar = "login";
-                        break;
-                            case 6:
-                columnaParaActualizar = "clave";
-                        break;  
-                }
-                
-                 try {
+          try {
                      rs = ((java.sql.Statement) stmt).executeQuery("SELECT * FROM usuario");
                          while(rs.next()){
                             if(rs.getString("cedula").equals(campoActualizar.getText())){
@@ -164,10 +137,23 @@ public class MantenimientoUsuario extends JPanel {
                          }
                       
                          if(encontrado==true){
-                         eleccion=JOptionPane.showConfirmDialog( null,"¿Desea guardar los cambios?","Confirmar acción",JOptionPane.YES_NO_OPTION,    JOptionPane.QUESTION_MESSAGE);
-                          if(eleccion==0){
-                             stmt.executeUpdate("UPDATE usuario SET "+columnaParaActualizar+"='"+campoValorActualizar.getText()+"' WHERE cedula = '"+campoActualizar.getText()+"';");
-                          }
+
+                           MantenimientoUsuario.this.remove(scroll);
+                MantenimientoUsuario.this.remove(botonInsertar);
+                MantenimientoUsuario.this.remove(botonActualizar);
+                MantenimientoUsuario.this.remove(botonEliminar);
+                MantenimientoUsuario.this.remove(botonConsultar);
+                 
+
+                panel = new PanelUsuario(MantenimientoUsuario.this,1);
+                panel.setLayout(null);
+                 panel.setBounds(10, 70, 700, 500);
+                 MantenimientoUsuario.this.add(panel);
+                  MantenimientoUsuario.this.setComponentZOrder(panel, 0); 
+                 MantenimientoUsuario.this.revalidate();
+                 MantenimientoUsuario.this.repaint();
+
+                         
                          }else{
                             JOptionPane.showMessageDialog(null, "No se encontro el registro buscado");
                          }
@@ -190,11 +176,15 @@ public class MantenimientoUsuario extends JPanel {
            
                     
                     } catch (SQLException ex) {
-                 }
+                 } catch (ClassNotFoundException e1) {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                    }
+                }
+                  campoActualizar.setText("");
             }
-            campoActualizar.setText("");
-            campoValorActualizar.setText("");
-            }
+           
+            
         });
 
          botonEliminar = crearBoton("Eliminar", 360, 360, 100, 40, "Eliminar usuario existente", "Iconos/eliminar.png");
@@ -325,7 +315,7 @@ public class MantenimientoUsuario extends JPanel {
                   rs = ((java.sql.Statement) stmt).executeQuery("SELECT * FROM usuario");
                 while(rs.next()){
                     
-                      encontrado=true;
+                     
                      String cedula = rs.getString("cedula");
             String primerNombre = rs.getString("nombre1");
             String segundoNombre = rs.getString("nombre2");
@@ -386,9 +376,9 @@ public class MantenimientoUsuario extends JPanel {
                 MantenimientoUsuario.this.remove(botonActualizar);
                 MantenimientoUsuario.this.remove(botonEliminar);
                 MantenimientoUsuario.this.remove(botonConsultar);
-                  MantenimientoUsuario.this.remove(combo);
+                 
 
-                panel = new PanelUsuario(MantenimientoUsuario.this);
+                panel = new PanelUsuario(MantenimientoUsuario.this,0);
                 panel.setLayout(null);
                  panel.setBounds(10, 70, 700, 500);
                  MantenimientoUsuario.this.add(panel);

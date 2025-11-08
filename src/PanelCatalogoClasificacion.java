@@ -1,8 +1,12 @@
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -18,28 +22,62 @@ public class PanelCatalogoClasificacion extends JPanel {
     Statement stmt;
     MantenimientoCatalogoClasificacion mantenimiento;
 
-    public PanelCatalogoClasificacion(MantenimientoCatalogoClasificacion mantenimiento) {
+    public PanelCatalogoClasificacion(MantenimientoCatalogoClasificacion mantenimiento, int funcion) {
         this.mantenimiento = mantenimiento;
         setLayout(null);
+         if (funcion==0) {
+              JLabel labelTitulo = new JLabel("Registro de puesto");
+        labelTitulo.setBounds(150, 20, 120, 30);
+        this.add(labelTitulo);
+        }else{
+                  JLabel labelTitulo = new JLabel("Actualizar registro");
+        labelTitulo.setBounds(150, 20, 120, 30);
+        this.add(labelTitulo);
+        }
 
         // Label y campo para ID
         JLabel lblId = new JLabel("ID Clasificacion:");
-        lblId.setBounds(90, 50, 120, 30);
+        lblId.setBounds(120, 60, 120, 30);
         this.add(lblId);
-        campoId = crearCampoTexto(190, 50, 200, 30, "Ingrese ID");
+        campoId = crearCampoTexto(220, 60, 200, 30, "Ingrese ID");
         this.add(campoId);
 
         // Label y campo para Tipo
         JLabel lblTipo = new JLabel("Tipo Clasificacion:");
-        lblTipo.setBounds(80, 100, 120, 30);
+        lblTipo.setBounds(120, 110, 120, 30);
         this.add(lblTipo);
-        campoTipo = crearCampoTexto(190, 100, 200, 30, "Ingrese tipo de clasificacion");
+        campoTipo = crearCampoTexto(220, 110, 200, 30, "Ingrese tipo de clasificacion");
         this.add(campoTipo);
 
+                  JButton botonCancelar = crearBoton("Cancelar", 400, 160, 100, 40, "Regresar atras", "Iconos/cancelar.png");
+botonCancelar.setBackground(new Color(240, 128, 128));
+botonCancelar.setForeground(Color.WHITE);
+this.add(botonCancelar);
+botonCancelar.addActionListener(new ActionListener() {
+    @Override
+    public void actionPerformed(ActionEvent e){
+mantenimiento.recargarTabla();
+                  mantenimiento.add(mantenimiento.botonActualizar);
+                mantenimiento.add(mantenimiento.botonInsertar);
+                mantenimiento.add(mantenimiento.botonEliminar);
+                mantenimiento.add(mantenimiento.botonConsultar);
+                mantenimiento.add(mantenimiento.scroll);
+                
+                mantenimiento.remove(PanelCatalogoClasificacion.this);
+                campoId.setText("");
+                campoTipo.setText("");
+                mantenimiento.revalidate();
+                mantenimiento.repaint();
+    }
+});
+
         // Botón Guardar
-        botonGuardar = crearBoton("Guardar", 180, 160, 120, 40, "Guardar registro", "Iconos/guardar-el-archivo.png");
+        botonGuardar = crearBoton("Guardar", 190, 160, 120, 40, "Guardar registro", "Iconos/guardar-el-archivo.png");
         botonGuardar.setBackground(new Color(46, 204, 113));
         botonGuardar.setForeground(Color.WHITE);
+          botonGuardar.setToolTipText("Guardar registro");
+        ImageIcon icono = new ImageIcon("Iconos/guardar-el-archivo.png");
+        botonGuardar.setIcon(icono);
         this.add(botonGuardar);
 
         // Acción Guardar
@@ -69,10 +107,11 @@ public class PanelCatalogoClasificacion extends JPanel {
                 mantenimiento.add(mantenimiento.botonEliminar);
                 mantenimiento.add(mantenimiento.botonConsultar);
                 mantenimiento.add(mantenimiento.scroll);
-                mantenimiento.add(mantenimiento.combo);
                 mantenimiento.remove(this);
                 campoId.setText("");
                 campoTipo.setText("");
+                mantenimiento.revalidate();
+                mantenimiento.repaint();
 
             } 
         }   catch (SQLException ex) {

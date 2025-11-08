@@ -27,7 +27,6 @@ public class MantenimientoTelefonoEmpleado extends JPanel {
     JButton botonEliminar;
     JButton botonConsultar;
     JScrollPane scroll;
-    JComboBox<Object> combo;
     PanelTelefonoEmpleado panel;
 
     public MantenimientoTelefonoEmpleado() throws ClassNotFoundException, SQLException {
@@ -84,15 +83,10 @@ public class MantenimientoTelefonoEmpleado extends JPanel {
         botonConsultar.setForeground(Color.WHITE);
         this.add(botonConsultar);
 
-        String lista[] = {"ID", "Teléfono", "Descripción"};
-        combo = new JComboBox<>(lista);
-        combo.setBounds(200, 410, 140, 30);
-        this.add(combo);
-
-        JTextField campoActualizar = crearCampoTexto(200, 450, 100, 30, "Ingrese ID de registro a actualizar");
+       
+        JTextField campoActualizar = crearCampoTexto(200, 410, 100, 30, "Ingrese ID de registro a actualizar");
         this.add(campoActualizar);
-        JTextField campoValorActualizar = crearCampoTexto(200, 490, 100, 30, "Ingrese nuevo valor");
-        this.add(campoValorActualizar);
+  
 
         botonActualizar.addActionListener(new ActionListener() {
             @Override
@@ -118,18 +112,6 @@ public class MantenimientoTelefonoEmpleado extends JPanel {
                         e1.printStackTrace();
                     }
                 } else {
-                    String columnaParaActualizar = "";
-                    switch (combo.getSelectedIndex()) {
-                        case 0:
-                            columnaParaActualizar = "id";
-                            break;
-                        case 1:
-                            columnaParaActualizar = "telefono";
-                            break;
-                        case 2:
-                            columnaParaActualizar = "descripcion";
-                            break;
-                    }
 
                     try {
                         rs = stmt.executeQuery("SELECT * FROM telefono_empleado");
@@ -139,15 +121,26 @@ public class MantenimientoTelefonoEmpleado extends JPanel {
                             }
                         }
 
-                        if (encontrado) {
-                            eleccion = javax.swing.JOptionPane.showConfirmDialog(null, "¿Desea guardar los cambios?",
-                                    "Confirmar acción", javax.swing.JOptionPane.YES_NO_OPTION,
-                                    javax.swing.JOptionPane.QUESTION_MESSAGE);
-                            if (eleccion == 0) {
-                                stmt.executeUpdate("UPDATE telefono_empleado SET " + columnaParaActualizar + "='"
-                                        + campoValorActualizar.getText() + "' WHERE id='" + campoActualizar.getText()
-                                        + "';");
-                            }
+                        if (encontrado==true) {
+                             try {
+                    MantenimientoTelefonoEmpleado.this.remove(scroll);
+                    MantenimientoTelefonoEmpleado.this.remove(botonInsertar);
+                    MantenimientoTelefonoEmpleado.this.remove(botonActualizar);
+                    MantenimientoTelefonoEmpleado.this.remove(botonEliminar);
+                    MantenimientoTelefonoEmpleado.this.remove(botonConsultar);
+                    
+
+                    panel = new PanelTelefonoEmpleado(MantenimientoTelefonoEmpleado.this,1);
+                    panel.setLayout(null);
+                    panel.setBounds(10, 70, 700, 500);
+                    MantenimientoTelefonoEmpleado.this.add(panel);
+                    MantenimientoTelefonoEmpleado.this.setComponentZOrder(panel, 0);
+                    MantenimientoTelefonoEmpleado.this.revalidate();
+                    MantenimientoTelefonoEmpleado.this.repaint();
+
+                } catch (ClassNotFoundException | SQLException e1) {
+                    e1.printStackTrace();
+                }
                         } else {
                             javax.swing.JOptionPane.showMessageDialog(null, "Registro no encontrado");
                         }
@@ -164,7 +157,7 @@ public class MantenimientoTelefonoEmpleado extends JPanel {
                     }
                 }
                 campoActualizar.setText("");
-                campoValorActualizar.setText("");
+               
             }
         });
 
@@ -292,9 +285,9 @@ public class MantenimientoTelefonoEmpleado extends JPanel {
                     MantenimientoTelefonoEmpleado.this.remove(botonActualizar);
                     MantenimientoTelefonoEmpleado.this.remove(botonEliminar);
                     MantenimientoTelefonoEmpleado.this.remove(botonConsultar);
-                    MantenimientoTelefonoEmpleado.this.remove(combo);
+                    
 
-                    panel = new PanelTelefonoEmpleado(MantenimientoTelefonoEmpleado.this);
+                    panel = new PanelTelefonoEmpleado(MantenimientoTelefonoEmpleado.this,0);
                     panel.setLayout(null);
                     panel.setBounds(10, 70, 700, 500);
                     MantenimientoTelefonoEmpleado.this.add(panel);

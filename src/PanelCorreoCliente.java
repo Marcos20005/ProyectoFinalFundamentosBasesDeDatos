@@ -18,17 +18,24 @@ public class PanelCorreoCliente extends JPanel {
     Statement stmt = null;
     Connection con = null;
 
-    public PanelCorreoCliente(MantenimientoCorreoCliente controlOriginal) throws SQLException, ClassNotFoundException {
+    public PanelCorreoCliente(MantenimientoCorreoCliente controlOriginal, int funcion) throws SQLException, ClassNotFoundException {
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true",
                 "root",
                 "cRojas34");
         stmt = con.createStatement();
-
-        JLabel lTitulo = crearEtiqueta("Datos de nuevo correo de cliente", 200, 20, 300, 30);
+        
+        if(funcion==0){
+          JLabel lTitulo = crearEtiqueta("Datos de nuevo correo de cliente", 200, 20, 300, 30);
         lTitulo.setHorizontalAlignment(SwingConstants.CENTER);
         this.add(lTitulo);
+        }else{
+             JLabel lTitulo = crearEtiqueta("Actualizar registro", 200, 20, 300, 30);
+        lTitulo.setHorizontalAlignment(SwingConstants.CENTER);
+        this.add(lTitulo);
+        }
+       
 
         JLabel lblID = crearEtiqueta("ID:", 150, 70, 140, 30);
         JTextField txtID = crearCampoTexto(300, 70, 200, 30, "Ingrese ID");
@@ -45,7 +52,30 @@ public class PanelCorreoCliente extends JPanel {
         this.add(lblDescripcion);
         this.add(txtDescripcion);
 
-        JButton botonGuardar = crearBoton("Guardar", 300, 230, 100, 40, "Guardar nuevo correo", "src/imagenes/guardar.png");
+                  JButton botonCancelar = crearBoton("Cancelar", 400, 230, 100, 40, "Regresar atras", "Iconos/cancelar.png");
+botonCancelar.setBackground(new Color(240, 128, 128));
+botonCancelar.setForeground(Color.WHITE);
+this.add(botonCancelar);
+botonCancelar.addActionListener(new ActionListener() {
+    @Override
+    public void actionPerformed(ActionEvent e){
+                txtID.setText("");
+                txtCorreo.setText("");
+                txtDescripcion.setText("");
+
+                controlOriginal.add(controlOriginal.botonActualizar);
+                controlOriginal.add(controlOriginal.botonInsertar);
+                controlOriginal.add(controlOriginal.botonEliminar);
+                controlOriginal.add(controlOriginal.botonConsultar);
+                controlOriginal.add(controlOriginal.scroll);
+                controlOriginal.remove(controlOriginal.panel);
+                controlOriginal.recargarTabla();
+                controlOriginal.revalidate();
+                controlOriginal.repaint();
+    }
+});
+
+        JButton botonGuardar = crearBoton("Guardar", 280, 230, 100, 40, "Guardar nuevo correo", "Iconos/guardar-el-archivo.png");
         botonGuardar.setBackground(new Color(46, 204, 113));
         botonGuardar.setForeground(Color.WHITE);
         this.add(botonGuardar);
@@ -77,7 +107,6 @@ public class PanelCorreoCliente extends JPanel {
                 controlOriginal.add(controlOriginal.botonEliminar);
                 controlOriginal.add(controlOriginal.botonConsultar);
                 controlOriginal.add(controlOriginal.scroll);
-                controlOriginal.add(controlOriginal.combo);
                 controlOriginal.remove(controlOriginal.panel);
                 controlOriginal.recargarTabla();
                 controlOriginal.revalidate();

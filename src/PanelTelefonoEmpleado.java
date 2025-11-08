@@ -21,7 +21,7 @@ public class PanelTelefonoEmpleado extends JPanel {
     Statement stmt = null;
     Connection con = null;
 
-    public PanelTelefonoEmpleado(MantenimientoTelefonoEmpleado controlOriginal) throws ClassNotFoundException, SQLException {
+    public PanelTelefonoEmpleado(MantenimientoTelefonoEmpleado controlOriginal, int funcion) throws ClassNotFoundException, SQLException {
         MantenimientoTelefonoEmpleado control = controlOriginal;
 
         Class.forName("com.mysql.cj.jdbc.Driver");
@@ -29,10 +29,16 @@ public class PanelTelefonoEmpleado extends JPanel {
                 "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", 
                 "root", "cRojas34");
         stmt = con.createStatement();
-
+         if(funcion==0){
         JLabel lblTitulo = crearEtiqueta("Datos de nuevo teléfono", 200, 20, 300, 30);
         lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
         this.add(lblTitulo);
+         }else{
+            JLabel lblTitulo = crearEtiqueta("Actualizar Registro", 200, 20, 300, 30);
+        lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
+        this.add(lblTitulo);
+         }
+        
 
        
         JLabel lblID = crearEtiqueta("ID:", 150, 70, 140, 30);
@@ -52,10 +58,36 @@ public class PanelTelefonoEmpleado extends JPanel {
         this.add(txtDescripcion);
 
        
-        JButton botonGuardar = crearBoton("Guardar", 300, 220, 100, 40, "Guardar nuevo teléfono", "Iconos/guardar.png");
+        JButton botonGuardar = crearBoton("Guardar", 270, 220, 100, 40, "Guardar nuevo teléfono", "Iconos/guardar-el-archivo.png");
         botonGuardar.setBackground(new Color(46, 204, 113));
         botonGuardar.setForeground(Color.WHITE);
         this.add(botonGuardar);
+
+        JButton botonCancelar = crearBoton("Cancelar", 400, 220, 100, 40, "Regresar atras", "Iconos/cancelar.png");
+botonCancelar.setBackground(new Color(240, 128, 128));
+botonCancelar.setForeground(Color.WHITE);
+this.add(botonCancelar);
+botonCancelar.addActionListener(new ActionListener() {
+    @Override
+    public void actionPerformed(ActionEvent e){
+ txtID.setText("");
+                txtTelefono.setText("");
+                txtDescripcion.setText("");
+              
+                  
+                control.add(control.botonActualizar);
+                control.add(control.botonInsertar);
+                control.add(control.botonEliminar);
+                control.add(control.botonConsultar);
+                control.add(control.scroll);
+                control.remove(control.panel);
+
+                
+                control.recargarTabla();
+                control.revalidate();
+                control.repaint();
+    }
+});
 
         botonGuardar.addActionListener(new ActionListener() {
             @Override
@@ -86,7 +118,6 @@ public class PanelTelefonoEmpleado extends JPanel {
                 control.add(control.botonEliminar);
                 control.add(control.botonConsultar);
                 control.add(control.scroll);
-                control.add(control.combo);
                 control.remove(control.panel);
 
                 

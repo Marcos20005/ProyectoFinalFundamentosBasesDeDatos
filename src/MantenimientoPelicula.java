@@ -23,7 +23,6 @@ public class MantenimientoPelicula extends JPanel {
 
     JButton botonInsertar, botonActualizar, botonEliminar, botonConsultar;
     JScrollPane scroll;
-    JComboBox<Object> combo;
     PanelPelicula panel;
 
     public MantenimientoPelicula() throws SQLException, ClassNotFoundException {
@@ -82,17 +81,10 @@ public class MantenimientoPelicula extends JPanel {
         botonConsultar.setForeground(Color.WHITE);
         this.add(botonConsultar);
 
-        // Combo box debajo de los botones
-        String lista[] = {"Codigo", "Titulo", "ID Genero","Duracion","ID clasificacion"};
-        combo = new JComboBox<>(lista);
-        combo.setBounds(200, 410, 140, 30);
-        this.add(combo);
 
         // Campos de texto para actualizar, eliminar y consultar
-        JTextField campoActualizar = crearCampoTexto(200, 450, 100, 30, "Ingrese ID a actualizar");
+        JTextField campoActualizar = crearCampoTexto(200, 410, 100, 30, "Ingrese ID a actualizar");
         this.add(campoActualizar);
-        JTextField campoValorActualizar = crearCampoTexto(200, 490, 100, 30, "Ingrese nuevo valor");
-        this.add(campoValorActualizar);
 
         JTextField campoEliminar = crearCampoTexto(360, 410, 100, 30, "Ingrese ID a eliminar");
         this.add(campoEliminar);
@@ -108,13 +100,11 @@ public class MantenimientoPelicula extends JPanel {
                 this.remove(botonActualizar);
                 this.remove(botonEliminar);
                 this.remove(botonConsultar);
-                this.remove(combo);
-                this.remove(campoActualizar);
-                this.remove(campoValorActualizar);
-                this.remove(campoEliminar);
-                this.remove(campoConsultar);
+                // this.remove(campoActualizar);
+                // this.remove(campoEliminar);
+                // this.remove(campoConsultar);
 
-               panel = new PanelPelicula(MantenimientoPelicula.this);
+               panel = new PanelPelicula(MantenimientoPelicula.this,0);
                 panel.setLayout(null);
                 panel.setBounds(10, 70, 700, 500);
                 this.add(panel);
@@ -145,30 +135,27 @@ public class MantenimientoPelicula extends JPanel {
                 }
 
                 if (encontrado) {
-                    int eleccion = JOptionPane.showConfirmDialog(null, "¿Desea guardar los cambios?",
-                            "Confirmar acción", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                    if (eleccion == 0) {
-                        String columna = "";
-                        switch (combo.getSelectedIndex()) {
-                        case 0:
-                            columna = "Codigo";
-                            break;
-                        case 1:
-                            columna = "Titulo";
-                            break;
-                        case 2:
-                            columna = "Id Genero";
-                            break;
-                             case 3:
-                            columna = "Duracion";
-                            break;
-                             case 4:
-                            columna = "Id Clasificacion";
-                            break;
-                        }
-                        stmt.executeUpdate("UPDATE pelicula SET " + columna + "='" + campoValorActualizar.getText()
-                                + "' WHERE codigo='" + campoActualizar.getText() + "';");
-                    }
+                     try {
+                this.remove(scroll);
+                this.remove(botonInsertar);
+                this.remove(botonActualizar);
+                this.remove(botonEliminar);
+                this.remove(botonConsultar);
+                // this.remove(campoActualizar);
+                // this.remove(campoEliminar);
+                // this.remove(campoConsultar);
+
+               panel = new PanelPelicula(MantenimientoPelicula.this,1);
+                panel.setLayout(null);
+                panel.setBounds(10, 70, 700, 500);
+                this.add(panel);
+                this.setComponentZOrder(panel, 1);
+                this.revalidate();
+                this.repaint();
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
                 } else {
                     JOptionPane.showMessageDialog(null, "Registro no encontrado");
                 }
@@ -189,7 +176,6 @@ public class MantenimientoPelicula extends JPanel {
             }
 
             campoActualizar.setText("");
-            campoValorActualizar.setText("");
         });
 
         // Acción Eliminar

@@ -24,7 +24,6 @@ public class MantenimientoCatalogoTipo extends JPanel {
     ResultSet rs = null;
     JButton botonInsertar, botonActualizar, botonEliminar, botonConsultar;
     JScrollPane scroll;
-    JComboBox<Object> combo;
     PanelCatalogoTipo panel;
 
     public MantenimientoCatalogoTipo() {
@@ -84,23 +83,18 @@ public class MantenimientoCatalogoTipo extends JPanel {
         botonConsultar.setForeground(Color.WHITE);
         this.add(botonConsultar);
 
-        // Combo y campos
-        combo = new JComboBox<>(new String[]{"ID Tipo","Nombre Tipo"});
-        combo.setBounds(200,360,140,30); this.add(combo);
-
-        JTextField campoActualizar = PanelCatalogoTipo.crearCampoTexto(200,400,100,30,"Ingrese ID a actualizar"); this.add(campoActualizar);
-        JTextField campoValorActualizar = PanelCatalogoTipo.crearCampoTexto(200,440,100,30,"Ingrese nuevo valor"); this.add(campoValorActualizar);
-        JTextField campoEliminar = PanelCatalogoTipo.crearCampoTexto(360,360,100,30,"Ingrese ID a eliminar"); this.add(campoEliminar);
-        JTextField campoConsultar = PanelCatalogoTipo.crearCampoTexto(520,360,100,30,"Ingrese ID a consultar"); this.add(campoConsultar);
+        JTextField campoActualizar = PanelCatalogoTipo.crearCampoTexto(200,410,100,30,"Ingrese ID a actualizar"); this.add(campoActualizar);
+        JTextField campoEliminar = PanelCatalogoTipo.crearCampoTexto(360,410,100,30,"Ingrese ID a eliminar"); this.add(campoEliminar);
+        JTextField campoConsultar = PanelCatalogoTipo.crearCampoTexto(520,410,100,30,"Ingrese ID a consultar"); this.add(campoConsultar);
 
         // Funcionalidad botones
         // Insertar
         botonInsertar.addActionListener(e -> {
             try {
                 this.remove(scroll); this.remove(botonInsertar); this.remove(botonActualizar); this.remove(botonEliminar); this.remove(botonConsultar);
-                this.remove(combo); this.remove(campoActualizar); this.remove(campoValorActualizar); this.remove(campoEliminar); this.remove(campoConsultar);
+             //this.remove(campoActualizar); this.remove(campoEliminar); this.remove(campoConsultar);
 
-                panel = new PanelCatalogoTipo(MantenimientoCatalogoTipo.this);
+                panel = new PanelCatalogoTipo(MantenimientoCatalogoTipo.this,0);
                 panel.setLayout(null); panel.setBounds(10,70,700,500);
                 this.add(panel); this.setComponentZOrder(panel,0); this.revalidate(); this.repaint();
             } catch (Exception ex) { ex.printStackTrace(); }
@@ -115,17 +109,20 @@ public class MantenimientoCatalogoTipo extends JPanel {
                 while(rs.next()) { if(rs.getString("id_tipo").equals(campoActualizar.getText())) encontrado=true; }
 
                 if(encontrado) {
-                    int eleccion = JOptionPane.showConfirmDialog(null,"¿Desea guardar los cambios?","Confirmar acción",JOptionPane.YES_NO_OPTION);
-                    if(eleccion==0) {
-                        String columna = combo.getSelectedIndex() == 0 ? "id_tipo" : "nombre_tipo";
-                        stmt.executeUpdate("UPDATE catalogo_tipo SET "+columna+"='"+campoValorActualizar.getText()+"' WHERE id_tipo='"+campoActualizar.getText()+"';");
-                    }
+                     try {
+                this.remove(scroll); this.remove(botonInsertar); this.remove(botonActualizar); this.remove(botonEliminar); this.remove(botonConsultar);
+            // this.remove(campoActualizar); this.remove(campoEliminar); this.remove(campoConsultar);
+
+                panel = new PanelCatalogoTipo(MantenimientoCatalogoTipo.this,1);
+                panel.setLayout(null); panel.setBounds(10,70,700,500);
+                this.add(panel); this.setComponentZOrder(panel,0); this.revalidate(); this.repaint();
+            } catch (Exception ex) { ex.printStackTrace(); }
                 } else { JOptionPane.showMessageDialog(null,"Registro no encontrado"); }
 
                 rs = stmt.executeQuery("SELECT * FROM catalogo_tipo");
                 while(rs.next()) { modelo.addRow(new String[]{rs.getString("id_tipo"), rs.getString("nombre_tipo")}); }
             } catch(SQLException ex){ ex.printStackTrace(); }
-            campoActualizar.setText(""); campoValorActualizar.setText("");
+            campoActualizar.setText(""); 
         });
 
         // Eliminar

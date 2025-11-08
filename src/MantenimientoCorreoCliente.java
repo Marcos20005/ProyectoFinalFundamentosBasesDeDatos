@@ -23,7 +23,6 @@ public class MantenimientoCorreoCliente extends JPanel {
     ResultSet rs = null;
     JButton botonInsertar, botonActualizar, botonEliminar, botonConsultar;
     JScrollPane scroll;
-    JComboBox<Object> combo;
     PanelCorreoCliente panel;
 
     public MantenimientoCorreoCliente() throws SQLException, ClassNotFoundException {
@@ -76,22 +75,15 @@ public class MantenimientoCorreoCliente extends JPanel {
         botonConsultar.setForeground(Color.WHITE);
         this.add(botonConsultar);
 
-        // Combo box para actualizar
-        String lista[] = {"ID", "Correo", "Descripcion"};
-        combo = new JComboBox<>(lista);
-        combo.setBounds(200, 360, 140, 30);
-        this.add(combo);
-
                 // Campos de texto para actualizar, eliminar y consultar
-        JTextField campoActualizar = crearCampoTexto(200, 400, 100, 30, "Ingrese Código a actualizar");
+        JTextField campoActualizar = crearCampoTexto(200, 410, 100, 30, "Ingrese Código a actualizar");
         this.add(campoActualizar);
-        JTextField campoValorActualizar = crearCampoTexto(200, 440, 100, 30, "Ingrese nuevo valor");
-        this.add(campoValorActualizar);
+       
 
-        JTextField campoEliminar = crearCampoTexto(360, 360, 100, 30, "Ingrese Código a eliminar");
+        JTextField campoEliminar = crearCampoTexto(360, 410, 100, 30, "Ingrese Código a eliminar");
         this.add(campoEliminar);
 
-        JTextField campoConsultar = crearCampoTexto(520, 360, 100, 30, "Ingrese Código a consultar");
+        JTextField campoConsultar = crearCampoTexto(520, 410, 100, 30, "Ingrese Código a consultar");
         this.add(campoConsultar);
         
         // Accion Insertar
@@ -99,12 +91,12 @@ public class MantenimientoCorreoCliente extends JPanel {
             try {
                 this.remove(scroll);
                 this.remove(botonInsertar); this.remove(botonActualizar); this.remove(botonEliminar); this.remove(botonConsultar);
-                this.remove(combo); this.remove(campoActualizar); this.remove(campoValorActualizar);
-                this.remove(campoEliminar); this.remove(campoConsultar);
+           //   this.remove(campoActualizar);
+             //   this.remove(campoEliminar); this.remove(campoConsultar);
 
-                panel = new PanelCorreoCliente(MantenimientoCorreoCliente.this);
+                panel = new PanelCorreoCliente(MantenimientoCorreoCliente.this,0);
                 panel.setLayout(null);
-                panel.setBounds(10, 70, 700, 300);
+                panel.setBounds(10, 70, 700, 400);
                 this.add(panel);
                 this.setComponentZOrder(panel, 0);
                 this.revalidate(); this.repaint();
@@ -124,16 +116,20 @@ public class MantenimientoCorreoCliente extends JPanel {
                 }
 
                 if (encontrado) {
-                    int eleccion = JOptionPane.showConfirmDialog(null, "¿Desea guardar los cambios?", "Confirmar acción", JOptionPane.YES_NO_OPTION);
-                    if (eleccion == 0) {
-                        String columna = "";
-                        switch (combo.getSelectedIndex()) {
-                            case 0: columna = "id"; break;
-                            case 1: columna = "correo"; break;
-                            case 2: columna = "descripcion"; break;
-                        }
-                        stmt.executeUpdate("UPDATE correo_cliente SET " + columna + "='" + campoValorActualizar.getText() + "' WHERE id='" + campoActualizar.getText() + "';");
-                    }
+ try {
+                this.remove(scroll);
+                this.remove(botonInsertar); this.remove(botonActualizar); this.remove(botonEliminar); this.remove(botonConsultar);
+              //this.remove(campoActualizar);
+                //this.remove(campoEliminar); this.remove(campoConsultar);
+
+                panel = new PanelCorreoCliente(MantenimientoCorreoCliente.this,1);
+                panel.setLayout(null);
+                panel.setBounds(10, 70, 700, 400);
+                this.add(panel);
+                this.setComponentZOrder(panel, 0);
+                this.revalidate(); this.repaint();
+            } catch (Exception ex) { ex.printStackTrace(); }
+                 
                 } else { JOptionPane.showMessageDialog(null, "Registro no encontrado"); }
 
                 rs = stmt.executeQuery("SELECT * FROM correo_cliente");
@@ -142,7 +138,7 @@ public class MantenimientoCorreoCliente extends JPanel {
                 }
             } catch (SQLException ex) { ex.printStackTrace(); }
 
-            campoActualizar.setText(""); campoValorActualizar.setText("");
+            campoActualizar.setText(""); 
         });
 
         // Accion Eliminar

@@ -19,15 +19,21 @@ public class PanelBoleto extends JPanel {
     Statement stmt = null;
     Connection con = null;
 
-    public PanelBoleto(MantenimientoBoleto controlOriginal) throws ClassNotFoundException, SQLException {
+    public PanelBoleto(MantenimientoBoleto controlOriginal, int funcion) throws ClassNotFoundException, SQLException {
         MantenimientoBoleto control = controlOriginal;
         //Estableciendo conexion a la base de datos
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", "root", "cRojas34");
         stmt = con.createStatement();
 
-        JLabel lblTitulo = crearEtiqueta("Datos de nuevo registro de Boleto", 250, 20, 300, 30);
+        if(funcion==0){
+ JLabel lblTitulo = crearEtiqueta("Datos de nuevo registro de Boleto", 250, 20, 300, 30);
         this.add(lblTitulo);
+        }else{
+             JLabel lblTitulo = crearEtiqueta("Actualizar registro", 250, 20, 300, 30);
+        this.add(lblTitulo);
+        }
+       
 
         JLabel lblCodigo = crearEtiqueta("Código:", 150, 70, 140, 30);
         JTextField txtCodigo = crearCampoTexto(300, 70, 200, 30, "Ingrese el código del boleto");
@@ -49,7 +55,30 @@ public class PanelBoleto extends JPanel {
         this.add(lblFechaEmicion);
         this.add(txtFechaEmicion);
 
-        JButton botonGuardar = crearBoton("Guardar", 300, 240, 100, 40, "Guardar nuevo boleto", "src/imagenes/guardar.png");
+                  JButton botonCancelar = crearBoton("Cancelar", 400, 240, 100, 40, "Regresar atras", "Iconos/cancelar.png");
+botonCancelar.setBackground(new Color(240, 128, 128));
+botonCancelar.setForeground(Color.WHITE);
+this.add(botonCancelar);
+botonCancelar.addActionListener(new ActionListener() {
+    @Override 
+    public void actionPerformed(ActionEvent e){
+     txtCodigo.setText("");
+                txtAsiento.setText("");
+                txtPrecioFinal.setText("");
+                txtFechaEmicion.setText("");
+                control.add(control.botonActualizar);
+                control.add(control.botonInsertar);
+                control.add(control.botonEliminar);
+                control.add(control.botonConsultar);
+                control.add(control.scroll);
+                control.remove(control.panel);
+                control.recargarTabla();
+                control.revalidate();
+                control.repaint();
+    }
+});
+
+        JButton botonGuardar = crearBoton("Guardar", 280, 240, 100, 40, "Guardar nuevo boleto", "Iconos/guardar-el-archivo.png");
         botonGuardar.setBackground(new Color(46, 204, 113));
         botonGuardar.setForeground(Color.WHITE);
         this.add(botonGuardar);

@@ -16,15 +16,17 @@ import javax.swing.JTextField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
+import java.sql.CallableStatement;
+
 import javax.swing.JOptionPane;
 
 public class MantenimientoCliente extends JPanel {
-    Statement stmt = null;
+    CallableStatement stmt = null;
+    CallableStatement stmt1 = null;
     Connection con = null;
     ResultSet rs = null;
     JButton botonInsertar, botonActualizar, botonEliminar, botonConsultar;
     JScrollPane scroll;
-    JComboBox<Object> combo;
     PanelCliente panel;
 
     public MantenimientoCliente() {
@@ -33,7 +35,7 @@ public class MantenimientoCliente extends JPanel {
             con = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true",
                     "root", "cRojas34");
-            stmt = con.createStatement();
+            stmt = con.prepareCall("{CALL listar_cliente()}");
         } catch (ClassNotFoundException | SQLException e) {
             JOptionPane.showMessageDialog(null, "Hubo un error por favor vuelva a intentar",
                     "Advertencia", JOptionPane.WARNING_MESSAGE);
@@ -50,7 +52,8 @@ public class MantenimientoCliente extends JPanel {
         tabla.setModel(modelo);
 
         try {
-            rs = stmt.executeQuery("SELECT * FROM cliente");
+         stmt = (CallableStatement) con.prepareCall("{CALL listar_cliente()}");
+            rs = stmt.executeQuery();
             while (rs.next()) {
                 modelo.addRow(new String[]{
                         rs.getString("cedula"),
@@ -90,23 +93,19 @@ public class MantenimientoCliente extends JPanel {
         botonConsultar.setForeground(Color.WHITE);
         this.add(botonConsultar);
 
-        // Combo y campos
-        combo = new JComboBox<>(new String[]{"Cedula","Primer Nombre","Segundo Nombre","Primer Apellido","Segundo Apellido"});
-        combo.setBounds(200, 360, 140, 30); this.add(combo);
 
-        JTextField campoActualizar = PanelCliente.crearCampoTexto(200,400,100,30,"Ingrese Cedula a actualizar"); this.add(campoActualizar);
-        JTextField campoValorActualizar = PanelCliente.crearCampoTexto(200,440,100,30,"Ingrese nuevo valor"); this.add(campoValorActualizar);
-        JTextField campoEliminar = PanelCliente.crearCampoTexto(360,360,100,30,"Ingrese Cedula a eliminar"); this.add(campoEliminar);
-        JTextField campoConsultar = PanelCliente.crearCampoTexto(520,360,100,30,"Ingrese Cedula a consultar"); this.add(campoConsultar);
+        JTextField campoActualizar = PanelCliente.crearCampoTexto(200, 410, 100, 30,"Ingrese Cedula a actualizar"); this.add(campoActualizar);
+        JTextField campoEliminar = PanelCliente.crearCampoTexto(360,410,100,30,"Ingrese Cedula a eliminar"); this.add(campoEliminar);
+        JTextField campoConsultar = PanelCliente.crearCampoTexto(520,410,100,30,"Ingrese Cedula a consultar"); this.add(campoConsultar);
 
         // Funcionalidad botones
         // Insertar
         botonInsertar.addActionListener(e -> {
             try {
                 this.remove(scroll); this.remove(botonInsertar); this.remove(botonActualizar); this.remove(botonEliminar); this.remove(botonConsultar);
-                this.remove(combo); this.remove(campoActualizar); this.remove(campoValorActualizar); this.remove(campoEliminar); this.remove(campoConsultar);
+           //  this.remove(campoActualizar); this.remove(campoEliminar); this.remove(campoConsultar);
 
-                panel = new PanelCliente(MantenimientoCliente.this);
+                panel = new PanelCliente(MantenimientoCliente.this,0,"");
                 panel.setLayout(null); panel.setBounds(10,70,700,500);
                 this.add(panel); this.setComponentZOrder(panel,0); this.revalidate(); this.repaint();
             } catch (Exception ex) { ex.printStackTrace(); }
@@ -117,27 +116,25 @@ public class MantenimientoCliente extends JPanel {
             modelo.setRowCount(0); boolean encontrado=false;
             if(tabla.isEditing()) tabla.getCellEditor().stopCellEditing();
             try {
-                rs = stmt.executeQuery("SELECT * FROM cliente");
+             stmt = (CallableStatement) con.prepareCall("{CALL listar_cliente()}");
+                rs = stmt.executeQuery();
                 while(rs.next()) { if(rs.getString("cedula").equals(campoActualizar.getText())) { encontrado=true; } }
 
                 if(encontrado) {
-                    int eleccion = JOptionPane.showConfirmDialog(null,"Â¿Desea guardar los cambios?","Confirmar acciÃ³n",JOptionPane.YES_NO_OPTION);
-                    if(eleccion==0) {
-                        String columna=""; switch(combo.getSelectedIndex()) {
-                            case 0: columna="cedula"; break;
-                            case 1: columna="primer_nombre"; break;
-                            case 2: columna="segundo_nombre"; break;
-                            case 3: columna="primer_apellido"; break;
-                            case 4: columna="segundo_apellido"; break;
-                        }
-                        stmt.executeUpdate("UPDATE cliente SET "+columna+"='"+campoValorActualizar.getText()+"' WHERE cedula='"+campoActualizar.getText()+"';");
-                    }
-                } else { JOptionPane.showMessageDialog(null,"Registro no encontrado"); }
+                    try {
+                this.remove(scroll); this.remove(botonInsertar); this.remove(botonActualizar); this.remove(botonEliminar); this.remove(botonConsultar);
+             //this.remove(campoActualizar); this.remove(campoEliminar); this.remove(campoConsultar);
 
-                rs = stmt.executeQuery("SELECT * FROM cliente");
+                panel = new PanelCliente(MantenimientoCliente.this,1,campoActualizar.getText());
+                panel.setLayout(null); panel.setBounds(10,70,700,500);
+                this.add(panel); this.setComponentZOrder(panel,0); this.revalidate(); this.repaint();
+            } catch (Exception ex) { ex.printStackTrace(); }
+                } else { JOptionPane.showMessageDialog(null,"Registro no encontrado"); }
+           stmt = (CallableStatement) con.prepareCall("{CALL listar_cliente()}");
+                rs = stmt.executeQuery();
                 while(rs.next()) { modelo.addRow(new String[]{rs.getString("cedula"),rs.getString("primer_nombre"),rs.getString("segundo_nombre"),rs.getString("primer_apellido"),rs.getString("segundo_apellido")}); }
             } catch(SQLException ex){ ex.printStackTrace(); }
-            campoActualizar.setText(""); campoValorActualizar.setText("");
+            campoActualizar.setText(""); 
         });
 
         // Eliminar
@@ -145,13 +142,21 @@ public class MantenimientoCliente extends JPanel {
             modelo.setRowCount(0); boolean encontrado=false;
             if(tabla.isEditing()) tabla.getCellEditor().stopCellEditing();
             try {
-                rs = stmt.executeQuery("SELECT * FROM cliente");
+                stmt = (CallableStatement) con.prepareCall("{CALL listar_cliente()}");
+                rs = stmt.executeQuery();
                 while(rs.next()) { if(rs.getString("cedula").equals(campoEliminar.getText())) encontrado=true; }
                 if(encontrado) {
                     int eleccion = JOptionPane.showConfirmDialog(null,"Â¿Desea eliminar este registro?","Confirmar",JOptionPane.YES_NO_OPTION);
-                    if(eleccion==0) stmt.executeUpdate("DELETE FROM cliente WHERE cedula='"+campoEliminar.getText()+"';");
+                    if(eleccion==0){
+                        stmt1 = (CallableStatement) con.prepareCall("{CALL eliminar_cliente(?)}");
+                    stmt1.setString(1, campoEliminar.getText());
+                    stmt1.executeUpdate();
+                    }
+                   
+
                 } else { JOptionPane.showMessageDialog(null,"Registro no encontrado"); }
-                rs = stmt.executeQuery("SELECT * FROM cliente");
+                stmt = (CallableStatement) con.prepareCall("{CALL listar_cliente()}");
+                rs = stmt.executeQuery();
                 while(rs.next()) { modelo.addRow(new String[]{rs.getString("cedula"),rs.getString("primer_nombre"),rs.getString("segundo_nombre"),rs.getString("primer_apellido"),rs.getString("segundo_apellido")}); }
             } catch(SQLException ex){ ex.printStackTrace(); }
             campoEliminar.setText("");
@@ -163,7 +168,8 @@ public class MantenimientoCliente extends JPanel {
             if(tabla.isEditing()) tabla.getCellEditor().stopCellEditing();
             try {
                 if(!campoConsultar.getText().isEmpty()) {
-                    rs = stmt.executeQuery("SELECT * FROM cliente");
+                   stmt = (CallableStatement) con.prepareCall("{CALL listar_cliente()}");
+                    rs = stmt.executeQuery();
                     while(rs.next()) {
                         if(rs.getString("cedula").equals(campoConsultar.getText())) {
                             encontrado=true;
@@ -181,7 +187,8 @@ public class MantenimientoCliente extends JPanel {
         try {
             DefaultTableModel modelo = (DefaultTableModel)((JTable)((JScrollPane)scroll).getViewport().getView()).getModel();
             modelo.setRowCount(0);
-            rs = stmt.executeQuery("SELECT * FROM cliente");
+            stmt = (CallableStatement) con.prepareCall("{CALL listar_cliente()}");
+            rs = stmt.executeQuery();
             while(rs.next()) modelo.addRow(new String[]{rs.getString("cedula"),rs.getString("primer_nombre"),rs.getString("segundo_nombre"),rs.getString("primer_apellido"),rs.getString("segundo_apellido")});
         } catch(SQLException e){ e.printStackTrace(); }
     }

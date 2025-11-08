@@ -23,7 +23,6 @@ public class MantenimientoSala extends JPanel {
 
     JButton botonInsertar, botonActualizar, botonEliminar, botonConsultar;
     JScrollPane scroll;
-    JComboBox<Object> combo;
     PanelSala panel;
 
     public MantenimientoSala() throws SQLException, ClassNotFoundException {
@@ -80,17 +79,11 @@ public class MantenimientoSala extends JPanel {
         botonConsultar.setForeground(Color.WHITE);
         this.add(botonConsultar);
 
-        // Combo box debajo de los botones
-        String lista[] = {"Numero de sala", "Capacidad", "ID tipo"};
-        combo = new JComboBox<>(lista);
-        combo.setBounds(200, 410, 140, 30);
-        this.add(combo);
 
         // Campos de texto para actualizar, eliminar y consultar
-        JTextField campoActualizar = crearCampoTexto(200, 450, 100, 30, "Ingrese ID a actualizar");
+        JTextField campoActualizar = crearCampoTexto(200, 410, 100, 30, "Ingrese ID a actualizar");
         this.add(campoActualizar);
-        JTextField campoValorActualizar = crearCampoTexto(200, 490, 100, 30, "Ingrese nuevo valor");
-        this.add(campoValorActualizar);
+      
 
         JTextField campoEliminar = crearCampoTexto(360, 410, 100, 30, "Ingrese ID a eliminar");
         this.add(campoEliminar);
@@ -106,13 +99,11 @@ public class MantenimientoSala extends JPanel {
                 this.remove(botonActualizar);
                 this.remove(botonEliminar);
                 this.remove(botonConsultar);
-                this.remove(combo);
-                this.remove(campoActualizar);
-                this.remove(campoValorActualizar);
-                this.remove(campoEliminar);
-                this.remove(campoConsultar);
+                // this.remove(campoActualizar);
+                // this.remove(campoEliminar);
+                // this.remove(campoConsultar);
 
-               panel = new PanelSala(MantenimientoSala.this);
+               panel = new PanelSala(MantenimientoSala.this,0);
                 panel.setLayout(null);
                 panel.setBounds(10, 70, 700, 500);
                 this.add(panel);
@@ -143,24 +134,27 @@ public class MantenimientoSala extends JPanel {
                 }
 
                 if (encontrado) {
-                    int eleccion = JOptionPane.showConfirmDialog(null, "¿Desea guardar los cambios?",
-                            "Confirmar acción", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                    if (eleccion == 0) {
-                        String columna = "";
-                        switch (combo.getSelectedIndex()) {
-                        case 0:
-                            columna = "numero_sala";
-                            break;
-                        case 1:
-                            columna = "capacidad";
-                            break;
-                        case 2:
-                            columna = "id_tipo";
-                            break;
-                        }
-                        stmt.executeUpdate("UPDATE sala SET " + columna + "='" + campoValorActualizar.getText()
-                                + "' WHERE numero_sala='" + campoActualizar.getText() + "';");
-                    }
+                    try {
+                this.remove(scroll);
+                this.remove(botonInsertar);
+                this.remove(botonActualizar);
+                this.remove(botonEliminar);
+                this.remove(botonConsultar);
+                // this.remove(campoActualizar);
+                // this.remove(campoEliminar);
+                // this.remove(campoConsultar);
+
+               panel = new PanelSala(MantenimientoSala.this,1);
+                panel.setLayout(null);
+                panel.setBounds(10, 70, 700, 500);
+                this.add(panel);
+                this.setComponentZOrder(panel, 0);
+                this.revalidate();
+                this.repaint();
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
                 } else {
                     JOptionPane.showMessageDialog(null, "Registro no encontrado");
                 }
@@ -179,7 +173,6 @@ public class MantenimientoSala extends JPanel {
             }
 
             campoActualizar.setText("");
-            campoValorActualizar.setText("");
         });
 
         // Acción Eliminar
@@ -200,11 +193,7 @@ public class MantenimientoSala extends JPanel {
                 }
 
                 if (encontrado) {
-                    int eleccion = JOptionPane.showConfirmDialog(null, "¿Desea confirmar la eliminación del registro?",
-                            "Confirmación", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                    if (eleccion == 0) {
-                        stmt.executeUpdate("DELETE FROM sala WHERE numero_sala='" + campoEliminar.getText() + "';");
-                    }
+                 
                 } else {
                     JOptionPane.showMessageDialog(null, "Registro no encontrado");
                 }

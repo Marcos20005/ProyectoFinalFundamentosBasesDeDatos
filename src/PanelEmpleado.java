@@ -1,8 +1,10 @@
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -15,19 +17,26 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 public class PanelEmpleado extends JPanel {
-    Statement stmt = null;
+    CallableStatement stmt = null;
     Connection con = null;
 
-    public PanelEmpleado(MantenimientoEmpleado controlOriginal) throws SQLException, ClassNotFoundException {
+    public PanelEmpleado(MantenimientoEmpleado controlOriginal, int funcion, String id) throws SQLException, ClassNotFoundException {
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", 
                 "root", "cRojas34");
-        stmt = con.createStatement();
+        
 
-        JLabel lBlcodigo = crearEtiqueta("Datos de nuevo empleado", 200, 20, 300, 30);
+        if(funcion==0){
+JLabel lBlcodigo = crearEtiqueta("Datos de nuevo empleado", 200, 20, 300, 30);
         lBlcodigo.setHorizontalAlignment(SwingConstants.CENTER);
         this.add(lBlcodigo);
+        }else{
+            JLabel lBlcodigo = crearEtiqueta("Actualizar registro", 200, 20, 300, 30);
+        lBlcodigo.setHorizontalAlignment(SwingConstants.CENTER);
+        this.add(lBlcodigo);
+        }
+        
 
         JLabel lblID = crearEtiqueta("ID empleado:", 150, 70, 140, 30);
         JTextField txtID = crearCampoTexto(300, 70, 200, 30, "Ingrese ID de empleado");
@@ -59,7 +68,49 @@ public class PanelEmpleado extends JPanel {
         this.add(lblIDPuesto);
         this.add(txtIDPuesto);
 
-        JButton botonGuardar = crearBoton("Guardar", 300, 370, 100, 40, "Guardar nuevo empleado", "src/imagenes/guardar.png");
+        if (funcion==1) {
+             stmt = (CallableStatement) con.prepareCall("{CALL listar_empleado()}");
+        ResultSet rs = stmt.executeQuery();
+        while(rs.next()){
+            if(rs.getString("id").equals(id)){
+
+                txtID.setText(rs.getString("id"));
+                txtPrimerNombre.setText(rs.getString("primer_nombre"));
+                txtSegundoNombre.setText(rs.getString("segundo_nombre"));
+                txtPrimerApellido.setText(rs.getString("primer_apellido"));
+                txtSegundoApellido.setText(rs.getString("segundo_apellido"));
+                txtIDPuesto.setText(rs.getString("id_puesto"));
+            }
+        }
+        }
+
+                  JButton botonCancelar = crearBoton("Cancelar", 400, 360, 100, 40, "Regresar atras", "Iconos/cancelar.png");
+botonCancelar.setBackground(new Color(240, 128, 128));
+botonCancelar.setForeground(Color.WHITE);
+this.add(botonCancelar);
+botonCancelar.addActionListener(new ActionListener() {
+    @Override
+    public void actionPerformed(ActionEvent e){
+             txtID.setText("");
+                txtPrimerNombre.setText("");
+                txtSegundoNombre.setText("");
+                txtPrimerApellido.setText("");
+                txtSegundoApellido.setText("");
+                txtIDPuesto.setText("");
+
+                controlOriginal.add(controlOriginal.botonActualizar);
+                controlOriginal.add(controlOriginal.botonInsertar);
+                controlOriginal.add(controlOriginal.botonEliminar);
+                controlOriginal.add(controlOriginal.botonConsultar);
+                controlOriginal.add(controlOriginal.scroll);
+                controlOriginal.remove(controlOriginal.panel);
+                controlOriginal.recargarTabla();
+                controlOriginal.revalidate();
+                controlOriginal.repaint();  
+    }
+});
+
+        JButton botonGuardar = crearBoton("Guardar", 290, 360, 100, 40, "Guardar nuevo empleado", "Iconos/guardar-el-archivo.png");
         botonGuardar.setBackground(new Color(46, 204, 113));
         botonGuardar.setForeground(Color.WHITE);
         this.add(botonGuardar);
@@ -67,14 +118,31 @@ public class PanelEmpleado extends JPanel {
         botonGuardar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                int eleccion;
                 try {
-                    int eleccion = JOptionPane.showConfirmDialog(null, "¿Desea confirmar nuevo registro?", "Confirmar acción",
-                            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                    if (eleccion == 0) {
-                        stmt.executeUpdate("INSERT INTO empleado (id, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, id_puesto) " +
-                                "VALUES ('" + txtID.getText() + "', '" + txtPrimerNombre.getText() + "', '" + txtSegundoNombre.getText() + 
-                                "', '" + txtPrimerApellido.getText() + "', '" + txtSegundoApellido.getText() + "', '" + txtIDPuesto.getText() + "');");
+                    if (funcion==0) {
+                     eleccion = JOptionPane.showConfirmDialog(null, "¿Desea confirmar nuevo registro?", "Confirmar acción",
+                            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);   
+                             stmt = con.prepareCall("{CALL insertar_empleado(?,?,?,?,?,?)}");
+                    } else{
+                    eleccion = JOptionPane.showConfirmDialog(null, "¿Desea confirmar cambios?", "Confirmar acción",
+                            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);   
+                             stmt = con.prepareCall("{CALL actualizar_empleado(?,?,?,?,?,?,?)}");
                     }
+            
+                    if (eleccion == 0) {
+                      stmt.setString(1, txtID.getText());
+                      stmt.setString(2, txtPrimerNombre.getText());
+                      stmt.setString(3, txtSegundoNombre.getText());
+                      stmt.setString(4, txtPrimerApellido.getText());
+                      stmt.setString(5, txtSegundoApellido.getText());
+                      stmt.setString(6, txtIDPuesto.getText());
+
+                      if(funcion==1){
+                 stmt.setString(7, id);
+                      }
+                    }
+                    stmt.executeUpdate();
                 } catch (SQLException ex) {
                     
                     JOptionPane.showMessageDialog(null, "Hubo un error por favor vuelva a intentar","Advertencia",JOptionPane.WARNING_MESSAGE);
@@ -92,7 +160,6 @@ public class PanelEmpleado extends JPanel {
                 controlOriginal.add(controlOriginal.botonEliminar);
                 controlOriginal.add(controlOriginal.botonConsultar);
                 controlOriginal.add(controlOriginal.scroll);
-                controlOriginal.add(controlOriginal.combo);
                 controlOriginal.remove(controlOriginal.panel);
                 controlOriginal.recargarTabla();
                 controlOriginal.revalidate();
