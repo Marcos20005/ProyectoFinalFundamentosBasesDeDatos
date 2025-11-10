@@ -18,7 +18,7 @@ public class PanelBoletos extends JPanel {
     private JTextField campoCodigo, campoAsiento, campoPrecio;
     private JComboBox<String> comboCliente, comboEmpleado, comboSala, comboFuncion;
     private JLabel TituloPelicula;
-    private String codigoPelicula, tituloPelicula;
+    private String codigoPelicula, tituloPelicula;  
 
     public PanelBoletos(JTabbedPane pestanias, Connection con) {
         this.setLayout(null);
@@ -112,26 +112,28 @@ public class PanelBoletos extends JPanel {
         cargarFunciones(con);
     }
 
-    public void setPeliculaSeleccionada(String codigo, String titulo) {
-        this.codigoPelicula = codigo;
-        this.tituloPelicula = titulo;
-        TituloPelicula.setText("Película seleccionada: " + titulo);
-    }
-
+  public void setPeliculaSeleccionada(String codigo, String titulo) {
+    this.codigoPelicula = codigo.trim(); // Asegura que no haya espacios
+    this.tituloPelicula = titulo.trim();
+    TituloPelicula.setText("Película seleccionada: " + titulo);
+}
       private void cargarClientes(Connection con) {
-        try (Statement stmt = con.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT cedula, primer_nombre FROM cliente")) {
-            while (rs.next()) {
-                comboCliente.addItem(rs.getString("cedula") + " - " + rs.getString("primer_nombre"));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+    try (java.sql.CallableStatement cstmt = con.prepareCall("{CALL listar_cliente()}");
+         ResultSet rs = cstmt.executeQuery()) {
+        comboCliente.removeAllItems();
+        while (rs.next()) {
+            comboCliente.addItem(rs.getString("cedula") + " - " + rs.getString("primer_nombre"));
         }
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Error al cargar los clientes: " + e.getMessage());
     }
+}
+
 
     private void cargarEmpleados(Connection con) {
-        try (Statement stmt = con.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT id, primer_nombre FROM empleado")) {
+        try (java.sql.CallableStatement stmt = con.prepareCall("{CALL listar_empleado()}");
+             ResultSet rs = stmt.executeQuery()) {
+            comboEmpleado.removeAllItems();
             while (rs.next()) {
                 comboEmpleado.addItem(rs.getString("id") + " - " + rs.getString("primer_nombre"));
             }
@@ -141,23 +143,27 @@ public class PanelBoletos extends JPanel {
     }
 
     private void cargarSalas(Connection con) {
-        try {
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT numero_sala FROM sala");
-            while (rs.next()) comboSala.addItem(rs.getString("numero_sala"));
-            stmt.close();
-        } catch (SQLException e) { e.printStackTrace(); }
+        try (java.sql.CallableStatement stmt = con.prepareCall("{CALL listar_sala()}");
+             ResultSet rs = stmt.executeQuery()) {
+            comboSala.removeAllItems();
+            while (rs.next()) {
+                comboSala.addItem(rs.getString("numero_sala"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private void cargarFunciones(Connection con) {
-        try {
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT codigo, hora, fecha FROM funciones");
+        try (java.sql.CallableStatement stmt = con.prepareCall("{CALL listar_funciones()}");
+             ResultSet rs = stmt.executeQuery()) {
+            comboFuncion.removeAllItems();
             while (rs.next()) {
                 comboFuncion.addItem(rs.getString("codigo") + " - " + rs.getString("hora") + " (" + rs.getString("fecha") + ")");
             }
-            stmt.close();
-        } catch (SQLException e) { e.printStackTrace(); }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private void registrarBoleto(Connection con) throws SQLException {
@@ -170,44 +176,51 @@ public class PanelBoletos extends JPanel {
         return;
     }
 
-        String fecha = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-        String codigoFuncion = comboFuncion.getSelectedItem().toString().split(" - ")[0];
-        String cedulaCliente = comboCliente.getSelectedItem().toString().split(" - ")[0];
-        String idEmpleado = comboEmpleado.getSelectedItem().toString().split(" - ")[0];
+    String fecha = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+    String codigoFuncion = comboFuncion.getSelectedItem().toString().split(" - ")[0];
+    String cedulaCliente = comboCliente.getSelectedItem().toString().split(" - ")[0];
+    String idEmpleado = comboEmpleado.getSelectedItem().toString().split(" - ")[0];
+    String numeroSala = comboSala.getSelectedItem().toString();
 
-    String sql = "INSERT INTO boleto (codigo, asiento, precio_final, fecha_emision, cedula_clien, codigo_pelicula, numero_sala, codigo_funcion, id_empleado) VALUES ('"
-        + campoCodigo.getText() + "', '"
-        + campoAsiento.getText() + "', "
-        + campoPrecio.getText() + ", '"
-        + fecha + "', '"
-        + cedulaCliente + "', '"
-        + codigoPelicula + "', '"
-        + comboSala.getSelectedItem().toString() + "', '"
-        + codigoFuncion + "', '"
-        + idEmpleado + "')";
+    try {
+        System.out.println("Código película enviado: '" + codigoPelicula + "'");
+        java.sql.CallableStatement cstmt = con.prepareCall("{CALL insertar_boleto(?, ?, ?, ?, ?, ?, ?, ?, ?)}");
+        cstmt.setString(1, campoCodigo.getText());
+        cstmt.setString(2, campoAsiento.getText());
+        cstmt.setDouble(3, Double.parseDouble(campoPrecio.getText()));
+        cstmt.setString(4, fecha);
+        cstmt.setString(5, cedulaCliente);
+        cstmt.setString(6, codigoPelicula);
+        cstmt.setString(7, numeroSala);
+        cstmt.setString(8, codigoFuncion);
+        cstmt.setString(9, idEmpleado);
 
-    Statement stmt = con.createStatement();
-    stmt.executeUpdate(sql);
-    stmt.close();
+        cstmt.executeUpdate();
+        cstmt.close();
 
-    // Comprobante
-    String resumen = " BOLETO EMITIDO EXITOSAMENTE\n\n"
-            + "Código de boleto: " + campoCodigo.getText() + "\n"
-            + "Película: " + tituloPelicula + "\n"
-            + "Sala: " + comboSala.getSelectedItem().toString() + "\n"
-            + "Función: " + comboFuncion.getSelectedItem().toString() + "\n"
-            + "Asiento: " + campoAsiento.getText() + "\n"
-            + "Precio final: ₡" + campoPrecio.getText() + "\n"
-            + "Cliente: " + comboCliente.getSelectedItem().toString() + "\n"
-            + "Empleado: " + comboEmpleado.getSelectedItem().toString() + "\n"
-            + "Fecha de emisión: " + fecha + "\n\n"
-            + "Gracias por su compra.";
+        String resumen = " BOLETO EMITIDO EXITOSAMENTE\n\n"
+                + "Código de boleto: " + campoCodigo.getText() + "\n"
+                + "Película: " + tituloPelicula + "\n"
+                + "Sala: " + numeroSala + "\n"
+                + "Función: " + comboFuncion.getSelectedItem().toString() + "\n"
+                + "Asiento: " + campoAsiento.getText() + "\n"
+                + "Precio final: ₡" + campoPrecio.getText() + "\n"
+                + "Cliente: " + comboCliente.getSelectedItem().toString() + "\n"
+                + "Empleado: " + comboEmpleado.getSelectedItem().toString() + "\n"
+                + "Fecha de emisión: " + fecha + "\n\n"
+                + "Gracias por su compra.";
 
-    JOptionPane.showMessageDialog(this, resumen, "Boleto registrado", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, resumen, "Boleto registrado", JOptionPane.INFORMATION_MESSAGE);
 
-    // Limpiar campos
-    campoCodigo.setText("");
-    campoAsiento.setText("");
-    campoPrecio.setText("");
+        campoCodigo.setText("");
+        campoAsiento.setText("");
+        campoPrecio.setText("");
+
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this,
+            "Error al registrar el boleto: " + e.getMessage(),
+            "Error",
+            JOptionPane.ERROR_MESSAGE);
+    }
 }
 }

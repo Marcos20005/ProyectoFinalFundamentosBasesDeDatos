@@ -57,34 +57,25 @@ public class PanelCancelarBoleto extends JPanel {
     private void cargarBoletos() {
          modeloTabla.setRowCount(0);
 
-    String sql = "SELECT b.codigo, p.titulo AS pelicula, c.primer_nombre AS cliente, "
-               + "b.numero_sala, f.codigo AS funcion, b.asiento, b.precio_final "
-               + "FROM boleto b "
-               + "LEFT JOIN pelicula p ON b.codigo_pelicula = p.codigo "
-               + "LEFT JOIN cliente c ON b.cedula_clien = c.cedula "
-               + "LEFT JOIN funciones f ON b.codigo_funcion = f.codigo";
-
-    try (Statement stmt = con.createStatement();
-         ResultSet rs = stmt.executeQuery(sql)) {
-
-        while (rs.next()) {
-            modeloTabla.addRow(new Object[]{
-                rs.getString("codigo"),
-                rs.getString("pelicula"),
-                rs.getString("cliente"),
-                rs.getString("numero_sala"),
-                rs.getString("funcion"),
-                rs.getString("asiento"),
-                rs.getDouble("precio_final")
-            });
+         try(java.sql.CallableStatement cstmt = con.prepareCall("{CALL cine.listar_boleto()}")) {
+            ResultSet rs = cstmt.executeQuery();
+            while (rs.next()) {
+                modeloTabla.addRow(new Object[]{
+                    rs.getString("codigo"),
+                    rs.getString("pelicula"),
+                    rs.getString("cliente"),
+                    rs.getString("numero_sala"),
+                    rs.getString("funcion"),
+                    rs.getString("asiento"),
+                    rs.getDouble("precio_final")
+                });
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error al cargar los boletos: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
         }
-
-    } catch (SQLException e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Error al cargar boletos: " + e.getMessage(),
-                "Error", JOptionPane.ERROR_MESSAGE);
     }
-}
 
     private void eliminarBoleto() {
     int fila = tablaBoletos.getSelectedRow();
@@ -105,15 +96,16 @@ public class PanelCancelarBoleto extends JPanel {
                 "Confirmar Cancelación", JOptionPane.YES_NO_OPTION);
 
     if (confirmar == JOptionPane.YES_OPTION) {
-            try (Statement stmt = con.createStatement()) {
-                stmt.executeUpdate("DELETE FROM boleto WHERE codigo = '" + codigoBoleto + "'");
+            try(java.sql.CallableStatement cstmt = con.prepareCall("{CALL eliminar_boleto(?)}")) {
+                cstmt.setString(1, codigoBoleto);
+                cstmt.executeUpdate();
                 JOptionPane.showMessageDialog(this, "Boleto cancelado exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                 cargarBoletos();
             } catch (SQLException e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(this, "Error al cancelar el boleto: " + e.getMessage(),
                         "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
-      }
-  }
+    }
 }

@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -29,7 +28,7 @@ public class MantenimientoTelefonoCliente extends JPanel {
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true",
-                "root", "cRojas34");
+                "root", "erpalacios");
 
         JLabel label = new JLabel("Mantenimiento de tabla teléfono cliente");
         label.setBounds(200, 20, 280, 30);

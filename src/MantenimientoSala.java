@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -6,7 +7,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -21,6 +21,7 @@ public class MantenimientoSala extends JPanel {
     Connection con = null;
     ResultSet rs = null;
 
+    public JTextField campoActualizar, campoEliminar, campoConsultar;
     JButton botonInsertar, botonActualizar, botonEliminar, botonConsultar;
     JScrollPane scroll;
     PanelSala panel;
@@ -29,7 +30,7 @@ public class MantenimientoSala extends JPanel {
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true",
-                "root", "cRojas34");
+                "root", "erpalacios");
 
         JLabel label = new JLabel("Mantenimiento de tabla sala");
         label.setBounds(200, 20, 280, 30);
@@ -40,13 +41,10 @@ public class MantenimientoSala extends JPanel {
         DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
         tabla.setModel(modelo);
 
-        stmt = con.createStatement();
-        rs = stmt.executeQuery("SELECT * FROM sala");
+        CallableStatement stmtListar = con.prepareCall("{CALL listar_sala_mantenimiento()}");
+        rs = stmtListar.executeQuery();
         while (rs.next()) {
-            String numeroSala = rs.getString("numero_sala");
-            String capacidad = rs.getString("capacidad");
-            String iDtipo = rs.getString("id_tipo");
-            String fila[] = {numeroSala, capacidad, iDtipo};
+            String fila[] = {rs.getString("numero_sala"), rs.getString("capacidad"), rs.getString("id_tipo")};
             modelo.addRow(fila);
         }
 
@@ -81,14 +79,14 @@ public class MantenimientoSala extends JPanel {
 
 
         // Campos de texto para actualizar, eliminar y consultar
-        JTextField campoActualizar = crearCampoTexto(200, 410, 100, 30, "Ingrese ID a actualizar");
+         campoActualizar = crearCampoTexto(200, 410, 100, 30, "Ingrese ID a actualizar");
         this.add(campoActualizar);
       
 
-        JTextField campoEliminar = crearCampoTexto(360, 410, 100, 30, "Ingrese ID a eliminar");
+         campoEliminar = crearCampoTexto(360, 410, 100, 30, "Ingrese ID a eliminar");
         this.add(campoEliminar);
 
-        JTextField campoConsultar = crearCampoTexto(520, 410, 100, 30, "Ingrese ID a consultar");
+         campoConsultar = crearCampoTexto(520, 410, 100, 30, "Ingrese ID a consultar");
         this.add(campoConsultar);
 
         // Acción Insertar -> muestra panel de inserción
@@ -103,7 +101,7 @@ public class MantenimientoSala extends JPanel {
                 // this.remove(campoEliminar);
                 // this.remove(campoConsultar);
 
-               panel = new PanelSala(MantenimientoSala.this,0);
+               panel = new PanelSala(MantenimientoSala.this,0,"");
                 panel.setLayout(null);
                 panel.setBounds(10, 70, 700, 500);
                 this.add(panel);
@@ -118,157 +116,98 @@ public class MantenimientoSala extends JPanel {
 
         // Acción Actualizar
         botonActualizar.addActionListener(e -> {
-            modelo.setRowCount(0);
-            boolean encontrado = false;
-
-            if (tabla.isEditing()) {
-                tabla.getCellEditor().stopCellEditing();
-            }
-
             try {
-                rs = stmt.executeQuery("SELECT * FROM sala");
-                while (rs.next()) {
-                    if (rs.getString("numero_sala").equals(campoActualizar.getText())) {
-                        encontrado = true;
-                    }
-                }
+                CallableStatement buscar = con.prepareCall("{CALL buscar_sala(?)}");
+                buscar.setString(1, campoActualizar.getText());
+                ResultSet resultado = buscar.executeQuery();
 
-                if (encontrado) {
-                    try {
-                this.remove(scroll);
-                this.remove(botonInsertar);
-                this.remove(botonActualizar);
-                this.remove(botonEliminar);
-                this.remove(botonConsultar);
-                // this.remove(campoActualizar);
-                // this.remove(campoEliminar);
-                // this.remove(campoConsultar);
-
-               panel = new PanelSala(MantenimientoSala.this,1);
+                if (resultado.next()) {
+                this.removeAll();
+                panel = new PanelSala(MantenimientoSala.this,1, campoActualizar.getText());
                 panel.setLayout(null);
                 panel.setBounds(10, 70, 700, 500);
                 this.add(panel);
-                this.setComponentZOrder(panel, 0);
                 this.revalidate();
                 this.repaint();
 
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
                 } else {
                     JOptionPane.showMessageDialog(null, "Registro no encontrado");
                 }
-
-                // Recargar tabla después de la acción
-                rs = stmt.executeQuery("SELECT * FROM sala");
-                while (rs.next()) {
-                    String id = rs.getString("numero_sala");
-                    String telefono = rs.getString("capacidad");
-                    String descripcion = rs.getString("id_tipo");
-                    String fila[] = {id, telefono, descripcion};
-                    modelo.addRow(fila);
-                }
-            } catch (SQLException ex) {
+                campoActualizar.setText("");
+            } catch (SQLException ex) { 
+                ex.printStackTrace();
+            } catch (ClassNotFoundException ex) {
                 ex.printStackTrace();
             }
-
-            campoActualizar.setText("");
         });
 
         // Acción Eliminar
         botonEliminar.addActionListener(e -> {
-            modelo.setRowCount(0);
-            boolean encontrado = false;
-
-            if (tabla.isEditing()) {
-                tabla.getCellEditor().stopCellEditing();
-            }
-
             try {
-                rs = stmt.executeQuery("SELECT * FROM sala");
-                while (rs.next()) {
-                    if (rs.getString("numero_sala").equals(campoEliminar.getText())) {
-                        encontrado = true;
+                CallableStatement buscar = con.prepareCall("{CALL buscar_sala(?)}");
+                buscar.setString(1, campoEliminar.getText());
+                ResultSet resultado = buscar.executeQuery();
+    
+                if (resultado.next()) {
+                    int eleccion = JOptionPane.showConfirmDialog(null,
+                            "¿Desea eliminar este registro?", "Confirmar acción",
+                            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+    
+                    if (eleccion == JOptionPane.YES_OPTION) {
+                        CallableStatement eliminar = con.prepareCall("{CALL eliminar_sala(?)}");
+                        eliminar.setString(1, campoEliminar.getText());
+                        eliminar.execute();
+                        JOptionPane.showMessageDialog(null, "Registro eliminado exitosamente");
+                        recargarTabla();
                     }
-                }
-
-                if (encontrado) {
-                 
                 } else {
                     JOptionPane.showMessageDialog(null, "Registro no encontrado");
                 }
-
-                // Recargar tabla
-                rs = stmt.executeQuery("SELECT * FROM sala");
-                while (rs.next()) {
-                    String id = rs.getString("numero_sala");
-                    String telefono = rs.getString("capacidad");
-                    String descripcion = rs.getString("id_tipo");
-                    String fila[] = {id, telefono, descripcion};
-                    modelo.addRow(fila);
-                }
-
+                campoEliminar.setText("");
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
-            campoEliminar.setText("");
         });
 
         // Acción Consultar
         botonConsultar.addActionListener(e -> {
             modelo.setRowCount(0);
-            boolean encontrado = false;
-
-            if (tabla.isEditing()) {
-                tabla.getCellEditor().stopCellEditing();
-            }
-
             try {
+                CallableStatement stmtBuscar;
                 if (!campoConsultar.getText().isEmpty()) {
-                    rs = stmt.executeQuery("SELECT * FROM sala");
-                    while (rs.next()) {
-                        if (rs.getString("numero_sala").equals(campoConsultar.getText())) {
-                            encontrado = true;
-                            String fila[] = {rs.getString("numero_sala"), rs.getString("capacidad"), rs.getString("id_tipo")};
-                            modelo.addRow(fila);
-                        }
-                    }
-                    if (!encontrado) {
-                        JOptionPane.showMessageDialog(null, "Registro no encontrado");
-                        rs = stmt.executeQuery("SELECT * FROM sala");
-                        while (rs.next()) {
-                           String fila[] = {rs.getString("numero_sala"), rs.getString("capacidad"), rs.getString("id_tipo")};
-                            modelo.addRow(fila);
-                        }
-                    }
+                    stmtBuscar = con.prepareCall("{CALL buscar_sala(?)}");
+                    stmtBuscar.setString(1, campoConsultar.getText());
                 } else {
-                    rs = stmt.executeQuery("SELECT * FROM sala");
-                    while (rs.next()) {
-                        String fila[] = {rs.getString("numero_sala"), rs.getString("capacidad"), rs.getString("id_tipo")};
-                            modelo.addRow(fila);
-                    }
+                    stmtBuscar = con.prepareCall("{CALL listar_sala_mantenimiento()}");
                 }
+
+                ResultSet rsBuscar = stmtBuscar.executeQuery();
+                while (rsBuscar.next()) {
+                    String fila[] = {
+                        rsBuscar.getString("numero_sala"),
+                        rsBuscar.getString("capacidad"),
+                        rsBuscar.getString("id_tipo")
+                    };
+                    modelo.addRow(fila);
+                }
+                campoConsultar.setText("");
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
-
-            campoConsultar.setText("");
         });
     }
 
     // Método para recargar tabla
    public void recargarTabla() {
         try {
-            DefaultTableModel modelo = (DefaultTableModel) ((JTable) ((JScrollPane) scroll).getViewport().getView())
-                    .getModel();
+            JTable tabla = (JTable) ((JScrollPane) scroll).getViewport().getView();
+            DefaultTableModel modelo = (DefaultTableModel) tabla.getModel();
             modelo.setRowCount(0);
 
-            rs = stmt.executeQuery("SELECT * FROM sala");
+            CallableStatement stmt = con.prepareCall("{CALL listar_sala_mantenimiento()}");
+            ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                String id = rs.getString("numero_sala");
-                String telefono = rs.getString("capacidad");
-                String descripcion = rs.getString("id_tipo");
-                String fila[] = {id, telefono, descripcion};
+                String fila[] = {rs.getString("numero_sala"), rs.getString("capacidad"), rs.getString("id_tipo")};
                 modelo.addRow(fila);
             }
         } catch (SQLException e) {

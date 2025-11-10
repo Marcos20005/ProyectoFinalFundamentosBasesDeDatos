@@ -1,24 +1,19 @@
 import java.awt.Color;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
-import java.sql.CallableStatement;
-
-import javax.swing.JOptionPane;
 
 public class MantenimientoCliente extends JPanel {
     CallableStatement stmt = null;
@@ -31,11 +26,12 @@ public class MantenimientoCliente extends JPanel {
 
     public MantenimientoCliente() {
         try {
+            setLayout(null);
             Class.forName("com.mysql.cj.jdbc.Driver");
             con = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true",
-                    "root", "cRojas34");
-            stmt = con.prepareCall("{CALL listar_cliente()}");
+                    "root", "erpalacios");
+            stmt = con.prepareCall("{CALL listar_cliente_mantenimiento()}");
         } catch (ClassNotFoundException | SQLException e) {
             JOptionPane.showMessageDialog(null, "Hubo un error por favor vuelva a intentar",
                     "Advertencia", JOptionPane.WARNING_MESSAGE);
@@ -52,7 +48,7 @@ public class MantenimientoCliente extends JPanel {
         tabla.setModel(modelo);
 
         try {
-         stmt = (CallableStatement) con.prepareCall("{CALL listar_cliente()}");
+         stmt = (CallableStatement) con.prepareCall("{CALL listar_cliente_mantenimiento()}");
             rs = stmt.executeQuery();
             while (rs.next()) {
                 modelo.addRow(new String[]{
@@ -116,7 +112,7 @@ public class MantenimientoCliente extends JPanel {
             modelo.setRowCount(0); boolean encontrado=false;
             if(tabla.isEditing()) tabla.getCellEditor().stopCellEditing();
             try {
-             stmt = (CallableStatement) con.prepareCall("{CALL listar_cliente()}");
+             stmt = (CallableStatement) con.prepareCall("{CALL listar_cliente_mantenimiento()}");
                 rs = stmt.executeQuery();
                 while(rs.next()) { if(rs.getString("cedula").equals(campoActualizar.getText())) { encontrado=true; } }
 
@@ -130,7 +126,7 @@ public class MantenimientoCliente extends JPanel {
                 this.add(panel); this.setComponentZOrder(panel,0); this.revalidate(); this.repaint();
             } catch (Exception ex) { ex.printStackTrace(); }
                 } else { JOptionPane.showMessageDialog(null,"Registro no encontrado"); }
-           stmt = (CallableStatement) con.prepareCall("{CALL listar_cliente()}");
+           stmt = (CallableStatement) con.prepareCall("{CALL listar_cliente_mantenimiento()}");
                 rs = stmt.executeQuery();
                 while(rs.next()) { modelo.addRow(new String[]{rs.getString("cedula"),rs.getString("primer_nombre"),rs.getString("segundo_nombre"),rs.getString("primer_apellido"),rs.getString("segundo_apellido")}); }
             } catch(SQLException ex){ ex.printStackTrace(); }
@@ -142,11 +138,11 @@ public class MantenimientoCliente extends JPanel {
             modelo.setRowCount(0); boolean encontrado=false;
             if(tabla.isEditing()) tabla.getCellEditor().stopCellEditing();
             try {
-                stmt = (CallableStatement) con.prepareCall("{CALL listar_cliente()}");
+                stmt = (CallableStatement) con.prepareCall("{CALL listar_cliente_mantenimiento()}");
                 rs = stmt.executeQuery();
                 while(rs.next()) { if(rs.getString("cedula").equals(campoEliminar.getText())) encontrado=true; }
                 if(encontrado) {
-                    int eleccion = JOptionPane.showConfirmDialog(null,"Â¿Desea eliminar este registro?","Confirmar",JOptionPane.YES_NO_OPTION);
+                    int eleccion = JOptionPane.showConfirmDialog(null,"¿Desea eliminar este registro?","Confirmar",JOptionPane.YES_NO_OPTION);
                     if(eleccion==0){
                         stmt1 = (CallableStatement) con.prepareCall("{CALL eliminar_cliente(?)}");
                     stmt1.setString(1, campoEliminar.getText());
@@ -155,7 +151,7 @@ public class MantenimientoCliente extends JPanel {
                    
 
                 } else { JOptionPane.showMessageDialog(null,"Registro no encontrado"); }
-                stmt = (CallableStatement) con.prepareCall("{CALL listar_cliente()}");
+                stmt = (CallableStatement) con.prepareCall("{CALL listar_cliente_mantenimiento()}");
                 rs = stmt.executeQuery();
                 while(rs.next()) { modelo.addRow(new String[]{rs.getString("cedula"),rs.getString("primer_nombre"),rs.getString("segundo_nombre"),rs.getString("primer_apellido"),rs.getString("segundo_apellido")}); }
             } catch(SQLException ex){ ex.printStackTrace(); }
@@ -168,7 +164,7 @@ public class MantenimientoCliente extends JPanel {
             if(tabla.isEditing()) tabla.getCellEditor().stopCellEditing();
             try {
                 if(!campoConsultar.getText().isEmpty()) {
-                   stmt = (CallableStatement) con.prepareCall("{CALL listar_cliente()}");
+                   stmt = (CallableStatement) con.prepareCall("{CALL listar_cliente_mantenimiento()}");
                     rs = stmt.executeQuery();
                     while(rs.next()) {
                         if(rs.getString("cedula").equals(campoConsultar.getText())) {
@@ -184,15 +180,26 @@ public class MantenimientoCliente extends JPanel {
     }
 
     public void recargarTabla() {
-        try {
-            DefaultTableModel modelo = (DefaultTableModel)((JTable)((JScrollPane)scroll).getViewport().getView()).getModel();
-            modelo.setRowCount(0);
-            stmt = (CallableStatement) con.prepareCall("{CALL listar_cliente()}");
-            rs = stmt.executeQuery();
-            while(rs.next()) modelo.addRow(new String[]{rs.getString("cedula"),rs.getString("primer_nombre"),rs.getString("segundo_nombre"),rs.getString("primer_apellido"),rs.getString("segundo_apellido")});
-        } catch(SQLException e){ e.printStackTrace(); }
-    }
-     static public JButton crearBoton(String texto, int x, int y, int ancho, int alto, String toolTip, String ruta) {
+            try {
+        DefaultTableModel modelo = (DefaultTableModel)((JTable)((JScrollPane)scroll).getViewport().getView()).getModel();
+        modelo.setRowCount(0);
+        stmt = (CallableStatement) con.prepareCall("{CALL listar_cliente_mantenimiento()}");
+        rs = stmt.executeQuery();
+        while (rs.next()) {
+            modelo.addRow(new String[]{
+                rs.getString("cedula"),
+                rs.getString("primer_nombre"),
+                rs.getString("segundo_nombre"),
+                rs.getString("primer_apellido"),
+                rs.getString("segundo_apellido")
+            });
+        }
+        revalidate();
+        repaint();
+    } catch(SQLException e){ e.printStackTrace(); }
+}
+    
+    static public JButton crearBoton(String texto, int x, int y, int ancho, int alto, String toolTip, String ruta) {
         JButton boton = new JButton(texto);
         boton.setBounds(x, y, ancho, alto);
         boton.setToolTipText(toolTip);

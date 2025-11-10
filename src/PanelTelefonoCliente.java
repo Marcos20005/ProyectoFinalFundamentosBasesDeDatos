@@ -25,7 +25,7 @@ public class PanelTelefonoCliente extends JPanel {
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true",
-                "root", "cRojas34");
+                "root", "erpalacios");
         stmt = con.createStatement();
 
         if(funcion==0){

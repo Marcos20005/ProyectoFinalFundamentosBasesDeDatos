@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -33,11 +32,10 @@ public class MantenimientoBoleto extends JPanel {
 
 
     public MantenimientoBoleto() throws ClassNotFoundException, SQLException {
-        this.setLayout(null); // Usamos un layout nulo para posicionar componentes manualmente
+        this.setLayout(null); 
 
-        //Estableciendo conexion a la base de datos
         Class.forName("com.mysql.cj.jdbc.Driver");
-        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", "root", "cRojas34");
+        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", "root", "erpalacios");
         stmt = con.createStatement();
 
         JLabel label = new JLabel("Mantenimiento de tabla boleto");
@@ -49,13 +47,12 @@ public class MantenimientoBoleto extends JPanel {
         modelo = new DefaultTableModel(columnas, 0);
         tabla.setModel(modelo);
         
-        recargarTabla(); // Carga inicial de datos
+        recargarTabla(); // Cargar datos iniciales en la tabla
 
         scroll = new JScrollPane(tabla);
-        scroll.setBounds(30, 70, 700, 250); // Ajustado para un mejor tamaño
+        scroll.setBounds(30, 70, 700, 250); 
         this.add(scroll);
 
-          // Botones
         botonInsertar = crearBoton("Insertar", 40, 360, 100, 40, "Insertar nuevo registro",
                 "Iconos/insertar-cuadrado.png");
         botonInsertar.setBackground(new Color(46, 204, 113));
@@ -92,9 +89,6 @@ public class MantenimientoBoleto extends JPanel {
         JTextField campoConsultar = crearCampoTexto(520, 410, 120, 30, "Ingrese CÓDIGO a consultar");
         this.add(campoConsultar);
 
-
-        // --- ACTION LISTENERS ---
-
         botonInsertar.addActionListener(e -> {
             try {
                 this.remove(scroll);
@@ -107,7 +101,7 @@ public class MantenimientoBoleto extends JPanel {
                 //this.remove(campoConsultar);
 
 
-                panel = new PanelBoleto(this,0);
+                panel = new PanelBoleto(this,0, null);
                 panel.setLayout(null);
                 panel.setBounds(10, 70, 700, 500);
                 this.add(panel);
@@ -119,81 +113,68 @@ public class MantenimientoBoleto extends JPanel {
             }
         });
         
-        botonActualizar.addActionListener(e -> {
-            boolean encontrado = false;
-            if (campoActualizarId.getText().isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Debe ingresar el código a buscar y el nuevo valor.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
+       botonActualizar.addActionListener(e -> {
+    if (campoActualizarId.getText().isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Debe ingresar el código del boleto a actualizar.",  "Advertencia", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    try (java.sql.CallableStatement cs = con.prepareCall("{CALL consultar_boleto(?)}")) {
+        cs.setString(1, campoActualizarId.getText().trim());
+        ResultSet rs = cs.executeQuery();
+
+        if (rs.next()) {
+            this.remove(scroll);
+            this.remove(botonInsertar);
+            this.remove(botonActualizar);
+            this.remove(botonEliminar);
+            this.remove(botonConsultar);
 
             try {
-                rs = stmt.executeQuery("SELECT * FROM boleto WHERE codigo = '" + campoActualizarId.getText() + "'");
-                if (rs.next()) {
-                    encontrado = true;
-                }
-
-                if (encontrado) {
-                     try {
-                this.remove(scroll);
-                this.remove(botonInsertar);
-                this.remove(botonActualizar);
-                this.remove(botonEliminar);
-                this.remove(botonConsultar);
-               // this.remove(campoActualizarId);
-                //this.remove(campoEliminar);
-                //this.remove(campoConsultar);
-
-
-                panel = new PanelBoleto(this,1);
+                panel = new PanelBoleto(this, 1, campoActualizarId.getText().trim());
                 panel.setLayout(null);
                 panel.setBounds(10, 70, 700, 500);
                 this.add(panel);
                 this.setComponentZOrder(panel, 0);
                 this.revalidate();
                 this.repaint();
-            } catch (ClassNotFoundException | SQLException e1) {
-                e1.printStackTrace();
-            }
-                 
-                } else {
-                    JOptionPane.showMessageDialog(null, "No se encontró el registro buscado");
-                }
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(null, "Error al actualizar la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-            recargarTabla();
-            campoActualizarId.setText("");
-            
-        });
-        
-        botonEliminar.addActionListener(e -> {
-            boolean encontrado = false;
-            if (campoEliminar.getText().isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Debe ingresar el código a eliminar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-                return;
+            } catch (ClassNotFoundException | SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error al abrir el panel de actualización: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
 
-            try {
-                rs = stmt.executeQuery("SELECT * FROM boleto WHERE codigo = '" + campoEliminar.getText() + "'");
-                if (rs.next()) {
-                    encontrado = true;
-                }
+        } else {
+            JOptionPane.showMessageDialog(this, "No se encontró el boleto con el código especificado.", "Aviso", JOptionPane.INFORMATION_MESSAGE);
+        }
 
-                if (encontrado) {
-                    int eleccion = JOptionPane.showConfirmDialog(null, "¿Desea confirmar la eliminación del registro?", "Confirmación", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                    if (eleccion == 0) {
-                        stmt.executeUpdate("DELETE FROM boleto WHERE codigo = '" + campoEliminar.getText() + "';");
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(null, "Registro no encontrado");
-                }
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(null, "Error al eliminar de la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(this, "Error al buscar el boleto: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+    // Limpiar campo de actualización
+    campoActualizarId.setText("");
+});
+
+     botonEliminar.addActionListener(e -> {
+    if (campoEliminar.getText().isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Debe ingresar el código a eliminar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    int confirmar = JOptionPane.showConfirmDialog(this,
+            "¿Está seguro de eliminar el boleto con código " + campoEliminar.getText() + "?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+
+    if (confirmar == JOptionPane.YES_OPTION) {
+        try (java.sql.CallableStatement cs = con.prepareCall("{CALL eliminar_boleto(?)}")) {
+            cs.setString(1, campoEliminar.getText());
+            cs.executeUpdate();
+            JOptionPane.showMessageDialog(this, "Boleto eliminado correctamente.");
             recargarTabla();
-            campoEliminar.setText("");
-        });
-        
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error al eliminar boleto: " + ex.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+});
+
         botonConsultar.addActionListener(e -> {
             if (campoConsultar.getText().isEmpty()) {
                 recargarTabla();
@@ -201,48 +182,50 @@ public class MantenimientoBoleto extends JPanel {
             }
 
             modelo.setRowCount(0);
-            boolean encontrado = false;
-            try {
-                rs = stmt.executeQuery("SELECT * FROM boleto WHERE codigo = '" + campoConsultar.getText() + "'");
-                while (rs.next()) {
-                    encontrado = true;
-                    String codigo = rs.getString("codigo");
-                    String asiento = rs.getString("asiento");
-                    String precioFinal = rs.getString("precio_final");
-                    String fechaEmicion = rs.getString("fecha_emicion");
-                    String[] fila = {codigo, asiento, precioFinal, fechaEmicion};
-                    modelo.addRow(fila);
-                }
-                if (!encontrado) {
-                    JOptionPane.showMessageDialog(null, "Registro no encontrado.");
-                    recargarTabla();
-                }
-            } catch (SQLException e1) {
-                e1.printStackTrace();
-            }
-            campoConsultar.setText("");
-        });
+             try (java.sql.CallableStatement cs = con.prepareCall("{CALL consultar_boleto(?)}")) {
+        cs.setString(1, campoConsultar.getText());
+        ResultSet rs = cs.executeQuery();
+
+        if (!rs.next()) {
+            JOptionPane.showMessageDialog(this, "Registro no encontrado.");
+            recargarTabla();
+            return;
+        }
+
+        do {
+            modelo.addRow(new Object[]{
+                rs.getString("codigo"),
+                rs.getString("asiento"),
+                rs.getString("precio_final"),
+                rs.getString("fecha_emision")
+            });
+        } while (rs.next());
+
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(this, "Error al consultar boleto: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+    campoConsultar.setText("");
+});
     }
 
     public void recargarTabla() {
-        if (tabla.isEditing()) {
-            tabla.getCellEditor().stopCellEditing();
+         modelo.setRowCount(0);
+    try (java.sql.CallableStatement cs = con.prepareCall("{CALL listar_boletos_mantenimiento()}");
+         ResultSet rs = cs.executeQuery()) {
+
+        while (rs.next()) {
+            String codigo = rs.getString("codigo");
+            String asiento = rs.getString("asiento");
+            String precioFinal = rs.getString("precio_final");
+            String fechaEmision = rs.getString("fecha_emision");
+            modelo.addRow(new Object[]{codigo, asiento, precioFinal, fechaEmision});
         }
-        modelo.setRowCount(0);
-        try {
-            rs = stmt.executeQuery("SELECT * FROM boleto");
-            while (rs.next()) {
-                String codigo = rs.getString("codigo");
-                String asiento = rs.getString("asiento");
-                String precioFinal = rs.getString("precio_final");
-                String fechaEmicion = rs.getString("fecha_emicion");
-                String[] fila = {codigo, asiento, precioFinal, fechaEmicion};
-                modelo.addRow(fila);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Error al listar boletos: " + e.getMessage(),
+                "Error", JOptionPane.ERROR_MESSAGE);
     }
+}
 
     static public JButton crearBoton(String texto, int x, int y, int ancho, int alto, String toolTip, String ruta) {
         JButton boton = new JButton(texto);

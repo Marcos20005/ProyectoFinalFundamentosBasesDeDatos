@@ -33,7 +33,7 @@ Class.forName("com.mysql.cj.jdbc.Driver");
         try {
             con = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", 
-                    "root", "cRojas34");
+                    "root", "erpalacios");
                      stmt = con.createStatement();
         } catch (SQLException e) {
             // TODO Auto-generated catch block

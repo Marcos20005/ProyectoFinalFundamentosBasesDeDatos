@@ -1,16 +1,18 @@
 import java.awt.Color;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import javax.swing.DefaultBoundedRangeModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -29,7 +31,7 @@ public class MantenimientoPelicula extends JPanel {
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true",
-                "root", "cRojas34");
+                "root", "erpalacios");
 
         JLabel label = new JLabel("Mantenimiento de tabla pelicula");
         label.setBounds(200, 20, 280, 30);
@@ -40,15 +42,15 @@ public class MantenimientoPelicula extends JPanel {
         DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
         tabla.setModel(modelo);
 
-        stmt = con.createStatement();
-        rs = stmt.executeQuery("SELECT * FROM pelicula");
+        CallableStatement stmt = con.prepareCall("{CALL listar_pelicula_mantenimiento()}");
+        ResultSet rs = stmt.executeQuery();
         while (rs.next()) {
-            String cadigo = rs.getString("codigo");
+            String codigo = rs.getString("codigo");
             String titulo = rs.getString("titulo");
-            String iDgenero = rs.getString("id_genero");
+            String iDgenero = rs.getString("nombre_genero");
             String duracion = rs.getString("duracion");
-            String iDclasificacion = rs.getString("id_clasificacion");
-            String fila[] = {cadigo, titulo, iDgenero,duracion,iDclasificacion};
+            String iDclasificacion = rs.getString("tipo_clasificacion");
+            String fila[] = {codigo, titulo, iDgenero,duracion,iDclasificacion};
             modelo.addRow(fila);
         }
 
@@ -104,7 +106,7 @@ public class MantenimientoPelicula extends JPanel {
                 // this.remove(campoEliminar);
                 // this.remove(campoConsultar);
 
-               panel = new PanelPelicula(MantenimientoPelicula.this,0);
+               panel = new PanelPelicula(MantenimientoPelicula.this,0, "");
                 panel.setLayout(null);
                 panel.setBounds(10, 70, 700, 500);
                 this.add(panel);
@@ -127,159 +129,115 @@ public class MantenimientoPelicula extends JPanel {
             }
 
             try {
-                rs = stmt.executeQuery("SELECT * FROM pelicula");
-                while (rs.next()) {
-                    if (rs.getString("codigo").equals(campoActualizar.getText())) {
-                        encontrado = true;
-                    }
-                }
+               CallableStatement buscar = con.prepareCall("{CALL buscar_pelicula(?)}");
+                buscar.setString(1, campoActualizar.getText());
+                ResultSet resultado = buscar.executeQuery();
 
-                if (encontrado) {
-                     try {
-                this.remove(scroll);
-                this.remove(botonInsertar);
-                this.remove(botonActualizar);
-                this.remove(botonEliminar);
-                this.remove(botonConsultar);
+                if (resultado.next()) {
+                    this.remove(scroll);
+                    this.remove(botonInsertar);
+                    this.remove(botonActualizar);
+                    this.remove(botonEliminar);
+                    this.remove(botonConsultar);
+
                 // this.remove(campoActualizar);
                 // this.remove(campoEliminar);
                 // this.remove(campoConsultar);
 
-               panel = new PanelPelicula(MantenimientoPelicula.this,1);
-                panel.setLayout(null);
-                panel.setBounds(10, 70, 700, 500);
-                this.add(panel);
-                this.setComponentZOrder(panel, 1);
-                this.revalidate();
-                this.repaint();
-
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+               panel = new PanelPelicula(MantenimientoPelicula.this, 1, campoActualizar.getText());
+                    panel.setLayout(null);
+                    panel.setBounds(10, 70, 700, 500);
+                    this.add(panel);
+                    this.setComponentZOrder(panel, 1);
+                    this.revalidate();
+                    this.repaint();
                 } else {
                     JOptionPane.showMessageDialog(null, "Registro no encontrado");
                 }
-
-                // Recargar tabla después de la acción
-                rs = stmt.executeQuery("SELECT * FROM pelicula");
-                while (rs.next()) {
-                     String codigo = rs.getString("codigo");
-            String titulo = rs.getString("titulo");
-            String iDgenero = rs.getString("id_genero");
-            String duracion = rs.getString("duracion");
-            String iDclasificacion = rs.getString("id_clasificacion");
-            String fila[] = {titulo, titulo, iDgenero,duracion,iDclasificacion};
-            modelo.addRow(fila);
-                }
+                campoActualizar.setText("");
             } catch (SQLException ex) {
                 ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error SQL: " + ex.getMessage(), "Advertencia", JOptionPane.WARNING_MESSAGE);
+            } catch (ClassNotFoundException ex) {
+                ex.printStackTrace();
             }
-
-            campoActualizar.setText("");
         });
+
 
         // Acción Eliminar
         botonEliminar.addActionListener(e -> {
-            modelo.setRowCount(0);
-            boolean encontrado = false;
-
-            if (tabla.isEditing()) {
-                tabla.getCellEditor().stopCellEditing();
-            }
-
             try {
-                rs = stmt.executeQuery("SELECT * FROM pelicula");
-                while (rs.next()) {
-                    if (rs.getString("codigo").equals(campoEliminar.getText())) {
-                        encontrado = true;
+                CallableStatement buscar = con.prepareCall("{CALL buscar_pelicula(?)}");
+                    buscar.setString(1, campoEliminar.getText());
+                    ResultSet resultado = buscar.executeQuery();
+
+                    if (resultado.next()) {
+                        int eleccion = JOptionPane.showConfirmDialog(null, "¿Desea confirmar la eliminación del registro?",
+                                "Confirmación", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                                if (eleccion == 0) {
+                                    CallableStatement eliminar = con.prepareCall("{CALL eliminar_pelicula(?)}");
+                                    // lo que hace es eliminar un registro de la base de datos
+                                    eliminar.setString(1, campoEliminar.getText());
+                                    eliminar.executeUpdate();
+                                    JOptionPane.showMessageDialog(null, "Registro eliminado");
+                                    recargarTabla();
+                                } 
+                    }else {
+                        JOptionPane.showMessageDialog(null, "Registro no encontrado");
                     }
-                }
-
-                if (encontrado) {
-                    int eleccion = JOptionPane.showConfirmDialog(null, "¿Desea confirmar la eliminación del registro?",
-                            "Confirmación", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                    if (eleccion == 0) {
-                        stmt.executeUpdate("DELETE FROM pelicula WHERE codigo='" + campoEliminar.getText() + "';");
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(null, "Registro no encontrado");
-                }
-
-                // Recargar tabla
-                rs = stmt.executeQuery("SELECT * FROM pelicula");
-                while (rs.next()) {
-                    String cadigo = rs.getString("codigo");
-            String titulo = rs.getString("titulo");
-            String iDgenero = rs.getString("id_genero");
-            String duracion = rs.getString("duracion");
-            String iDclasificacion = rs.getString("id_clasificacion");
-            String fila[] = {cadigo, titulo, iDgenero,duracion,iDclasificacion};
-            modelo.addRow(fila);
-                }
-
+                    campoEliminar.setText("");
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
-            campoEliminar.setText("");
         });
 
         // Acción Consultar
         botonConsultar.addActionListener(e -> {
+           try{ 
             modelo.setRowCount(0);
-            boolean encontrado = false;
+           CallableStatement stmtBuscar;
 
-            if (tabla.isEditing()) {
-                tabla.getCellEditor().stopCellEditing();
-            }
+           if(!campoConsultar.getText().isEmpty()){
+               stmtBuscar = con.prepareCall("{CALL buscar_pelicula(?)}");
+               stmtBuscar.setString(1, campoConsultar.getText());
+           } else {
+               stmtBuscar = con.prepareCall("{CALL listar_pelicula_mantenimiento()}");
+           }
 
-            try {
-                if (!campoConsultar.getText().isEmpty()) {
-                    rs = stmt.executeQuery("SELECT * FROM pelicula");
-                    while (rs.next()) {
-                        if (rs.getString("codigo").equals(campoConsultar.getText())) {
-                            encontrado = true;
-                            String fila[] = {rs.getString("codigo"), rs.getString("titulo"), rs.getString("id_genero"),rs.getString("duracion"),rs.getString("id_clasificacion")};
-                            modelo.addRow(fila);
-                        }
-                    }
-                    if (!encontrado) {
-                        JOptionPane.showMessageDialog(null, "Registro no encontrado");
-                        rs = stmt.executeQuery("SELECT * FROM pelicula");
-                        while (rs.next()) {
-                             String fila[] = {rs.getString("codigo"), rs.getString("titulo"), rs.getString("id_genero"),rs.getString("duracion"),rs.getString("id_clasificacion")};
-                            modelo.addRow(fila);
-                        }
-                    }
-                } else {
-                    rs = stmt.executeQuery("SELECT * FROM pelicula");
-                    while (rs.next()) {
-                           String fila[] = {rs.getString("codigo"), rs.getString("titulo"), rs.getString("id_genero"),rs.getString("duracion"),rs.getString("id_clasificacion")};
-                            modelo.addRow(fila);
-                    }
-                }
-            } catch (SQLException ex) {
+           ResultSet rsBuscar = stmtBuscar.executeQuery();
+           while(rsBuscar.next()){
+            String fila[] = {
+                rsBuscar.getString("codigo"),
+                rsBuscar.getString("titulo"),
+                rsBuscar.getString("nombre_genero"),
+                rsBuscar.getString("duracion"),
+                rsBuscar.getString("tipo_clasificacion")
+            };
+            modelo.addRow(fila);
+           }
+           campoConsultar.setText("");
+              } catch (SQLException ex) {
                 ex.printStackTrace();
             }
-
-            campoConsultar.setText("");
         });
     }
 
     // Método para recargar tabla
    public void recargarTabla() {
         try {
-            DefaultTableModel modelo = (DefaultTableModel) ((JTable) ((JScrollPane) scroll).getViewport().getView())
-                    .getModel();
+            JTable tabla = (JTable) ((JScrollPane) scroll).getViewport().getView();
+            DefaultTableModel modelo = (DefaultTableModel) tabla.getModel();
             modelo.setRowCount(0);
-
-            rs = stmt.executeQuery("SELECT * FROM pelicula");
+            CallableStatement stmt = con.prepareCall("{CALL listar_pelicula_mantenimiento()}");
+            ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                 String codigo = rs.getString("codigo");
-            String titulo = rs.getString("titulo");
-            String iDgenero = rs.getString("id_genero");
-            String duracion = rs.getString("duracion");
-            String iDclasificacion = rs.getString("id_clasificacion");
-            String fila[] = {titulo, titulo, iDgenero,duracion,iDclasificacion};
+                String fila[] = {
+                    rs.getString("codigo"),
+                    rs.getString("titulo"),
+                    rs.getString("nombre_genero"),
+                    rs.getString("duracion"),
+                    rs.getString("tipo_clasificacion")
+                };
             modelo.addRow(fila);
                 
             }

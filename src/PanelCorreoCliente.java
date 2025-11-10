@@ -23,7 +23,7 @@ public class PanelCorreoCliente extends JPanel {
         con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true",
                 "root",
-                "cRojas34");
+                "erpalacios");
         stmt = con.createStatement();
         
         if(funcion==0){

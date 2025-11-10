@@ -26,7 +26,7 @@ public class PanelFunciones extends JPanel {
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true",
-                "root", "cRojas34");
+                "root", "erpalacios");
 
         if (funcion == 0) {
             JLabel lBlcodigo = crearEtiqueta("Datos de nueva función", 200, 20, 300, 30);
@@ -53,11 +53,6 @@ public class PanelFunciones extends JPanel {
         this.add(lblHora);
         this.add(txtHora);
 
-        JLabel lblPrecio = crearEtiqueta("Precio base:", 150, 220, 140, 30);
-        JTextField txtPrecio = crearCampoTexto(300, 220, 200, 30, "Ingrese precio base");
-        this.add(lblPrecio);
-        this.add(txtPrecio);
-
         //Fragmento de codigo para llenar los campos de texto en caso de que se desee actualizar un registro porder ver los valores que estan dentro de la base de datos
         if (funcion == 1) {
             stmt = con.prepareCall("{CALL listar_funciones()}");
@@ -67,8 +62,6 @@ public class PanelFunciones extends JPanel {
                     txtCodigo.setText(rs.getString("codigo"));
                     txtFecha.setText(rs.getString("fecha"));
                     txtHora.setText(rs.getString("hora"));
-                    txtPrecio.setText(rs.getString("precio_base"));
-
                 }
             }
 
@@ -84,7 +77,6 @@ public class PanelFunciones extends JPanel {
                 txtCodigo.setText("");
                 txtFecha.setText("");
                 txtHora.setText("");
-                txtPrecio.setText("");
                 controlOriginal.add(controlOriginal.botonActualizar);
                 controlOriginal.add(controlOriginal.botonInsertar);
                 controlOriginal.add(controlOriginal.botonEliminar);
@@ -112,23 +104,19 @@ public class PanelFunciones extends JPanel {
                         eleccion = JOptionPane.showConfirmDialog(null,
                                 "¿Desea confirmar nuevo registro?", "Confirmar acción",
                                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                        stmt = con.prepareCall("{CALL insertar_funciones(?,?,?,?)}");
+                        stmt = con.prepareCall("{CALL insertar_funciones(?,?,?)}");
 
                     } else {
                         eleccion = JOptionPane.showConfirmDialog(null,
                                 "¿Desea confirmar cambios?", "Confirmar acción",
                                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                        stmt = con.prepareCall("{CALL actualizar_funciones(?,?,?,?,?)}");
+                        stmt = con.prepareCall("{CALL actualizar_funciones(?,?,?)}");
                     }
 
                     if (eleccion == 0) {
                         stmt.setString(1, txtCodigo.getText());
                         stmt.setString(2, txtFecha.getText());
                         stmt.setString(3, txtHora.getText());
-                        stmt.setString(4, txtPrecio.getText());
-                        if (funcion == 1) {
-                            stmt.setString(5, codigo);
-                        }
                         stmt.executeUpdate();
                     }
                 } catch (SQLException e1) {
@@ -138,7 +126,6 @@ public class PanelFunciones extends JPanel {
                 txtCodigo.setText("");
                 txtFecha.setText("");
                 txtHora.setText("");
-                txtPrecio.setText("");
                 controlOriginal.add(controlOriginal.botonActualizar);
                 controlOriginal.add(controlOriginal.botonInsertar);
                 controlOriginal.add(controlOriginal.botonEliminar);

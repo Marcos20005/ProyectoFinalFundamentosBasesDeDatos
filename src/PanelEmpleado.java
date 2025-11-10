@@ -24,7 +24,7 @@ public class PanelEmpleado extends JPanel {
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", 
-                "root", "cRojas34");
+                "root", "erpalacios");
         
 
         if(funcion==0){
@@ -63,40 +63,56 @@ JLabel lBlcodigo = crearEtiqueta("Datos de nuevo empleado", 200, 20, 300, 30);
         this.add(lblSegundoApellido);
         this.add(txtSegundoApellido);
 
-        JLabel lblIDPuesto = crearEtiqueta("ID Puesto:", 150, 320, 140, 30);
-        JTextField txtIDPuesto = crearCampoTexto(300, 320, 200, 30, "Ingrese ID puesto");
+        JLabel lblIDPuesto = crearEtiqueta("Puesto:", 150, 320, 140, 30);
+        javax.swing.JComboBox<String> comboPuesto = new javax.swing.JComboBox<>();
+        comboPuesto.setBounds(300, 320, 200, 30);
         this.add(lblIDPuesto);
-        this.add(txtIDPuesto);
+        this.add(comboPuesto);
 
-        if (funcion==1) {
-             stmt = (CallableStatement) con.prepareCall("{CALL listar_empleado()}");
-        ResultSet rs = stmt.executeQuery();
-        while(rs.next()){
-            if(rs.getString("id").equals(id)){
+        // Cargar puestos en el combo box
+        java.util.Map<String, String> mapaPuestos = new java.util.HashMap<>();
+        CallableStatement stmtPuestos = con.prepareCall("{CALL listar_puesto()}");
+        ResultSet rsPuestos = stmtPuestos.executeQuery();
+        while (rsPuestos.next()) {
+            String idPuesto = rsPuestos.getString("id_puesto");
+            String nombrePuesto = rsPuestos.getString("nombre_puesto");
+            comboPuesto.addItem(nombrePuesto);
+            mapaPuestos.put(nombrePuesto, idPuesto);
+        }
+        if (funcion == 1) {
+            stmt = (CallableStatement) con.prepareCall("{CALL listar_empleado_mantenimiento()}");
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                if (rs.getString("id").equals(id)) {
+                    txtID.setText(rs.getString("id"));
+                    txtPrimerNombre.setText(rs.getString("primer_nombre"));
+                    txtSegundoNombre.setText(rs.getString("segundo_nombre"));
+                    txtPrimerApellido.setText(rs.getString("primer_apellido"));
+                    txtSegundoApellido.setText(rs.getString("segundo_apellido"));
 
-                txtID.setText(rs.getString("id"));
-                txtPrimerNombre.setText(rs.getString("primer_nombre"));
-                txtSegundoNombre.setText(rs.getString("segundo_nombre"));
-                txtPrimerApellido.setText(rs.getString("primer_apellido"));
-                txtSegundoApellido.setText(rs.getString("segundo_apellido"));
-                txtIDPuesto.setText(rs.getString("id_puesto"));
+                    String idPuestoEmpleado = rs.getString("id_puesto");
+                    for (String nombrePuesto : mapaPuestos.keySet()) {
+                        if (mapaPuestos.get(nombrePuesto).equals(idPuestoEmpleado)) {
+                            comboPuesto.setSelectedItem(nombrePuesto);
+                            break;
+                        }
+                    }
+                }
             }
         }
-        }
 
-                  JButton botonCancelar = crearBoton("Cancelar", 400, 360, 100, 40, "Regresar atras", "Iconos/cancelar.png");
-botonCancelar.setBackground(new Color(240, 128, 128));
-botonCancelar.setForeground(Color.WHITE);
-this.add(botonCancelar);
-botonCancelar.addActionListener(new ActionListener() {
-    @Override
-    public void actionPerformed(ActionEvent e){
-             txtID.setText("");
+        JButton botonCancelar = crearBoton("Cancelar", 400, 360, 100, 40, "Regresar atras", "Iconos/cancelar.png");
+        botonCancelar.setBackground(new Color(240, 128, 128));
+        botonCancelar.setForeground(Color.WHITE);
+        this.add(botonCancelar);
+        botonCancelar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                txtID.setText("");
                 txtPrimerNombre.setText("");
                 txtSegundoNombre.setText("");
                 txtPrimerApellido.setText("");
                 txtSegundoApellido.setText("");
-                txtIDPuesto.setText("");
 
                 controlOriginal.add(controlOriginal.botonActualizar);
                 controlOriginal.add(controlOriginal.botonInsertar);
@@ -136,8 +152,9 @@ botonCancelar.addActionListener(new ActionListener() {
                       stmt.setString(3, txtSegundoNombre.getText());
                       stmt.setString(4, txtPrimerApellido.getText());
                       stmt.setString(5, txtSegundoApellido.getText());
-                      stmt.setString(6, txtIDPuesto.getText());
-
+                      String puestoSeleccionado = (String) comboPuesto.getSelectedItem();
+                      String idPuestoReal = mapaPuestos.get(puestoSeleccionado);
+                      stmt.setString(6, idPuestoReal);
                       if(funcion==1){
                  stmt.setString(7, id);
                       }
@@ -153,7 +170,6 @@ botonCancelar.addActionListener(new ActionListener() {
                 txtSegundoNombre.setText("");
                 txtPrimerApellido.setText("");
                 txtSegundoApellido.setText("");
-                txtIDPuesto.setText("");
 
                 controlOriginal.add(controlOriginal.botonActualizar);
                 controlOriginal.add(controlOriginal.botonInsertar);
@@ -194,4 +210,3 @@ botonCancelar.addActionListener(new ActionListener() {
         return etiqueta;
     }
 }
-

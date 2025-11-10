@@ -1,13 +1,11 @@
 import java.awt.Color;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -16,7 +14,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
-import java.sql.CallableStatement;
 
 public class MantenimientoEmpleado extends JPanel {
     CallableStatement stmt = null;
@@ -31,8 +28,8 @@ public class MantenimientoEmpleado extends JPanel {
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", 
-                "root", "cRojas34");
-        stmt = con.prepareCall("{Call listar_empleado}");
+                "root", "erpalacios");
+        stmt = con.prepareCall("{Call listar_empleado_mantenimiento}");
 
         JLabel label = new JLabel("Mantenimiento de tabla empleado");
         label.setBounds(200, 20, 250, 30);

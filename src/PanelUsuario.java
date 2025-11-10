@@ -28,7 +28,7 @@ public class PanelUsuario extends JPanel{
         MantenimientoUsuario control = controlOriginal;
         //Estableciendo conexion a la base de datos
         Class.forName("com.mysql.cj.jdbc.Driver");
-        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", "root", "cRojas34");
+        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", "root", "erpalacios");
         stmt = (CallableStatement) con.prepareCall("{CALL insertarDatosEstudiantes(?, ?, ?, ?, ?, ?, ?)}");
         
         if (funcion==0) {

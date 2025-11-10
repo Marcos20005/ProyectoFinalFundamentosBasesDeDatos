@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,30 +14,36 @@ import javax.swing.JTextField;
 
 public class PanelEmpleados extends JPanel {
 
-    private JTextField campoID, campoNombre1, campoNombre2, campoApellido1, campoApellido2;
+    private JTextField campoID, campoNombre1, campoNombre2, campoApellido1, campoApellido2, campoTelefono, campoDescripcion;
     private JComboBox<String> comboPuesto;
+    int idContador = 1;
 
-    public PanelEmpleados(JTabbedPane pestanias, Connection con){
+    public PanelEmpleados(JTabbedPane pestanias, Connection con) throws SQLException{
         this.setLayout(null);
         this.setBackground(new Color(245, 245, 245));
+        Statement stmt = con.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT * FROM telefono_empleado");
+        while (rs.next()) { 
+            idContador++;
+        }
+        stmt.close();
 
-        //Tarjeta de registro de empleado
-        JPanel tarjeta = new JPanel();
+        //Tarjeta de registro 
+         JPanel tarjeta = new JPanel();
         tarjeta.setLayout(null);
-        tarjeta.setBounds(100, 100, 600, 420);
+        tarjeta.setBounds(100, 70, 600, 500);
         tarjeta.setBackground(Color.WHITE);
         tarjeta.setBorder(javax.swing.BorderFactory.createLineBorder(new Color(130, 90, 160), 2, true));
         this.add(tarjeta);
 
-        //Titulo
-       JLabel titulo = new JLabel("Registro de Empleado", JLabel.CENTER);
+        // Título
+        JLabel titulo = new JLabel("Registro de Empleado", JLabel.CENTER);
         titulo.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 24));
         titulo.setForeground(new Color(90, 60, 120));
         titulo.setBounds(0, 20, 600, 40);
         tarjeta.add(titulo);
 
-        //Etiquetas y campos de texto
-         JLabel eti1 = VistaPrincipal.crearEtiqueta("ID empleado:", 100, 90, 150, 25);
+        JLabel eti1 = VistaPrincipal.crearEtiqueta("ID empleado:", 100, 90, 150, 25);
         tarjeta.add(eti1);
         campoID = VistaPrincipal.crearCampoTexto("", 280, 90, 200, 25, "ID del empleado");
         tarjeta.add(campoID);
@@ -66,17 +73,25 @@ public class PanelEmpleados extends JPanel {
         comboPuesto = new JComboBox<>();
         comboPuesto.setBounds(280, 290, 200, 25);
         tarjeta.add(comboPuesto);
+
+        JLabel eti7 = VistaPrincipal.crearEtiqueta("Teléfono:", 100, 330, 150, 25);
+        tarjeta.add(eti7);
+        campoTelefono = VistaPrincipal.crearCampoTexto("", 280, 330, 200, 25, "Número telefónico del empleado");
+        tarjeta.add(campoTelefono);
+
+        JLabel eti8 = VistaPrincipal.crearEtiqueta("Descripción:", 100, 370, 150, 25);
+        tarjeta.add(eti8);
+        campoDescripcion = VistaPrincipal.crearCampoTexto("", 280, 370, 200, 25, "Ej: personal, oficina, etc.");
+        tarjeta.add(campoDescripcion);
+
         cargarPuestos(con);
 
-        //Botones
-         JButton btnAtras = VistaPrincipal.crearBoton("<--", 100, 350, 60, 40, "Volver", "Iconos/paso-atras.png");
+        JButton btnAtras = VistaPrincipal.crearBoton("<--", 120, 420, 60, 40, "Volver", "Iconos/paso-atras.png");
         tarjeta.add(btnAtras);
-        btnAtras.setToolTipText("Volver al menu principal");
         btnAtras.addActionListener(e -> pestanias.setSelectedIndex(0));
 
-        JButton btnGuardar = VistaPrincipal.crearBoton("Registrar empleado", 220, 350, 160, 40, "Guardar empleado", "Iconos/guardar-el-archivo.png");
+        JButton btnGuardar = VistaPrincipal.crearBoton("Registrar empleado", 240, 420, 160, 40, "Guardar empleado", "Iconos/guardar-el-archivo.png");
         tarjeta.add(btnGuardar);
-        btnGuardar.setToolTipText("Guardar el nuevo empleado en la base de datos");
         btnGuardar.addActionListener(e -> {
             try {
                 registrarEmpleado(con);
@@ -85,54 +100,94 @@ public class PanelEmpleados extends JPanel {
             }
         });
 
-        JButton btnSiguiente = VistaPrincipal.crearBoton("-->", 440, 350, 60, 40, "Siguiente", "Iconos/un-paso-adelante.png");
+        JButton btnSiguiente = VistaPrincipal.crearBoton("-->", 460, 420, 60, 40, "Siguiente", "Iconos/un-paso-adelante.png");
         tarjeta.add(btnSiguiente);
-        btnSiguiente.setToolTipText("Ir al registro de cliente");
         btnSiguiente.addActionListener(e -> pestanias.setSelectedIndex(2));
     }
 
     private void cargarPuestos(Connection con) {
         try {
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT nombre_puesto FROM catalogo_puesto");
-        
+            java.sql.CallableStatement cstmt = con.prepareCall("{call listar_puesto()}");
+            ResultSet rs = cstmt.executeQuery();
+            
+            // Limpiar el comboBox antes de cargar los datos
+            comboPuesto.removeAllItems();
             while (rs.next()) {
+                // Agregar cada puesto al comboBox
                 comboPuesto.addItem(rs.getString("nombre_puesto"));
             }
-
             rs.close();
-            stmt.close();
-        } catch (SQLException e) {
+            cstmt.close();
+        }catch (SQLException e) {
             e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error al cargar los puestos: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void registrarEmpleado(Connection con) throws SQLException {
-        if (campoID.getText().isEmpty() || campoNombre1.getText().isEmpty() || campoApellido1.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Complete los campos obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+    if (campoID.getText().trim().isEmpty() || campoNombre1.getText().trim().isEmpty() || campoApellido1.getText().trim().isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Complete los campos obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    try (CallableStatement cstmt = con.prepareCall("{CALL insertar_empleado(?, ?, ?, ?, ?, ?)}")) {
+
+        // Asignar los valores
+        cstmt.setString(1, campoID.getText().trim());
+        cstmt.setString(2, campoNombre1.getText().trim());
+        cstmt.setString(3, campoNombre2.getText().trim());
+        cstmt.setString(4, campoApellido1.getText().trim());
+        cstmt.setString(5, campoApellido2.getText().trim());
+        cstmt.setString(6, comboPuesto.getSelectedItem().toString().trim());
+
+        cstmt.execute();
+
+        // El SELECT en tu SP es solo para depuración. En un entorno real,
+        // un procedimiento "insertar" no debería devolver un ResultSet.
+        // Pero si lo hace, debes procesarlo y cerrarlo.
+        try (ResultSet rs = cstmt.getResultSet()) {
+            if (rs != null) {
+                while (rs.next()) {
+                    System.out.println("🔹 Parámetros recibidos por el SP:");
+                    System.out.println("ID: " + rs.getString("ID"));
+                    // ... el resto de tus System.out.println ...
+                }
+            }
+        } // rs.close() se llama automáticamente aquí
+
+    } // cstmt.close() se llama automáticamente aquí
+    catch (SQLException e) {
+        // Si el error ocurrió en el primer SP, muéstralo
+        JOptionPane.showMessageDialog(this, "Error al registrar el empleado: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        return; // Detener la ejecución si el empleado no se pudo registrar
+    }
+
+    // Ahora que el primer statement está cerrado, podemos ejecutar el segundo de forma segura.
+    try {
+        if (!campoTelefono.getText().isEmpty()) {
+            try (CallableStatement csTelefono = con.prepareCall("{CALL insertar_telefono_empleado(?, ?, ?, ?)}")) {
+                csTelefono.setInt(1, idContador);
+                csTelefono.setString(2, campoTelefono.getText());
+                csTelefono.setString(3, campoDescripcion.getText());
+                csTelefono.setString(4, campoID.getText().trim());
+                csTelefono.execute();
+            } // csTelefono.close() se llama automáticamente aquí
         }
-
-        String sql = "INSERT INTO empleado (id, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, id_puesto) VALUES ('"
-                + campoID.getText() + "', '"
-                + campoNombre1.getText() + "', '"
-                + campoNombre2.getText() + "', '"
-                + campoApellido1.getText() + "', '"
-                + campoApellido2.getText() + "', '"
-                + comboPuesto.getSelectedItem().toString() + "')";
-
-        Statement stmt = con.createStatement();
-        stmt.executeUpdate(sql);
-        stmt.close();
 
         JOptionPane.showMessageDialog(this, "Empleado registrado correctamente.");
 
+        // Limpiar los campos después de registrar
         campoID.setText("");
         campoNombre1.setText("");
         campoNombre2.setText("");
         campoApellido1.setText("");
         campoApellido2.setText("");
         comboPuesto.setSelectedIndex(0);
-    }
+        campoTelefono.setText("");
+        campoDescripcion.setText("");
 
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Error al registrar el teléfono del empleado: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
 }

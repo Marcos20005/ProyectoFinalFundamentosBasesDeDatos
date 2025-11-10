@@ -27,7 +27,7 @@ public class PanelTelefonoEmpleado extends JPanel {
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", 
-                "root", "cRojas34");
+                "root", "erpalacios");
         stmt = con.createStatement();
          if(funcion==0){
         JLabel lblTitulo = crearEtiqueta("Datos de nuevo teléfono", 200, 20, 300, 30);

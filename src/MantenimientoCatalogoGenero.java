@@ -31,7 +31,7 @@ public class MantenimientoCatalogoGenero extends JPanel {
             Class.forName("com.mysql.cj.jdbc.Driver");
             con = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true",
-                    "root", "cRojas34");
+                    "root", "erpalacios");
             stmt = con.createStatement();
         } catch (ClassNotFoundException | SQLException e) {
             JOptionPane.showMessageDialog(null, "Hubo un error por favor vuelva a intentar",

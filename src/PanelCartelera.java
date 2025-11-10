@@ -2,7 +2,6 @@ import java.awt.Color;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -64,29 +63,23 @@ public class PanelCartelera extends JPanel {
 
     private void cargarPeliculas(Connection con) {
         try {
-            modeloTabla.setRowCount(0);
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(
-                "SELECT p.codigo, p.titulo, g.nombre_genero AS genero, p.duracion, c.tipo_clasificacion AS clasificacion " +
-                "FROM pelicula p " +
-                "LEFT JOIN catalogo_genero g ON p.id_genero = g.id_genero " +
-                "LEFT JOIN catalogo_clasificacion c ON p.id_clasificacion = c.id_clasificacion"
-            );
-
+            modeloTabla.setRowCount(0); // Limpiar tabla
+           java.sql.CallableStatement cstmt = con.prepareCall("{CALL listar_peliculas_cartelera()}");
+            ResultSet rs = cstmt.executeQuery();
             while (rs.next()) {
-                Object[] fila = {
+               Object[] fila = {
                     rs.getString("codigo"),
                     rs.getString("titulo"),
                     rs.getString("genero"),
-                    rs.getString("duracion"),
+                    rs.getInt("duracion"),
                     rs.getString("clasificacion")
                 };
                 modeloTabla.addRow(fila);
             }
             rs.close();
-            stmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
+            cstmt.close();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error al cargar la cartelera: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

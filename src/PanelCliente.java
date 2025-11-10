@@ -25,11 +25,12 @@ public class PanelCliente extends JPanel {
     Connection con = null;
 
     public PanelCliente(MantenimientoCliente controlOriginal, int funcion, String cedula) throws SQLException, ClassNotFoundException {
+        setLayout(null);
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true",
                 "root",
-                "cRojas34");
+                "erpalacios");
     
        if(funcion==0){
    JLabel lBlcodigo = crearEtiqueta("Datos de nuevo cliente", 200, 20, 300, 30);
@@ -69,7 +70,7 @@ public class PanelCliente extends JPanel {
         
 
         //Porcion de codigo para llenar los campos cuando se desee actualizar un registro
-        stmt = (CallableStatement) con.prepareCall("{CALL listar_cliente}");
+        stmt = (CallableStatement) con.prepareCall("{CALL listar_cliente_mantenimiento()}");
         ResultSet rs = stmt.executeQuery();
 
      if (funcion==1) {
@@ -77,7 +78,7 @@ public class PanelCliente extends JPanel {
             if (rs.getString("cedula").equals(cedula)) {
               txtCedula.setText(rs.getString("cedula"));  
               txtPrimerNombre.setText(rs.getString("primer_nombre"));
-              txtSegundoNombre.setText(rs.getString("segundo_Nombre"));
+              txtSegundoNombre.setText(rs.getString("segundo_nombre"));
               txtPrimerApellido.setText(rs.getString("primer_apellido"));
               txtSegundoApellido.setText(rs.getString("segundo_apellido"));
             }
@@ -139,6 +140,12 @@ txtCedula.setText("");
          }
         stmt.executeUpdate();
        
+        controlOriginal.recargarTabla();
+
+JOptionPane.showMessageDialog(null, 
+    (funcion == 0 ? "Cliente insertado correctamente." : "Cliente actualizado correctamente."),
+    "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
                     }
                 } catch (SQLException e1) {
                      JOptionPane.showMessageDialog(null, "Hubo un error por favor vuelva a intentar: "+e1.getMessage(),"Advertencia",JOptionPane.WARNING_MESSAGE);
@@ -146,19 +153,24 @@ txtCedula.setText("");
                     }
 
                 txtCedula.setText("");
-                txtPrimerNombre.setText("");
-                txtSegundoNombre.setText("");
-                txtPrimerApellido.setText("");
-                txtSegundoApellido.setText("");
-                controlOriginal.add(controlOriginal.botonActualizar);
-                controlOriginal.add(controlOriginal.botonInsertar);
-                controlOriginal.add(controlOriginal.botonEliminar);
-                controlOriginal.add(controlOriginal.botonConsultar);
-                controlOriginal.add(controlOriginal.scroll);
-                controlOriginal.remove(controlOriginal.panel);
-                controlOriginal.recargarTabla();
-                controlOriginal.revalidate();
-                controlOriginal.repaint();
+txtPrimerNombre.setText("");
+txtSegundoNombre.setText("");
+txtPrimerApellido.setText("");
+txtSegundoApellido.setText("");
+
+        controlOriginal.add(controlOriginal.botonActualizar);
+        controlOriginal.add(controlOriginal.botonInsertar);
+        controlOriginal.add(controlOriginal.botonEliminar);
+        controlOriginal.add(controlOriginal.botonConsultar);
+        controlOriginal.add(controlOriginal.scroll);
+
+        controlOriginal.remove(controlOriginal.panel);
+
+        controlOriginal.recargarTabla();
+        controlOriginal.scroll.revalidate();
+        controlOriginal.scroll.repaint();
+        controlOriginal.revalidate();
+        controlOriginal.repaint();
             }
         });
     }

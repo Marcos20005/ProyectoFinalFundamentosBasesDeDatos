@@ -5,14 +5,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.CallableStatement;
-
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -35,14 +30,14 @@ public class MantenimientoFunciones extends JPanel {
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true",
-                "root", "cRojas34");
+                "root", "erpalacios");
 
         JLabel label = new JLabel("Mantenimiento de tabla funciones");
         label.setBounds(200, 20, 280, 30);
         this.add(label);
 
         JTable tabla = new JTable();
-        Object columnas[] = {"Código", "Fecha", "Hora", "Precio base"};
+        Object columnas[] = {"Código", "Fecha", "Hora"};
         DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
         tabla.setModel(modelo);
 
@@ -52,8 +47,7 @@ public class MantenimientoFunciones extends JPanel {
             String codigo = rs.getString("codigo");
             String fecha = rs.getString("fecha");
             String hora = rs.getString("hora");
-            String precioBase = rs.getString("precio_base");
-            String fila[] = {codigo, fecha, hora, precioBase};
+            String fila[] = {codigo, fecha, hora};
             modelo.addRow(fila);
         }
 
@@ -168,8 +162,7 @@ public class MantenimientoFunciones extends JPanel {
                     String codigo = rs.getString("codigo");
                     String fecha = rs.getString("fecha");
                     String hora = rs.getString("hora");
-                    String precioBase = rs.getString("precio_base");
-                    String fila[] = {codigo, fecha, hora, precioBase};
+                    String fila[] = {codigo, fecha, hora};
                     modelo.addRow(fila);
                 }
             } catch (SQLException ex) {
@@ -214,8 +207,7 @@ public class MantenimientoFunciones extends JPanel {
                     String codigo = rs.getString("codigo");
                     String fecha = rs.getString("fecha");
                     String hora = rs.getString("hora");
-                    String precioBase = rs.getString("precio_base");
-                    String fila[] = {codigo, fecha, hora, precioBase};
+                    String fila[] = {codigo, fecha, hora};
                     modelo.addRow(fila);
                 }
 
@@ -241,7 +233,7 @@ public class MantenimientoFunciones extends JPanel {
                         if (rs.getString("codigo").equals(campoConsultar.getText())) {
                             encontrado = true;
                             String fila[] = {rs.getString("codigo"), rs.getString("fecha"),
-                                rs.getString("hora"), rs.getString("precio_base")};
+                                rs.getString("hora")};
                             modelo.addRow(fila);
                         }
                     }
@@ -250,7 +242,7 @@ public class MantenimientoFunciones extends JPanel {
                         rs = stmt.executeQuery();
                         while (rs.next()) {
                             String fila[] = {rs.getString("codigo"), rs.getString("fecha"),
-                                rs.getString("hora"), rs.getString("precio_base")};
+                                rs.getString("hora")};
                             modelo.addRow(fila);
                         }
                     }
@@ -258,7 +250,7 @@ public class MantenimientoFunciones extends JPanel {
                     rs = stmt.executeQuery();
                     while (rs.next()) {
                         String fila[] = {rs.getString("codigo"), rs.getString("fecha"),
-                            rs.getString("hora"), rs.getString("precio_base")};
+                            rs.getString("hora")};
                         modelo.addRow(fila);
                     }
                 }
@@ -281,8 +273,7 @@ public class MantenimientoFunciones extends JPanel {
                 String codigo = rs.getString("codigo");
                 String fecha = rs.getString("fecha");
                 String hora = rs.getString("hora");
-                String precioBase = rs.getString("precio_base");
-                String fila[] = {codigo, fecha, hora, precioBase};
+                String fila[] = {codigo, fecha, hora};
                 modelo.addRow(fila);
             }
         } catch (SQLException e) {

@@ -40,7 +40,7 @@ public class MantenimientoUsuario extends JPanel {
 
 //Estableciendo conexion a la base de datos
         Class.forName("com.mysql.cj.jdbc.Driver");
-        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", "root", "cRojas34");
+        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", "root", "erpalacios");
 
         JLabel label = new JLabel("Mantenimiento de tabala usuario");
         label.setBounds(200, 20, 200, 30);

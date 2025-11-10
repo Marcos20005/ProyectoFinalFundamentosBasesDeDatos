@@ -34,7 +34,7 @@ public class MantenimientoTelefonoEmpleado extends JPanel {
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true",
-                "root", "cRojas34");
+                "root", "erpalacios");
 
         JLabel label = new JLabel("Mantenimiento de tabla teléfono empleado");
         label.setBounds(200, 20, 280, 30);
