@@ -35,10 +35,10 @@ public class PanelCartelera extends JPanel {
         scroll.setBounds(50, 80, 700, 300);
         this.add(scroll);
 
-        JButton btnSeleccionar = VistaPrincipal.crearBoton("Seleccionar Película", 100, 400, 200, 40, "Seleccionar película para boleto", "Iconos/seleccionar.png");
+        JButton btnSeleccionar = VistaPrincipal.crearBoton("Seleccionar Película", 100, 400, 200, 40, "Seleccionar película para boleto", "Iconos/mouse-pointer-click.png");
         this.add(btnSeleccionar);
 
-        JButton btnActualizar = VistaPrincipal.crearBoton("Actualizar Cartelera", 350, 400, 200, 40, "Actualizar cartelera", "Iconos/actualizar.png");
+        JButton btnActualizar = VistaPrincipal.crearBoton("Actualizar Cartelera", 350, 400, 200, 40, "Actualizar cartelera", "Iconos/refresh.png");
         this.add(btnActualizar);
 
         // Acción para actualizar

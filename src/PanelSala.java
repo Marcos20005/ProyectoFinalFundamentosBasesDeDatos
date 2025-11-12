@@ -25,8 +25,7 @@ public class PanelSala extends JPanel{
 
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", 
-                "root", "erpalacios");
+                "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", "root", "cRojas34");
         stmt = con.createStatement();
 
         if(funcion==0){

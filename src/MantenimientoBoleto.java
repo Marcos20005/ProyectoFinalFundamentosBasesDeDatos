@@ -35,7 +35,7 @@ public class MantenimientoBoleto extends JPanel {
         this.setLayout(null); 
 
         Class.forName("com.mysql.cj.jdbc.Driver");
-        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", "root", "erpalacios");
+        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", "root", "cRojas34");
         stmt = con.createStatement();
 
         JLabel label = new JLabel("Mantenimiento de tabla boleto");

@@ -1,8 +1,6 @@
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
-
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -22,18 +20,18 @@ public class PanelMantenimiento extends JPanel{
         String listaMantenimiento[] = {
             "Mantenimiento Usuario",
             "Mantenimiento Boleto",
-            "Mantenimiento Catalogo Clasificacion",
-            "Mantenimiento Catalogo Genero",
-            "Mantenimiento Catalogo Puesto",
-            "Mantenimiento Catalogo Tipo",
+            //"Mantenimiento Catalogo Clasificacion",
+           // "Mantenimiento Catalogo Genero",
+            //"Mantenimiento Catalogo Puesto",
+            //"Mantenimiento Catalogo Tipo",
             "Mantenimiento Cliente",
-            "Mantenimiento Correo Cliente",
+            //"Mantenimiento Correo Cliente",
             "Mantenimiento Empleado",
             "Mantenimiento Funciones",
             "Mantenimiento Pelicula",
             "Mantenimiento Sala",
-            "Mantenimiento Telefono Cliente",
-            "Mantenimiento Telefono Empleado"
+            //"Mantenimiento Telefono Cliente",
+            //"Mantenimiento Telefono Empleado"
         };
 
         JComboBox<String> comboMantenimientos = new JComboBox<>(listaMantenimiento);
@@ -62,24 +60,24 @@ public class PanelMantenimiento extends JPanel{
                         case "Mantenimiento Boleto":
                             nuevoPanel = new MantenimientoBoleto();
                             break;
-                        case "Mantenimiento Catalogo Clasificacion":
-                            nuevoPanel = new MantenimientoCatalogoClasificacion();
-                            break;
-                        case "Mantenimiento Catalogo Genero":
-                            nuevoPanel = new MantenimientoCatalogoGenero();
-                            break;
-                        case "Mantenimiento Catalogo Puesto":
-                            nuevoPanel = new MantenimientoCatalogoPuesto();
-                            break;
-                        case "Mantenimiento Catalogo Tipo":
-                            nuevoPanel = new MantenimientoCatalogoTipo();
-                            break;
+                        // case "Mantenimiento Catalogo Clasificacion":
+                        //     nuevoPanel = new MantenimientoCatalogoClasificacion();
+                        //     break;
+                        // case "Mantenimiento Catalogo Genero":
+                        //     nuevoPanel = new MantenimientoCatalogoGenero();
+                        //     break;
+                        // case "Mantenimiento Catalogo Puesto":
+                        //     nuevoPanel = new MantenimientoCatalogoPuesto();
+                        //     break;
+                        // case "Mantenimiento Catalogo Tipo":
+                        //     nuevoPanel = new MantenimientoCatalogoTipo();
+                        //     break;
                         case "Mantenimiento Cliente":
                             nuevoPanel = new MantenimientoCliente();
                             break;
-                        case "Mantenimiento Correo Cliente":
-                            nuevoPanel = new MantenimientoCorreoCliente();
-                            break;
+                        // case "Mantenimiento Correo Cliente":
+                        //     nuevoPanel = new MantenimientoCorreoCliente();
+                        //     break;
                         case "Mantenimiento Empleado":
                             nuevoPanel = new MantenimientoEmpleado();
                             break;
@@ -92,12 +90,12 @@ public class PanelMantenimiento extends JPanel{
                         case "Mantenimiento Sala":
                             nuevoPanel = new MantenimientoSala();
                             break;
-                        case "Mantenimiento Telefono Cliente":
-                            nuevoPanel = new MantenimientoTelefonoCliente();
-                            break;
-                        case "Mantenimiento Telefono Empleado":
-                            nuevoPanel = new MantenimientoTelefonoEmpleado();
-                            break;
+                        // case "Mantenimiento Telefono Cliente":
+                        //     nuevoPanel = new MantenimientoTelefonoCliente();
+                        //     break;
+                        // case "Mantenimiento Telefono Empleado":
+                        //     nuevoPanel = new MantenimientoTelefonoEmpleado();
+                        //     break;
                     }
 
 

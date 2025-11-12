@@ -30,7 +30,7 @@ public class MantenimientoCliente extends JPanel {
             Class.forName("com.mysql.cj.jdbc.Driver");
             con = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true",
-                    "root", "erpalacios");
+                    "root", "cRojas34");
             stmt = con.prepareCall("{CALL listar_cliente_mantenimiento()}");
         } catch (ClassNotFoundException | SQLException e) {
             JOptionPane.showMessageDialog(null, "Hubo un error por favor vuelva a intentar",

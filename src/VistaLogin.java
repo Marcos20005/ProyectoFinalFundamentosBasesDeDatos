@@ -2,6 +2,7 @@
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.event.ActionListener;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -25,7 +26,7 @@ public class VistaLogin {
       //Objetos de conexion
      static ResultSet rs;
     static Connection con ;
-   static   Statement stmt;
+   static   CallableStatement stmt;
 
     public static void main(String[] args) throws Exception {
     
@@ -33,8 +34,8 @@ Class.forName("com.mysql.cj.jdbc.Driver");
         try {
             con = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", 
-                    "root", "erpalacios");
-                     stmt = con.createStatement();
+                    "root", "cRojas34");
+                     stmt = con.prepareCall("{Call listar_usuario()}");
         } catch (SQLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -80,27 +81,27 @@ Class.forName("com.mysql.cj.jdbc.Driver");
 
         conte.add(campoContrasena);
         conte.add(mostrarContrasena);
-        JButton botonRegistrarse = crearBoton("Registrase", 50, 300, 300, 30, "Crear nuevo perfil", "Iconos/agregar-usuario.png");
-        conte.add(botonRegistrarse);
-        botonRegistrarse.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                VistaRegistro vistaRegistro = null;
-                try {
-                    vistaRegistro = new VistaRegistro();
-                } catch (UnsupportedLookAndFeelException e1) {
+       // JButton botonRegistrarse = crearBoton("Registrase", 50, 300, 300, 30, "Crear nuevo perfil", "Iconos/agregar-usuario.png");
+        //conte.add(botonRegistrarse);
+        // botonRegistrarse.addActionListener(new ActionListener() {
+        //     @Override
+        //     public void actionPerformed(java.awt.event.ActionEvent e) {
+        //       //  VistaRegistro vistaRegistro = null;
+        //         try {
+        //           //  vistaRegistro = new VistaRegistro();
+        //         } catch (UnsupportedLookAndFeelException e1) {
                     
-                    e1.printStackTrace();
-                } catch (ClassNotFoundException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                } catch (SQLException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                }
-                vistaRegistro.setVisible(true);
-            }
-        });
+        //             e1.printStackTrace();
+        //         } catch (ClassNotFoundException e1) {
+        //             // TODO Auto-generated catch block
+        //             e1.printStackTrace();
+        //         } catch (SQLException e1) {
+        //             // TODO Auto-generated catch block
+        //             e1.printStackTrace();
+        //         }
+        //         //vistaRegistro.setVisible(true);
+        //     }
+        // });
         JButton botonIngresar = crearBoton("Loguearce", 50, 350, 300, 30, "Iniciar secion", "Iconos/entrar.png");
         conte.add(botonIngresar);
         botonIngresar.addActionListener(new ActionListener() {
@@ -111,7 +112,7 @@ Class.forName("com.mysql.cj.jdbc.Driver");
                 try {
                     vistaPrincipal = new VistaPrincipal();
                    
-                    rs = stmt.executeQuery("SELECT *FROM usuario");
+                    rs = stmt.executeQuery();
                     while (rs.next()) {
                         if(rs.getString("login").equals(campoNombreUsuario.getText()) && rs.getString("clave").equals(campoContrasena.getText())){
                           

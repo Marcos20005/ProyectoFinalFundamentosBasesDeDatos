@@ -35,7 +35,7 @@ public class VistaPrincipal extends JFrame {
     public VistaPrincipal() throws ClassNotFoundException, UnsupportedLookAndFeelException, SQLException {
 
         Class.forName("com.mysql.cj.jdbc.Driver");
-        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", "root", "erpalacios");
+        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", "root", "cRojas34");
         //Ajustes flatlaf
         UIManager.setLookAndFeel(new FlatMacLightLaf());
         UIManager.put("Button.arc", 80);

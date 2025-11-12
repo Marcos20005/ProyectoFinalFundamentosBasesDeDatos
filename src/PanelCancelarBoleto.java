@@ -36,7 +36,7 @@ public class PanelCancelarBoleto extends JPanel {
         scrollPane.setBounds(50, 80, 700, 350);
         this.add(scrollPane);
 
-        JButton botonActualizar = VistaPrincipal.crearBoton("Actualizar", 150, 460, 150, 40, "Actualizar lista de boletos", "Iconos/actualizar.png");
+        JButton botonActualizar = VistaPrincipal.crearBoton("Actualizar", 150, 460, 150, 40, "Actualizar lista de boletos", "Iconos/refresh.png");
         this.add(botonActualizar);
 
         JButton botonCancelar = VistaPrincipal.crearBoton("Cancelar Boleto", 325, 460, 200, 40, "Cancelar boleto seleccionado", "Iconos/eliminar.png");

@@ -3,7 +3,6 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -21,8 +20,8 @@ public class PanelEmpleados extends JPanel {
     public PanelEmpleados(JTabbedPane pestanias, Connection con) throws SQLException{
         this.setLayout(null);
         this.setBackground(new Color(245, 245, 245));
-        Statement stmt = con.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT * FROM telefono_empleado");
+        CallableStatement stmt = con.prepareCall("{call listar_puesto()}");
+        ResultSet rs = stmt.executeQuery();
         while (rs.next()) { 
             idContador++;
         }

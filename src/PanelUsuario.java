@@ -15,8 +15,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-
-import com.mysql.cj.jdbc.CallableStatement;
+import java.sql.CallableStatement;
 
 public class PanelUsuario extends JPanel{
     //Objetos de conexion SQL
@@ -28,7 +27,7 @@ public class PanelUsuario extends JPanel{
         MantenimientoUsuario control = controlOriginal;
         //Estableciendo conexion a la base de datos
         Class.forName("com.mysql.cj.jdbc.Driver");
-        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", "root", "erpalacios");
+        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", "root", "cRojas34");
         stmt = (CallableStatement) con.prepareCall("{CALL insertarDatosEstudiantes(?, ?, ?, ?, ?, ?, ?)}");
         
         if (funcion==0) {

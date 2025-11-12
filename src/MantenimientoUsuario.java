@@ -18,8 +18,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
-
-import com.mysql.cj.jdbc.CallableStatement;
+import java.sql.CallableStatement;
 
 public class MantenimientoUsuario extends JPanel {
 
@@ -40,7 +39,7 @@ public class MantenimientoUsuario extends JPanel {
 
 //Estableciendo conexion a la base de datos
         Class.forName("com.mysql.cj.jdbc.Driver");
-        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", "root", "erpalacios");
+        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", "root", "cRojas34");
 
         JLabel label = new JLabel("Mantenimiento de tabala usuario");
         label.setBounds(200, 20, 200, 30);

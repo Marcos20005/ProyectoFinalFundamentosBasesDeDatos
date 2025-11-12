@@ -2,12 +2,11 @@
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -15,7 +14,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import java.sql.CallableStatement;
 
 
 
@@ -30,7 +28,7 @@ public class PanelCliente extends JPanel {
         con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true",
                 "root",
-                "erpalacios");
+                "cRojas34");
     
        if(funcion==0){
    JLabel lBlcodigo = crearEtiqueta("Datos de nuevo cliente", 200, 20, 300, 30);

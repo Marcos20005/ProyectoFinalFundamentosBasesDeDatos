@@ -30,7 +30,7 @@ public class MantenimientoFunciones extends JPanel {
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true",
-                "root", "erpalacios");
+                "root", "cRojas34");
 
         JLabel label = new JLabel("Mantenimiento de tabla funciones");
         label.setBounds(200, 20, 280, 30);

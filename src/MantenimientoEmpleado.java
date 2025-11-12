@@ -1,3 +1,4 @@
+
 import java.awt.Color;
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -16,6 +17,7 @@ import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 
 public class MantenimientoEmpleado extends JPanel {
+
     CallableStatement stmt = null;
     CallableStatement stmt1 = null;
     Connection con = null;
@@ -27,8 +29,8 @@ public class MantenimientoEmpleado extends JPanel {
     public MantenimientoEmpleado() throws SQLException, ClassNotFoundException {
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", 
-                "root", "erpalacios");
+                "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true",
+                "root", "cRojas34");
         stmt = con.prepareCall("{Call listar_empleado_mantenimiento}");
 
         JLabel label = new JLabel("Mantenimiento de tabla empleado");
@@ -82,7 +84,7 @@ public class MantenimientoEmpleado extends JPanel {
         botonConsultar.setForeground(Color.WHITE);
         this.add(botonConsultar);
 
-                // Campos de texto para actualizar, eliminar y consultar
+        // Campos de texto para actualizar, eliminar y consultar
         JTextField campoActualizar = crearCampoTexto(200, 410, 100, 30, "Ingrese Código a actualizar");
         this.add(campoActualizar);
 
@@ -103,7 +105,7 @@ public class MantenimientoEmpleado extends JPanel {
                 // this.remove(campoEliminar);
                 // this.remove(campoConsultar);
 
-                panel = new PanelEmpleado(MantenimientoEmpleado.this,0,"");
+                panel = new PanelEmpleado(MantenimientoEmpleado.this, 0, "");
                 panel.setLayout(null);
                 panel.setBounds(10, 70, 700, 500);
                 this.add(panel);
@@ -130,26 +132,26 @@ public class MantenimientoEmpleado extends JPanel {
                     }
                 }
                 if (encontrado) {
- try {
-                this.remove(scroll);
-                this.remove(botonInsertar);
-                this.remove(botonActualizar);
-                this.remove(botonEliminar);
-                this.remove(botonConsultar);
-                //this.remove(campoActualizar);
-               // this.remove(campoEliminar);
-              //  this.remove(campoConsultar);
+                    try {
+                        this.remove(scroll);
+                        this.remove(botonInsertar);
+                        this.remove(botonActualizar);
+                        this.remove(botonEliminar);
+                        this.remove(botonConsultar);
+                        //this.remove(campoActualizar);
+                        // this.remove(campoEliminar);
+                        //  this.remove(campoConsultar);
 
-                panel = new PanelEmpleado(MantenimientoEmpleado.this,1,campoActualizar.getText());
-                panel.setLayout(null);
-                panel.setBounds(10, 70, 700, 500);
-                this.add(panel);
-                this.setComponentZOrder(panel, 0);
-                this.revalidate();
-                this.repaint();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+                        panel = new PanelEmpleado(MantenimientoEmpleado.this, 1, campoActualizar.getText());
+                        panel.setLayout(null);
+                        panel.setBounds(10, 70, 700, 500);
+                        this.add(panel);
+                        this.setComponentZOrder(panel, 0);
+                        this.revalidate();
+                        this.repaint();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                 } else {
                     JOptionPane.showMessageDialog(null, "Registro no encontrado");
                 }
@@ -170,7 +172,7 @@ public class MantenimientoEmpleado extends JPanel {
                 ex.printStackTrace();
             }
             campoActualizar.setText("");
-            
+
         });
 
         // Acción Eliminar
@@ -231,7 +233,7 @@ public class MantenimientoEmpleado extends JPanel {
                         if (rs.getString("id").equals(campoConsultar.getText())) {
                             encontrado = true;
                             String fila[] = {rs.getString("id"), rs.getString("primer_nombre"), rs.getString("segundo_nombre"),
-                                    rs.getString("primer_apellido"), rs.getString("segundo_apellido"), rs.getString("id_puesto")};
+                                rs.getString("primer_apellido"), rs.getString("segundo_apellido"), rs.getString("id_puesto")};
                             modelo.addRow(fila);
                         }
                     }
@@ -240,7 +242,7 @@ public class MantenimientoEmpleado extends JPanel {
                         rs = stmt.executeQuery();
                         while (rs.next()) {
                             String fila[] = {rs.getString("id"), rs.getString("primer_nombre"), rs.getString("segundo_nombre"),
-                                    rs.getString("primer_apellido"), rs.getString("segundo_apellido"), rs.getString("id_puesto")};
+                                rs.getString("primer_apellido"), rs.getString("segundo_apellido"), rs.getString("id_puesto")};
                             modelo.addRow(fila);
                         }
                     }
@@ -248,7 +250,7 @@ public class MantenimientoEmpleado extends JPanel {
                     rs = stmt.executeQuery();
                     while (rs.next()) {
                         String fila[] = {rs.getString("id"), rs.getString("primer_nombre"), rs.getString("segundo_nombre"),
-                                rs.getString("primer_apellido"), rs.getString("segundo_apellido"), rs.getString("id_puesto")};
+                            rs.getString("primer_apellido"), rs.getString("segundo_apellido"), rs.getString("id_puesto")};
                         modelo.addRow(fila);
                     }
                 }
@@ -266,7 +268,7 @@ public class MantenimientoEmpleado extends JPanel {
             rs = stmt.executeQuery();
             while (rs.next()) {
                 String fila[] = {rs.getString("id"), rs.getString("primer_nombre"), rs.getString("segundo_nombre"),
-                        rs.getString("primer_apellido"), rs.getString("segundo_apellido"), rs.getString("id_puesto")};
+                    rs.getString("primer_apellido"), rs.getString("segundo_apellido"), rs.getString("id_puesto")};
                 modelo.addRow(fila);
             }
         } catch (SQLException e) {
