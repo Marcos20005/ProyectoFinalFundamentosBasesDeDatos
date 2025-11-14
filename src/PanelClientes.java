@@ -9,6 +9,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import java.sql.CallableStatement;
 
 public class PanelClientes extends JPanel {
     private JTextField campoCedula, campoNombre1, campoNombre2, campoApellido1, campoApellido2;
@@ -20,8 +21,8 @@ public class PanelClientes extends JPanel {
         this.setBackground(new Color(245, 245, 245));
 
         // Obtener el siguiente ID para teléfono y correo
-        Statement stmt = con.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT * FROM telefono_cliente");
+        CallableStatement stmt = con.prepareCall("{Call listar_telefono_cliente()}");
+        ResultSet rs = stmt.executeQuery();
         while (rs.next()) { 
             idContador++;
         }

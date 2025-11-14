@@ -175,7 +175,7 @@ public class VistaPrincipal extends JFrame {
            boton.setHorizontalAlignment(SwingConstants.CENTER);
         }
        
-        boton.setIconTextGap(50);
+        boton.setIconTextGap(30);
         return boton;
     }
 

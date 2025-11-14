@@ -22,25 +22,26 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
+
 public class VistaLogin {
-      //Objetos de conexion
-     static ResultSet rs;
-    static Connection con ;
-   static   CallableStatement stmt;
+    //Objetos de conexion
+
+    static ResultSet rs;
+    static Connection con;
+    static CallableStatement stmt;
 
     public static void main(String[] args) throws Exception {
-    
-Class.forName("com.mysql.cj.jdbc.Driver");
+
+        Class.forName("com.mysql.cj.jdbc.Driver");
         try {
             con = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", 
+                    "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true",
                     "root", "cRojas34");
-                     stmt = con.prepareCall("{Call listar_usuario()}");
+            stmt = con.prepareCall("{Call listar_usuario()}");
         } catch (SQLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-       
 
         //Ajustes de FlatLaf
         UIManager.setLookAndFeel(new FlatMacLightLaf());
@@ -69,6 +70,7 @@ Class.forName("com.mysql.cj.jdbc.Driver");
         JPasswordField campoContrasena = new JPasswordField();
         campoContrasena.setBounds(80, 150, 150, 30);
         campoContrasena.setEchoChar('*');
+        campoContrasena.setToolTipText("Ingrese su contraseña");
         JCheckBox mostrarContrasena = new JCheckBox("Mostrar contraseña");
         mostrarContrasena.setBounds(240, 150, 200, 30);
         mostrarContrasena.addActionListener(e -> {
@@ -81,7 +83,7 @@ Class.forName("com.mysql.cj.jdbc.Driver");
 
         conte.add(campoContrasena);
         conte.add(mostrarContrasena);
-       // JButton botonRegistrarse = crearBoton("Registrase", 50, 300, 300, 30, "Crear nuevo perfil", "Iconos/agregar-usuario.png");
+        // JButton botonRegistrarse = crearBoton("Registrase", 50, 300, 300, 30, "Crear nuevo perfil", "Iconos/agregar-usuario.png");
         //conte.add(botonRegistrarse);
         // botonRegistrarse.addActionListener(new ActionListener() {
         //     @Override
@@ -90,7 +92,7 @@ Class.forName("com.mysql.cj.jdbc.Driver");
         //         try {
         //           //  vistaRegistro = new VistaRegistro();
         //         } catch (UnsupportedLookAndFeelException e1) {
-                    
+
         //             e1.printStackTrace();
         //         } catch (ClassNotFoundException e1) {
         //             // TODO Auto-generated catch block
@@ -108,34 +110,33 @@ Class.forName("com.mysql.cj.jdbc.Driver");
             @Override
             public void actionPerformed(java.awt.event.ActionEvent e) {
                 VistaPrincipal vistaPrincipal = null;
-                 boolean encontrado= false;
+                boolean encontrado = false;
                 try {
                     vistaPrincipal = new VistaPrincipal();
-                   
+
                     rs = stmt.executeQuery();
                     while (rs.next()) {
-                        if(rs.getString("login").equals(campoNombreUsuario.getText()) && rs.getString("clave").equals(campoContrasena.getText())){
-                          
-                          encontrado=true;
-                        }
-                          System.out.println(rs.getString("login")+":"+rs.getString("clave"));
-                          System.out.println(campoContrasena.getText()+":"+campoNombreUsuario.getText());
+                        if (rs.getString("login").equals(campoNombreUsuario.getText()) && rs.getString("clave").equals(campoContrasena.getText())) {
 
-                        
+                            encontrado = true;
+                        }
+                        System.out.println(rs.getString("login") + ":" + rs.getString("clave"));
+                        System.out.println(campoContrasena.getText() + ":" + campoNombreUsuario.getText());
+
                     }
                 } catch (ClassNotFoundException | UnsupportedLookAndFeelException | SQLException e1) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
                 }
-                 if(encontrado==true){
+                if (encontrado == true) {
                     JOptionPane.showMessageDialog(null, "Inicio de secion exitoso");
                     vistaPrincipal.setVisible(true);
-                 }else{
-                     JOptionPane.showMessageDialog(null, "No se encontro el usuario intente nuevamente");
-                 }
-                 campoNombreUsuario.setText("");
-                 campoContrasena.setText("");
-                
+                } else {
+                    JOptionPane.showMessageDialog(null, "No se encontro el usuario intente nuevamente");
+                }
+                campoNombreUsuario.setText("");
+                campoContrasena.setText("");
+
             }
         });
         frameLogin.add(conte);

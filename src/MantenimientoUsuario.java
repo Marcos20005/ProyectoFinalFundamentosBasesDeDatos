@@ -48,11 +48,11 @@ public class MantenimientoUsuario extends JPanel {
         Object columnas[] = {"ID", "Primer Nombre", "Segundo Nombre", "Primer Apellido", "Segundo Apellido", "Usuario", "Contraseña"};
         DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
         tabla.setModel(modelo);
-        stmt = (CallableStatement) con.prepareCall("{CALL insertarDatosEstudiantes(?, ?, ?, ?, ?, ?, ?)}");
+        stmt = (CallableStatement) con.prepareCall("{CALL listar_usuario()}");
         
 
 
-        rs = ((java.sql.Statement) stmt).executeQuery("SELECT * FROM usuario");
+            rs = stmt.executeQuery();
         while (rs.next()) {
             String cedula = rs.getString("cedula");
             String primerNombre = rs.getString("nombre1");
@@ -103,7 +103,7 @@ public class MantenimientoUsuario extends JPanel {
                 int eleccion =0;
           if (campoActualizar.getText().equals("")) {
             try {
-                rs = ((java.sql.Statement) stmt).executeQuery("SELECT * FROM usuario");
+                rs = stmt.executeQuery();
                 while(rs.next()){
                     
                      String cedula = rs.getString("cedula");
@@ -126,7 +126,7 @@ public class MantenimientoUsuario extends JPanel {
 
             }else{
           try {
-                     rs = ((java.sql.Statement) stmt).executeQuery("SELECT * FROM usuario");
+                      rs = stmt.executeQuery();
                          while(rs.next()){
                             if(rs.getString("cedula").equals(campoActualizar.getText())){
                               encontrado=true;
@@ -159,7 +159,7 @@ public class MantenimientoUsuario extends JPanel {
                        
                      
                 
-                     rs = ((java.sql.Statement) stmt).executeQuery("SELECT * FROM usuario");
+                      rs = stmt.executeQuery();
                     while(rs.next()){
                                            
                          String cedula = rs.getString("cedula");
@@ -208,7 +208,7 @@ public class MantenimientoUsuario extends JPanel {
                
 
             try {
-                rs = ((java.sql.Statement) stmt).executeQuery("SELECT * FROM usuario");
+                 rs = stmt.executeQuery();
                 while(rs.next()){
                     
                      String cedula = rs.getString("cedula");
@@ -233,7 +233,7 @@ public class MantenimientoUsuario extends JPanel {
             }else{
                 
                  try {
-                     rs = ((java.sql.Statement) stmt).executeQuery("SELECT * FROM usuario");
+                      rs = stmt.executeQuery();
                      while(rs.next()){
                       if (rs.getString("cedula").equals(campoEliminar.getText())) {
                           encontrado=true;
@@ -251,7 +251,7 @@ public class MantenimientoUsuario extends JPanel {
                         JOptionPane.showMessageDialog(null, "Registro no encontrado");
                       }
                   
-                    rs = ((java.sql.Statement) stmt).executeQuery("SELECT * FROM usuario");
+                     rs = stmt.executeQuery();
                      while(rs.next()){
                        
                         String cedula = rs.getString("cedula");
@@ -291,7 +291,7 @@ public class MantenimientoUsuario extends JPanel {
                
 
             try {
-                rs = ((java.sql.Statement) stmt).executeQuery("SELECT * FROM usuario");
+                 rs = stmt.executeQuery();
                 while(rs.next()){
                      if(rs.getString("cedula").equals(campoConsultar.getText())){
                       encontrado=true;
@@ -311,7 +311,7 @@ public class MantenimientoUsuario extends JPanel {
                 }
                 if (encontrado==false) {
                  JOptionPane.showMessageDialog(null, "Registro no encontrado");   
-                  rs = ((java.sql.Statement) stmt).executeQuery("SELECT * FROM usuario");
+                   rs = stmt.executeQuery();
                 while(rs.next()){
                     
                      
@@ -337,7 +337,7 @@ public class MantenimientoUsuario extends JPanel {
 
             }else{
                 try {
-                rs = ((java.sql.Statement) stmt).executeQuery("SELECT * FROM usuario");
+                 rs = stmt.executeQuery();
                 while(rs.next()){
                     
                      String cedula = rs.getString("cedula");
@@ -398,7 +398,7 @@ public class MantenimientoUsuario extends JPanel {
         DefaultTableModel modelo = (DefaultTableModel) ((JTable) ((JScrollPane) scroll).getViewport().getView()).getModel();
         modelo.setRowCount(0); 
 
-        rs = stmt.executeQuery("SELECT * FROM usuario");
+         rs = stmt.executeQuery();
         while (rs.next()) {
             String cedula = rs.getString("cedula");
             String primerNombre = rs.getString("nombre1");
