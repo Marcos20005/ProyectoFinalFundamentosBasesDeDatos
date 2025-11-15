@@ -1,4 +1,6 @@
+
 import java.awt.Color;
+import java.awt.Panel;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -15,20 +17,17 @@ public class PanelEmpleados extends JPanel {
 
     private JTextField campoID, campoNombre1, campoNombre2, campoApellido1, campoApellido2, campoTelefono, campoDescripcion;
     private JComboBox<String> comboPuesto;
-    int idContador = 1;
+    PanelBoletos panelControl;
+    
 
-    public PanelEmpleados(JTabbedPane pestanias, Connection con) throws SQLException{
+    public PanelEmpleados(JTabbedPane pestanias, Connection con, VistaPrincipal miVista) throws SQLException {
         this.setLayout(null);
         this.setBackground(new Color(245, 245, 245));
         CallableStatement stmt = con.prepareCall("{call listar_puesto()}");
-        ResultSet rs = stmt.executeQuery();
-        while (rs.next()) { 
-            idContador++;
-        }
-        stmt.close();
-
+        panelControl=new PanelBoletos(new JTabbedPane(), con);
+      
         //Tarjeta de registro 
-         JPanel tarjeta = new JPanel();
+        JPanel tarjeta = new JPanel();
         tarjeta.setLayout(null);
         tarjeta.setBounds(100, 70, 600, 500);
         tarjeta.setBackground(Color.WHITE);
@@ -94,6 +93,8 @@ public class PanelEmpleados extends JPanel {
         btnGuardar.addActionListener(e -> {
             try {
                 registrarEmpleado(con);
+                miVista.actualizarPaneles();
+                panelControl.cargarEmpleados(con);
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
@@ -108,7 +109,7 @@ public class PanelEmpleados extends JPanel {
         try {
             java.sql.CallableStatement cstmt = con.prepareCall("{call listar_puesto()}");
             ResultSet rs = cstmt.executeQuery();
-            
+
             // Limpiar el comboBox antes de cargar los datos
             comboPuesto.removeAllItems();
             while (rs.next()) {
@@ -117,76 +118,75 @@ public class PanelEmpleados extends JPanel {
             }
             rs.close();
             cstmt.close();
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error al cargar los puestos: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void registrarEmpleado(Connection con) throws SQLException {
-    if (campoID.getText().trim().isEmpty() || campoNombre1.getText().trim().isEmpty() || campoApellido1.getText().trim().isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Complete los campos obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
-        return;
-    }
-
-    try (CallableStatement cstmt = con.prepareCall("{CALL insertar_empleado(?, ?, ?, ?, ?, ?)}")) {
-
-        // Asignar los valores
-        cstmt.setString(1, campoID.getText().trim());
-        cstmt.setString(2, campoNombre1.getText().trim());
-        cstmt.setString(3, campoNombre2.getText().trim());
-        cstmt.setString(4, campoApellido1.getText().trim());
-        cstmt.setString(5, campoApellido2.getText().trim());
-        cstmt.setString(6, comboPuesto.getSelectedItem().toString().trim());
-
-        cstmt.execute();
-
-        // El SELECT en tu SP es solo para depuración. En un entorno real,
-        // un procedimiento "insertar" no debería devolver un ResultSet.
-        // Pero si lo hace, debes procesarlo y cerrarlo.
-        try (ResultSet rs = cstmt.getResultSet()) {
-            if (rs != null) {
-                while (rs.next()) {
-                    System.out.println("🔹 Parámetros recibidos por el SP:");
-                    System.out.println("ID: " + rs.getString("ID"));
-                    // ... el resto de tus System.out.println ...
-                }
-            }
-        } // rs.close() se llama automáticamente aquí
-
-    } // cstmt.close() se llama automáticamente aquí
-    catch (SQLException e) {
-        // Si el error ocurrió en el primer SP, muéstralo
-        JOptionPane.showMessageDialog(this, "Error al registrar el empleado: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        return; // Detener la ejecución si el empleado no se pudo registrar
-    }
-
-    // Ahora que el primer statement está cerrado, podemos ejecutar el segundo de forma segura.
-    try {
-        if (!campoTelefono.getText().isEmpty()) {
-            try (CallableStatement csTelefono = con.prepareCall("{CALL insertar_telefono_empleado(?, ?, ?, ?)}")) {
-                csTelefono.setInt(1, idContador);
-                csTelefono.setString(2, campoTelefono.getText());
-                csTelefono.setString(3, campoDescripcion.getText());
-                csTelefono.setString(4, campoID.getText().trim());
-                csTelefono.execute();
-            } // csTelefono.close() se llama automáticamente aquí
+        if (campoID.getText().trim().isEmpty() || campoNombre1.getText().trim().isEmpty() || campoApellido1.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Complete los campos obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
         }
 
-        JOptionPane.showMessageDialog(this, "Empleado registrado correctamente.");
+        try (CallableStatement cstmt = con.prepareCall("{CALL insertar_empleado(?, ?, ?, ?, ?, ?)}")) {
 
-        // Limpiar los campos después de registrar
-        campoID.setText("");
-        campoNombre1.setText("");
-        campoNombre2.setText("");
-        campoApellido1.setText("");
-        campoApellido2.setText("");
-        comboPuesto.setSelectedIndex(0);
-        campoTelefono.setText("");
-        campoDescripcion.setText("");
+            // Asignar los valores
+            cstmt.setString(1, campoID.getText().trim());
+            cstmt.setString(2, campoNombre1.getText().trim());
+            cstmt.setString(3, campoNombre2.getText().trim());
+            cstmt.setString(4, campoApellido1.getText().trim());
+            cstmt.setString(5, campoApellido2.getText().trim());
+            cstmt.setString(6, comboPuesto.getSelectedItem().toString().trim());
 
-    } catch (SQLException e) {
-        JOptionPane.showMessageDialog(this, "Error al registrar el teléfono del empleado: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            cstmt.execute();
+
+            // El SELECT en tu SP es solo para depuración. En un entorno real,
+            // un procedimiento "insertar" no debería devolver un ResultSet.
+            // Pero si lo hace, debes procesarlo y cerrarlo.
+            try (ResultSet rs = cstmt.getResultSet()) {
+                if (rs != null) {
+                    while (rs.next()) {
+                        System.out.println("🔹 Parámetros recibidos por el SP:");
+                        System.out.println("ID: " + rs.getString("ID"));
+                        // ... el resto de tus System.out.println ...
+                    }
+                }
+            } // rs.close() se llama automáticamente aquí
+
+        } // cstmt.close() se llama automáticamente aquí
+        catch (SQLException e) {
+            // Si el error ocurrió en el primer SP, muéstralo
+            JOptionPane.showMessageDialog(this, "Error al registrar el empleado: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            return; // Detener la ejecución si el empleado no se pudo registrar
+        }
+
+        // Ahora que el primer statement está cerrado, podemos ejecutar el segundo de forma segura.
+        try {
+            if (!campoTelefono.getText().isEmpty()) {
+                try (CallableStatement csTelefono = con.prepareCall("{CALL insertar_telefono_empleado(?, ?, ?)}")) {
+                    csTelefono.setString(1, campoTelefono.getText());
+                    csTelefono.setString(2, campoDescripcion.getText());
+                    csTelefono.setString(3, campoID.getText().trim());
+                    csTelefono.execute();
+                } // csTelefono.close() se llama automáticamente aquí
+            }
+
+            JOptionPane.showMessageDialog(this, "Empleado registrado correctamente.");
+
+            // Limpiar los campos después de registrar
+            campoID.setText("");
+            campoNombre1.setText("");
+            campoNombre2.setText("");
+            campoApellido1.setText("");
+            campoApellido2.setText("");
+            comboPuesto.setSelectedIndex(0);
+            campoTelefono.setText("");
+            campoDescripcion.setText("");
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error al registrar el teléfono del empleado: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
-}
 }

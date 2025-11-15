@@ -1,3 +1,4 @@
+
 import java.awt.Color;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -12,21 +13,14 @@ import javax.swing.JTextField;
 import java.sql.CallableStatement;
 
 public class PanelClientes extends JPanel {
+
     private JTextField campoCedula, campoNombre1, campoNombre2, campoApellido1, campoApellido2;
     private JTextField campoTelefono, campoDescripcionTelefono, campoCorreo, campoDescripcionCorreo;
-    int idContador = 1;  
+    PanelBoletos panelControl;
 
-    public PanelClientes(JTabbedPane pestanias, Connection con) throws SQLException {
+    public PanelClientes(JTabbedPane pestanias, Connection con, VistaPrincipal miVista) throws SQLException {
         this.setLayout(null);
         this.setBackground(new Color(245, 245, 245));
-
-        // Obtener el siguiente ID para teléfono y correo
-        CallableStatement stmt = con.prepareCall("{Call listar_telefono_cliente()}");
-        ResultSet rs = stmt.executeQuery();
-        while (rs.next()) { 
-            idContador++;
-        }
-        stmt.close();
 
         // Tarjeta de cliente
         JPanel tarjetaCliente = new JPanel();
@@ -35,7 +29,7 @@ public class PanelClientes extends JPanel {
         tarjetaCliente.setBackground(Color.WHITE);
         tarjetaCliente.setBorder(javax.swing.BorderFactory.createLineBorder(new Color(130, 90, 160), 2, true));
         this.add(tarjetaCliente);
-
+        panelControl=new PanelBoletos(new JTabbedPane(), con);
         // Título
         JLabel titulo = new JLabel("Datos del Cliente", JLabel.CENTER);
         titulo.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 24));
@@ -91,7 +85,7 @@ public class PanelClientes extends JPanel {
         JButton btnAtras = VistaPrincipal.crearBoton("<--", 100, 460, 60, 40, "Volver", "Iconos/paso-atras.png");
         tarjetaCliente.add(btnAtras);
         btnAtras.setToolTipText("Volver al registro de empleado");
-        btnAtras.addActionListener(e -> pestanias.setSelectedIndex(0));
+        btnAtras.addActionListener(e -> pestanias.setSelectedIndex(1));
 
         JButton btnGuardar = VistaPrincipal.crearBoton("Guardar", 220, 460, 160, 40, "Guardar cliente", "Iconos/guardar-el-archivo.png");
         tarjetaCliente.add(btnGuardar);
@@ -99,6 +93,7 @@ public class PanelClientes extends JPanel {
         btnGuardar.addActionListener(e -> {
             try {
                 registrarCliente(con);
+                miVista.actualizarPaneles();
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
@@ -129,27 +124,25 @@ public class PanelClientes extends JPanel {
 
             // === TELÉFONO ===
             if (!campoTelefono.getText().trim().isEmpty()) {
-                java.sql.CallableStatement csTelefono = con.prepareCall("{CALL insertar_telefono_cliente(?, ?, ?, ?)}");
-                csTelefono.setInt(1, idContador);
-                csTelefono.setString(2, campoTelefono.getText().trim());
-                csTelefono.setString(3, campoDescripcionTelefono.getText().trim());
-                csTelefono.setString(4, campoCedula.getText().trim());
+                java.sql.CallableStatement csTelefono = con.prepareCall("{CALL insertar_telefono_cliente(?, ?, ?)}");
+                csTelefono.setString(1, campoTelefono.getText().trim());
+                csTelefono.setString(2, campoDescripcionTelefono.getText().trim());
+                csTelefono.setString(3, campoCedula.getText().trim());
                 csTelefono.execute();
                 csTelefono.close();
             }
 
             if (!campoCorreo.getText().trim().isEmpty()) {
-                java.sql.CallableStatement csCorreo = con.prepareCall("{CALL insertar_correo_cliente(?, ?, ?, ?)}");
-                csCorreo.setInt(1, idContador);
-                csCorreo.setString(2, campoCorreo.getText().trim());
-                csCorreo.setString(3, campoDescripcionCorreo.getText().trim());
-                csCorreo.setString(4, campoCedula.getText().trim());
+                java.sql.CallableStatement csCorreo = con.prepareCall("{CALL insertar_correo_cliente(?, ?, ?)}");
+                csCorreo.setString(1, campoCorreo.getText().trim());
+                csCorreo.setString(2, campoDescripcionCorreo.getText().trim());
+                csCorreo.setString(3, campoCedula.getText().trim());
                 csCorreo.execute();
                 csCorreo.close();
             }
 
             JOptionPane.showMessageDialog(this, "Cliente registrado correctamente con teléfono y correo.");
-            idContador++; // Aumentar el contador
+      
 
             campoCedula.setText("");
             campoNombre1.setText("");
@@ -165,5 +158,6 @@ public class PanelClientes extends JPanel {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error al registrar cliente: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
+        panelControl.cargarClientes(con);
     }
 }

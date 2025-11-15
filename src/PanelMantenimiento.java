@@ -13,7 +13,7 @@ public class PanelMantenimiento extends JPanel{
     static JPanel panelSeleccionado = null;
     static JFrame pantalla;
 
-    public PanelMantenimiento(JTabbedPane pestanias, Connection con) {
+    public PanelMantenimiento(JTabbedPane pestanias, Connection con, VistaPrincipal miVista) {
         this.setLayout(null);
         
 
@@ -73,22 +73,22 @@ public class PanelMantenimiento extends JPanel{
                         //     nuevoPanel = new MantenimientoCatalogoTipo();
                         //     break;
                         case "Mantenimiento Cliente":
-                            nuevoPanel = new MantenimientoCliente();
+                            nuevoPanel = new MantenimientoCliente(miVista);
                             break;
                         // case "Mantenimiento Correo Cliente":
                         //     nuevoPanel = new MantenimientoCorreoCliente();
                         //     break;
                         case "Mantenimiento Empleado":
-                            nuevoPanel = new MantenimientoEmpleado();
+                            nuevoPanel = new MantenimientoEmpleado(miVista);
                             break;
                         case "Mantenimiento Funciones":
-                            nuevoPanel = new MantenimientoFunciones();
+                            nuevoPanel = new MantenimientoFunciones(miVista);
                             break;
                         case "Mantenimiento Pelicula":
                             nuevoPanel = new MantenimientoPelicula();
                             break;
                         case "Mantenimiento Sala":
-                            nuevoPanel = new MantenimientoSala();
+                            nuevoPanel = new MantenimientoSala(miVista);
                             break;
                         // case "Mantenimiento Telefono Cliente":
                         //     nuevoPanel = new MantenimientoTelefonoCliente();

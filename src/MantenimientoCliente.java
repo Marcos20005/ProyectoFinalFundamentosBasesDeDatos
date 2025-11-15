@@ -10,6 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -23,8 +24,10 @@ public class MantenimientoCliente extends JPanel {
     JButton botonInsertar, botonActualizar, botonEliminar, botonConsultar;
     JScrollPane scroll;
     PanelCliente panel;
+    VistaPrincipal vistaPrincipal;
 
-    public MantenimientoCliente() {
+    public MantenimientoCliente(VistaPrincipal vistaPrincipal) {
+        this.vistaPrincipal = vistaPrincipal;
         try {
             setLayout(null);
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -37,7 +40,7 @@ public class MantenimientoCliente extends JPanel {
                     "Advertencia", JOptionPane.WARNING_MESSAGE);
             return;
         }
-
+        
         JLabel label = new JLabel("Mantenimiento de tabla cliente");
         label.setBounds(200, 20, 280, 30);
         this.add(label);
@@ -101,7 +104,7 @@ public class MantenimientoCliente extends JPanel {
                 this.remove(scroll); this.remove(botonInsertar); this.remove(botonActualizar); this.remove(botonEliminar); this.remove(botonConsultar);
            //  this.remove(campoActualizar); this.remove(campoEliminar); this.remove(campoConsultar);
 
-                panel = new PanelCliente(MantenimientoCliente.this,0,"");
+                panel = new PanelCliente(MantenimientoCliente.this,0,"",vistaPrincipal);
                 panel.setLayout(null); panel.setBounds(10,70,700,500);
                 this.add(panel); this.setComponentZOrder(panel,0); this.revalidate(); this.repaint();
             } catch (Exception ex) { ex.printStackTrace(); }
@@ -121,7 +124,7 @@ public class MantenimientoCliente extends JPanel {
                 this.remove(scroll); this.remove(botonInsertar); this.remove(botonActualizar); this.remove(botonEliminar); this.remove(botonConsultar);
              //this.remove(campoActualizar); this.remove(campoEliminar); this.remove(campoConsultar);
 
-                panel = new PanelCliente(MantenimientoCliente.this,1,campoActualizar.getText());
+                panel = new PanelCliente(MantenimientoCliente.this,1,campoActualizar.getText(), vistaPrincipal);
                 panel.setLayout(null); panel.setBounds(10,70,700,500);
                 this.add(panel); this.setComponentZOrder(panel,0); this.revalidate(); this.repaint();
             } catch (Exception ex) { ex.printStackTrace(); }
@@ -156,6 +159,7 @@ public class MantenimientoCliente extends JPanel {
                 while(rs.next()) { modelo.addRow(new String[]{rs.getString("cedula"),rs.getString("primer_nombre"),rs.getString("segundo_nombre"),rs.getString("primer_apellido"),rs.getString("segundo_apellido")}); }
             } catch(SQLException ex){ ex.printStackTrace(); }
             campoEliminar.setText("");
+            vistaPrincipal.actualizarPaneles();
         });
 
         // Consultar

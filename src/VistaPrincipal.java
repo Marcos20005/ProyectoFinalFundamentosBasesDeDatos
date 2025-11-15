@@ -12,14 +12,14 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import com.formdev.flatlaf.FlatLaf; 
+import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.ImageIcon;   
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
@@ -31,6 +31,7 @@ public class VistaPrincipal extends JFrame {
     static Connection con = null;
     static Statement stmt = null;
     static ResultSet rs = null;
+    PanelBoletos panel3;
 
     public VistaPrincipal() throws ClassNotFoundException, UnsupportedLookAndFeelException, SQLException {
 
@@ -57,12 +58,12 @@ public class VistaPrincipal extends JFrame {
 
         JPanel panel1 = new JPanel();
         panel1.setLayout(null);
-        panel1.setBackground(new Color(245,245,245));
+        panel1.setBackground(new Color(245, 245, 245));
 
         //Panel central de opciones 
         JPanel tarjeta = new JPanel();
         tarjeta.setLayout(null);
-        tarjeta.setBounds(200, 80, 400,500);
+        tarjeta.setBounds(200, 80, 400, 500);
         tarjeta.setBackground(Color.WHITE);
         tarjeta.setBorder(javax.swing.BorderFactory.createLineBorder(new Color(130, 90, 160), 2, true));
         panel1.add(tarjeta);
@@ -70,13 +71,12 @@ public class VistaPrincipal extends JFrame {
         //Titulo de panel de opciones
         JLabel tituloOpciones = new JLabel("Sistema Multicines S.A", SwingConstants.CENTER);
         tituloOpciones.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 24));
-        tituloOpciones.setForeground(new Color(90,60,120));
-        tituloOpciones.setBounds(0,20,400,40);
+        tituloOpciones.setForeground(new Color(90, 60, 120));
+        tituloOpciones.setBounds(0, 20, 400, 40);
         tarjeta.add(tituloOpciones);
 
         //Botones de las opciones
-
-        JButton btnEmpleado = crearBoton("<html><center>Registrar<br>Empleado</center></html>", 80,80,240,45 , "Registrar empleado nuevo", "Iconos/anadir.png");
+        JButton btnEmpleado = crearBoton("<html><center>Registrar<br>Empleado</center></html>", 80, 80, 240, 45, "Registrar empleado nuevo", "Iconos/anadir.png");
         tarjeta.add(btnEmpleado);
         btnEmpleado.addActionListener(new ActionListener() {
             @Override
@@ -114,7 +114,7 @@ public class VistaPrincipal extends JFrame {
 
         JButton btnMantenimiento = crearBoton("Mantenimientos", 80, 380, 240, 45, "Ver tablas mantenimientos", "Iconos/module.png");
         tarjeta.add(btnMantenimiento);
-       btnMantenimiento.addActionListener(new ActionListener() {
+        btnMantenimiento.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 pestanias.setSelectedIndex(6); // suponiendo que es la 6ta pestaña
@@ -130,24 +130,21 @@ public class VistaPrincipal extends JFrame {
             }
         });
 
-       PanelBoletos panel3 = new PanelBoletos(pestanias, con);
-       PanelCartelera panel2 = new PanelCartelera(pestanias, con, panel3);
-       PanelEmpleados panel5 = new PanelEmpleados(pestanias, con);
-       PanelClientes panel6 = new PanelClientes(pestanias, con);
-       PanelCancelarBoleto panel4 = new PanelCancelarBoleto(pestanias, con);
-       PanelMantenimiento panel7 = new PanelMantenimiento(pestanias, con);
-
-     
+        panel3 = new PanelBoletos(pestanias, con);
+        PanelCartelera panel2 = new PanelCartelera(pestanias, con, panel3);
+        PanelEmpleados panel5 = new PanelEmpleados(pestanias, con, this);
+        PanelClientes panel6 = new PanelClientes(pestanias, con, this);
+        PanelCancelarBoleto panel4 = new PanelCancelarBoleto(pestanias, con);
+        PanelMantenimiento panel7 = new PanelMantenimiento(pestanias, con, this);
 
         JButton opcionCancelar = crearBoton("<html>Cerrar<br><center>secion</center></html>", 80, 440, 240, 40, "Regresar a vista login", "Iconos/cerrar-sesion.png");
         tarjeta.add(opcionCancelar);
         opcionCancelar.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e){
-             VistaPrincipal.this.setVisible(false);
+            public void actionPerformed(ActionEvent e) {
+                VistaPrincipal.this.setVisible(false);
             }
         });
-
 
         pestanias.addTab("Opciones", panel1);
         pestanias.addTab("Registrar Empleado", panel5);
@@ -155,8 +152,7 @@ public class VistaPrincipal extends JFrame {
         pestanias.addTab("Ver Cartelera", panel2);
         pestanias.addTab("Registrar boleto", panel3);
         pestanias.addTab("Cancelar boleto", panel4);
-        pestanias.addTab("Mantenimiento de tablas",panel7);
-
+        pestanias.addTab("Mantenimiento de tablas", panel7);
 
         this.add(pestanias);
         this.setLocationRelativeTo(null);
@@ -172,9 +168,9 @@ public class VistaPrincipal extends JFrame {
         boton.setIcon(iconoOriginal);
         boton.setHorizontalAlignment(SwingConstants.LEFT);
         if (texto.equals("")) {
-           boton.setHorizontalAlignment(SwingConstants.CENTER);
+            boton.setHorizontalAlignment(SwingConstants.CENTER);
         }
-       
+
         boton.setIconTextGap(30);
         return boton;
     }
@@ -194,4 +190,13 @@ public class VistaPrincipal extends JFrame {
         return campoTexto;
     }
 
+    public void actualizarPaneles() {
+
+        panel3.cargarClientes(this.con);
+        panel3.cargarFunciones(this.con);
+        panel3.cargarEmpleados(this.con);
+        panel3.cargarSalas(this.con);
+
+        // 2. Le dice a MantenimientoCliente que recargue su tabla de clientes
+    }
 }

@@ -1,3 +1,4 @@
+
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,39 +14,39 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-public class PanelSala extends JPanel{
-  //Objetos de conexion SQL
+public class PanelSala extends JPanel {
+    //Objetos de conexion SQL
+
     Statement stmt = null;
     Connection con = null;
-    public PanelSala(MantenimientoSala controlOriginal,int funcion,String numeroSala) throws SQLException, ClassNotFoundException {
-           //MantenimientoSala control = controlOriginal;
+
+    public PanelSala(MantenimientoSala controlOriginal, int funcion, String numeroSala, VistaPrincipal miVista) throws SQLException, ClassNotFoundException {
+        //MantenimientoSala control = controlOriginal;
 
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", "root", "cRojas34");
         stmt = con.createStatement();
 
-        if(funcion==0){
+        if (funcion == 0) {
             JLabel lblTitulo = crearEtiqueta("Datos de nueva sala", 200, 20, 300, 30);
-        lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
-        this.add(lblTitulo);
-        }else{
+            lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
+            this.add(lblTitulo);
+        } else {
             JLabel lblTitulo = crearEtiqueta("Actualizar registro", 200, 20, 300, 30);
-        lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
-        this.add(lblTitulo);
+            lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
+            this.add(lblTitulo);
         }
-        
 
-       
         JLabel lblNumeroSala = crearEtiqueta("Numero de Sala:", 150, 70, 140, 30);
         JTextField txtNumeroSala = crearCampoTexto(300, 70, 200, 30, "Ingrese numero de sala");
         this.add(lblNumeroSala);
         this.add(txtNumeroSala);
 
-      
         JLabel lblCapacidad = crearEtiqueta("Ingrese la capacidad de la sala:", 100, 120, 200, 30);
         JTextField txtCapacidad = crearCampoTexto(300, 120, 200, 30, "Ingrese capacidad de la sala");
         this.add(lblCapacidad);
@@ -56,7 +57,7 @@ public class PanelSala extends JPanel{
         this.add(lbliDtipo);
         this.add(txtIdTipo);
 
-         if (funcion == 1 && numeroSala != null && !numeroSala.isEmpty()) {
+        if (funcion == 1 && numeroSala != null && !numeroSala.isEmpty()) {
             CallableStatement buscar = con.prepareCall("{CALL buscar_sala(?)}");
             buscar.setString(1, numeroSala);
             ResultSet rs = buscar.executeQuery();
@@ -67,14 +68,14 @@ public class PanelSala extends JPanel{
                 txtNumeroSala.setEditable(false);
             }
         }
-        
-          JButton botonCancelar = crearBoton("Cancelar", 420, 220, 100, 40, "Regresar atras", "Iconos/cancelar.png");
-botonCancelar.setBackground(new Color(240, 128, 128));
-botonCancelar.setForeground(Color.WHITE);
-this.add(botonCancelar);
-botonCancelar.addActionListener(new ActionListener() {
-   @Override
-   public void actionPerformed(ActionEvent e){
+
+        JButton botonCancelar = crearBoton("Cancelar", 420, 220, 100, 40, "Regresar atras", "Iconos/cancelar.png");
+        botonCancelar.setBackground(new Color(240, 128, 128));
+        botonCancelar.setForeground(Color.WHITE);
+        this.add(botonCancelar);
+        botonCancelar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
 
                 controlOriginal.add(controlOriginal.botonActualizar);
                 controlOriginal.add(controlOriginal.botonInsertar);
@@ -88,9 +89,9 @@ botonCancelar.addActionListener(new ActionListener() {
                 controlOriginal.recargarTabla();
                 controlOriginal.revalidate();
                 controlOriginal.repaint();
-   } 
-});
-       
+            }
+        });
+
         JButton botonGuardar = crearBoton("Guardar", 300, 220, 100, 40, "Guardar nuevo teléfono", "Iconos/guardar-el-archivo.png");
         botonGuardar.setBackground(new Color(46, 204, 113));
         botonGuardar.setForeground(Color.WHITE);
@@ -122,8 +123,8 @@ botonCancelar.addActionListener(new ActionListener() {
                     JOptionPane.showMessageDialog(null,
                             "Error SQL: " + e1.getMessage(), "Advertencia",
                             JOptionPane.WARNING_MESSAGE);
-                }              
-                  
+                }
+
                 controlOriginal.add(controlOriginal.botonActualizar);
                 controlOriginal.add(controlOriginal.botonInsertar);
                 controlOriginal.add(controlOriginal.botonEliminar);
@@ -133,14 +134,16 @@ botonCancelar.addActionListener(new ActionListener() {
                 controlOriginal.add(controlOriginal.campoActualizar);
                 controlOriginal.add(controlOriginal.campoEliminar);
                 controlOriginal.add(controlOriginal.campoConsultar);
-                
+
                 controlOriginal.recargarTabla();
                 controlOriginal.revalidate();
                 controlOriginal.repaint();
+                miVista.actualizarPaneles();
             }
 
         });
     }
+
     static public JButton crearBoton(String texto, int x, int y, int ancho, int alto, String toolTip, String ruta) {
         JButton boton = new JButton(texto);
         boton.setBounds(x, y, ancho, alto);
@@ -166,5 +169,5 @@ botonCancelar.addActionListener(new ActionListener() {
         etiqueta.setBounds(x, y, ancho, alto);
         return etiqueta;
     }
-    
+
 }

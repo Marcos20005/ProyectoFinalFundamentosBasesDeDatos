@@ -10,6 +10,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -21,12 +22,12 @@ public class MantenimientoFunciones extends JPanel {
     CallableStatement stmt1 = null;
     Connection con = null;
     ResultSet rs = null;
-
     JButton botonInsertar, botonActualizar, botonEliminar, botonConsultar;
     JScrollPane scroll;
     PanelFunciones panel;
+    
 
-    public MantenimientoFunciones() throws SQLException, ClassNotFoundException {
+    public MantenimientoFunciones(VistaPrincipal miVista) throws SQLException, ClassNotFoundException {
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true",
@@ -102,7 +103,7 @@ public class MantenimientoFunciones extends JPanel {
                 // this.remove(campoEliminar);
                 // this.remove(campoConsultar);
 
-                panel = new PanelFunciones(MantenimientoFunciones.this, 0, "");
+                panel = new PanelFunciones(MantenimientoFunciones.this, 0, "", miVista);
                 panel.setLayout(null);
                 panel.setBounds(10, 70, 700, 400);
                 this.add(panel);
@@ -142,7 +143,7 @@ public class MantenimientoFunciones extends JPanel {
                         // this.remove(campoEliminar);
                         // this.remove(campoConsultar);
 
-                        panel = new PanelFunciones(MantenimientoFunciones.this, 1, campoActualizar.getText());
+                        panel = new PanelFunciones(MantenimientoFunciones.this, 1, campoActualizar.getText(), miVista);
                         panel.setLayout(null);
                         panel.setBounds(10, 70, 700, 400);
                         this.add(panel);
@@ -215,6 +216,7 @@ public class MantenimientoFunciones extends JPanel {
                 ex.printStackTrace();
             }
             campoEliminar.setText("");
+            miVista.actualizarPaneles();
         });
 
         // Acción Consultar

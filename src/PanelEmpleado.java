@@ -11,18 +11,22 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 public class PanelEmpleado extends JPanel {
     CallableStatement stmt = null;
     Connection con = null;
+    
 
-    public PanelEmpleado(MantenimientoEmpleado controlOriginal, int funcion, String id) throws SQLException, ClassNotFoundException {
+
+    public PanelEmpleado(MantenimientoEmpleado controlOriginal, int funcion, String id, VistaPrincipal miVista) throws SQLException, ClassNotFoundException {
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", 
                 "root", "cRojas34");
+     
         
 
         if(funcion==0){
@@ -178,7 +182,9 @@ JLabel lBlcodigo = crearEtiqueta("Datos de nuevo empleado", 200, 20, 300, 30);
                 controlOriginal.recargarTabla();
                 controlOriginal.revalidate();
                 controlOriginal.repaint();
+                 miVista.actualizarPaneles();
             }
+           
         });
     }
 

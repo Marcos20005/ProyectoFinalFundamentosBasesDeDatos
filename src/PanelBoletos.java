@@ -117,7 +117,7 @@ public class PanelBoletos extends JPanel {
     this.tituloPelicula = titulo.trim();
     TituloPelicula.setText("Película seleccionada: " + titulo);
 }
-      private void cargarClientes(Connection con) {
+      public void cargarClientes(Connection con) {
     try (java.sql.CallableStatement cstmt = con.prepareCall("{CALL listar_cliente()}");
          ResultSet rs = cstmt.executeQuery()) {
         comboCliente.removeAllItems();
@@ -130,7 +130,7 @@ public class PanelBoletos extends JPanel {
 }
 
 
-    private void cargarEmpleados(Connection con) {
+    public void cargarEmpleados(Connection con) {
         try (java.sql.CallableStatement stmt = con.prepareCall("{CALL listar_empleado()}");
              ResultSet rs = stmt.executeQuery()) {
             comboEmpleado.removeAllItems();
@@ -142,7 +142,7 @@ public class PanelBoletos extends JPanel {
         }
     }
 
-    private void cargarSalas(Connection con) {
+    public void cargarSalas(Connection con) {
         try (java.sql.CallableStatement stmt = con.prepareCall("{CALL listar_sala()}");
              ResultSet rs = stmt.executeQuery()) {
             comboSala.removeAllItems();
@@ -154,7 +154,7 @@ public class PanelBoletos extends JPanel {
         }
     }
 
-    private void cargarFunciones(Connection con) {
+    public void cargarFunciones(Connection con) {
         try (java.sql.CallableStatement stmt = con.prepareCall("{CALL listar_funciones()}");
              ResultSet rs = stmt.executeQuery()) {
             comboFuncion.removeAllItems();
@@ -166,7 +166,7 @@ public class PanelBoletos extends JPanel {
         }
     }
 
-    private void registrarBoleto(Connection con) throws SQLException {
+    public void registrarBoleto(Connection con) throws SQLException {
     if (campoCodigo.getText().isEmpty() || campoAsiento.getText().isEmpty() ||
         campoPrecio.getText().isEmpty() || comboCliente.getSelectedItem() == null ||
         comboEmpleado.getSelectedItem() == null || comboSala.getSelectedItem() == null ||
@@ -174,6 +174,7 @@ public class PanelBoletos extends JPanel {
 
         JOptionPane.showMessageDialog(this, "Complete todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
         return;
+        
     }
 
     String fecha = new SimpleDateFormat("yyyy-MM-dd").format(new Date());

@@ -11,6 +11,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -26,7 +27,7 @@ public class MantenimientoSala extends JPanel {
     JScrollPane scroll;
     PanelSala panel;
 
-    public MantenimientoSala() throws SQLException, ClassNotFoundException {
+    public MantenimientoSala(VistaPrincipal miVista) throws SQLException, ClassNotFoundException {
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true",
@@ -101,7 +102,7 @@ public class MantenimientoSala extends JPanel {
                 // this.remove(campoEliminar);
                 // this.remove(campoConsultar);
 
-               panel = new PanelSala(MantenimientoSala.this,0,"");
+               panel = new PanelSala(MantenimientoSala.this,0,"", miVista);
                 panel.setLayout(null);
                 panel.setBounds(10, 70, 700, 500);
                 this.add(panel);
@@ -123,7 +124,7 @@ public class MantenimientoSala extends JPanel {
 
                 if (resultado.next()) {
                 this.removeAll();
-                panel = new PanelSala(MantenimientoSala.this,1, campoActualizar.getText());
+                panel = new PanelSala(MantenimientoSala.this,1, campoActualizar.getText(), miVista);
                 panel.setLayout(null);
                 panel.setBounds(10, 70, 700, 500);
                 this.add(panel);
@@ -163,10 +164,12 @@ public class MantenimientoSala extends JPanel {
                 } else {
                     JOptionPane.showMessageDialog(null, "Registro no encontrado");
                 }
-                campoEliminar.setText("");
+                
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
+         campoEliminar.setText("");
+            miVista.actualizarPaneles();
         });
 
         // Acción Consultar

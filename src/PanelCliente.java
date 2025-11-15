@@ -12,6 +12,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
@@ -21,8 +22,9 @@ public class PanelCliente extends JPanel {
     // Objetos de conexion SQL
     CallableStatement stmt = null;
     Connection con = null;
+     
 
-    public PanelCliente(MantenimientoCliente controlOriginal, int funcion, String cedula) throws SQLException, ClassNotFoundException {
+    public PanelCliente(MantenimientoCliente controlOriginal, int funcion, String cedula, VistaPrincipal miVista) throws SQLException, ClassNotFoundException {
         setLayout(null);
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection(
@@ -169,6 +171,8 @@ txtSegundoApellido.setText("");
         controlOriginal.scroll.repaint();
         controlOriginal.revalidate();
         controlOriginal.repaint();
+             
+              miVista.actualizarPaneles();
             }
         });
     }

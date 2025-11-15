@@ -12,6 +12,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
@@ -20,11 +21,12 @@ public class PanelFunciones extends JPanel {
     CallableStatement stmt = null;
     Connection con = null;
 
-    public PanelFunciones(MantenimientoFunciones controlOriginal, int funcion, String codigo) throws SQLException, ClassNotFoundException {
+    public PanelFunciones(MantenimientoFunciones controlOriginal, int funcion, String codigo, VistaPrincipal miVista) throws SQLException, ClassNotFoundException {
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true",
                 "root", "cRojas34");
+      
 
         if (funcion == 0) {
             JLabel lBlcodigo = crearEtiqueta("Datos de nueva función", 200, 20, 300, 30);
@@ -134,6 +136,7 @@ public class PanelFunciones extends JPanel {
                 controlOriginal.recargarTabla();
                 controlOriginal.revalidate();
                 controlOriginal.repaint();
+                miVista.actualizarPaneles();
             }
         });
     }

@@ -11,6 +11,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -25,13 +26,15 @@ public class MantenimientoEmpleado extends JPanel {
     JButton botonInsertar, botonActualizar, botonEliminar, botonConsultar;
     JScrollPane scroll;
     PanelEmpleado panel;
+    
 
-    public MantenimientoEmpleado() throws SQLException, ClassNotFoundException {
+    public MantenimientoEmpleado(VistaPrincipal miVista) throws SQLException, ClassNotFoundException {
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true",
                 "root", "cRojas34");
         stmt = con.prepareCall("{Call listar_empleado_mantenimiento}");
+    
 
         JLabel label = new JLabel("Mantenimiento de tabla empleado");
         label.setBounds(200, 20, 250, 30);
@@ -105,7 +108,7 @@ public class MantenimientoEmpleado extends JPanel {
                 // this.remove(campoEliminar);
                 // this.remove(campoConsultar);
 
-                panel = new PanelEmpleado(MantenimientoEmpleado.this, 0, "");
+                panel = new PanelEmpleado(MantenimientoEmpleado.this, 0, "", miVista);
                 panel.setLayout(null);
                 panel.setBounds(10, 70, 700, 500);
                 this.add(panel);
@@ -142,7 +145,7 @@ public class MantenimientoEmpleado extends JPanel {
                         // this.remove(campoEliminar);
                         //  this.remove(campoConsultar);
 
-                        panel = new PanelEmpleado(MantenimientoEmpleado.this, 1, campoActualizar.getText());
+                        panel = new PanelEmpleado(MantenimientoEmpleado.this, 1, campoActualizar.getText(),miVista);
                         panel.setLayout(null);
                         panel.setBounds(10, 70, 700, 500);
                         this.add(panel);
@@ -217,6 +220,7 @@ public class MantenimientoEmpleado extends JPanel {
                 ex.printStackTrace();
             }
             campoEliminar.setText("");
+             miVista.actualizarPaneles();
         });
 
         // Acción Consultar
