@@ -1,6 +1,5 @@
 
 import java.awt.Color;
-import java.awt.Panel;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -130,6 +129,7 @@ public class PanelEmpleados extends JPanel {
             return;
         }
 
+        //Se usa para llamar al procedimiento almacenado de insertar empleado para agregar la informacion en la base de datos 
         try (CallableStatement cstmt = con.prepareCall("{CALL insertar_empleado(?, ?, ?, ?, ?, ?)}")) {
 
             // Asignar los valores

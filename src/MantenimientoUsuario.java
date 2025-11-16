@@ -54,6 +54,7 @@ public class MantenimientoUsuario extends JPanel {
 
             rs = stmt.executeQuery();
         while (rs.next()) {
+            //Captura los datos de la base de datos
             String cedula = rs.getString("cedula");
             String primerNombre = rs.getString("nombre1");
             String segundoNombre = rs.getString("nombre2");
@@ -73,6 +74,7 @@ public class MantenimientoUsuario extends JPanel {
         scroll.setBounds(10, 70, 700, 200);
         this.add(scroll);
 
+        //Creacion de botones insertar, actualizar, eliminar y consultar
      botonInsertar = crearBoton("Insertar", 40, 360, 100, 40, "Insertar nuevo usuario", "Iconos/insertar-cuadrado.png");
         botonInsertar.setBackground(new Color(46, 204, 113)); 
          botonInsertar.setForeground(Color.WHITE);            
@@ -162,6 +164,7 @@ public class MantenimientoUsuario extends JPanel {
                       rs = stmt.executeQuery();
                     while(rs.next()){
                                            
+                        //Captura los datos de la base de datos
                          String cedula = rs.getString("cedula");
              String primerNombre = rs.getString("nombre1");
              String segundoNombre = rs.getString("nombre2");
@@ -254,6 +257,7 @@ public class MantenimientoUsuario extends JPanel {
                      rs = stmt.executeQuery();
                      while(rs.next()){
                        
+                        //Captura los datos de la base de datos 
                         String cedula = rs.getString("cedula");
             String primerNombre = rs.getString("nombre1");
             String segundoNombre = rs.getString("nombre2");
@@ -393,6 +397,7 @@ public class MantenimientoUsuario extends JPanel {
         });
 
     }
+    // Metodo para volver a cargar tabla
     public void recargarTabla() {
     try {
         DefaultTableModel modelo = (DefaultTableModel) ((JTable) ((JScrollPane) scroll).getViewport().getView()).getModel();

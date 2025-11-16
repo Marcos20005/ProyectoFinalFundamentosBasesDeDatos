@@ -2,7 +2,6 @@ import java.awt.Color;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -54,6 +53,7 @@ public class PanelCancelarBoleto extends JPanel {
         cargarBoletos();
     }
 
+    //metodo para cargar los boletos con el procedimiento almacenado de listar boletos de la base de datos cine
     private void cargarBoletos() {
          modeloTabla.setRowCount(0);
 
@@ -96,6 +96,7 @@ public class PanelCancelarBoleto extends JPanel {
                 "Confirmar Cancelación", JOptionPane.YES_NO_OPTION);
 
     if (confirmar == JOptionPane.YES_OPTION) {
+        //usa el procedimiento almacenado eliminar boleto, para eliminar un boleto
             try(java.sql.CallableStatement cstmt = con.prepareCall("{CALL eliminar_boleto(?)}")) {
                 cstmt.setString(1, codigoBoleto);
                 cstmt.executeUpdate();

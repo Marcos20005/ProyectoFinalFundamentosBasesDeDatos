@@ -32,6 +32,7 @@ public class VistaLogin {
 
     public static void main(String[] args) throws Exception {
 
+        //Conexion con la base de datos
         Class.forName("com.mysql.cj.jdbc.Driver");
         try {
             con = DriverManager.getConnection(

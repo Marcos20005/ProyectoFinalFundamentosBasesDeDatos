@@ -15,6 +15,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 public class PanelBoleto extends JPanel {
+
+    //Objetos de conexion
     Statement stmt = null;
     Connection con = null;
 
@@ -60,7 +62,7 @@ public class PanelBoleto extends JPanel {
         this.add(lblFechaEmision);
         this.add(txtFechaEmision);
 
-        // cargar datos si es actualización
+        // cargar datos si es actualización con el procedimiento almacenado 
         if (funcion == 1 && codigoActualizar != null) {
             try (java.sql.CallableStatement cs = con.prepareCall("{CALL consultar_boleto(?)}")) {
                 cs.setString(1, codigoActualizar);
@@ -99,6 +101,7 @@ public class PanelBoleto extends JPanel {
 
                     if (eleccion == JOptionPane.YES_OPTION) {
                         if (funcion == 0) {
+                            //Utiliza el procedimiento almacenado para insertar datos en la tabla bobleto
                             try (java.sql.CallableStatement cs = con.prepareCall("{CALL insertar_boleto(?, ?, ?, ?, ?, ?, ?, ?, ?)}")) {
                             cs.setString(1, txtCodigo.getText());
                             cs.setString(2, txtAsiento.getText());
@@ -113,6 +116,7 @@ public class PanelBoleto extends JPanel {
                                 JOptionPane.showMessageDialog(null, "Boleto insertado correctamente.");
                             }
                         } else {
+                            //Se utiliza el procedimiento almacenado para actulziar los datos del boleto
                             try (java.sql.CallableStatement cs = con.prepareCall("{CALL actualizar_boleto(?, ?, ?, ?)}")) {
                                 cs.setString(1, txtCodigo.getText());
                                 cs.setString(2, txtAsiento.getText());
@@ -176,6 +180,7 @@ public class PanelBoleto extends JPanel {
         });
     }
     
+    //Metodos declarados para crear botones
     static public JButton crearBoton(String texto, int x, int y, int ancho, int alto, String toolTip, String ruta) {
         JButton boton = new JButton(texto);
         boton.setBounds(x, y, ancho, alto); 

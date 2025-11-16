@@ -10,7 +10,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -18,6 +17,7 @@ import javax.swing.table.DefaultTableModel;
 
 public class MantenimientoFunciones extends JPanel {
 
+    //Objetos de la clase
     CallableStatement stmt = null;
     CallableStatement stmt1 = null;
     Connection con = null;
@@ -28,23 +28,28 @@ public class MantenimientoFunciones extends JPanel {
     
 
     public MantenimientoFunciones(VistaPrincipal miVista) throws SQLException, ClassNotFoundException {
+        // Conexión a la base de datos
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true",
                 "root", "cRojas34");
 
+        // Configuración del panel
         JLabel label = new JLabel("Mantenimiento de tabla funciones");
         label.setBounds(200, 20, 280, 30);
         this.add(label);
 
+        //  Tabla de datos
         JTable tabla = new JTable();
         Object columnas[] = {"Código", "Fecha", "Hora"};
         DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
         tabla.setModel(modelo);
 
+        // Cargar datos desde la base de datos a la tabla inicialmente con el procedimiento almacenado
         stmt = con.prepareCall("{CALL listar_funciones()}");
         rs = stmt.executeQuery();
         while (rs.next()) {
+            // Obtener datos de cada columna
             String codigo = rs.getString("codigo");
             String fecha = rs.getString("fecha");
             String hora = rs.getString("hora");
@@ -56,7 +61,7 @@ public class MantenimientoFunciones extends JPanel {
         scroll.setBounds(30, 70, 700, 200);
         this.add(scroll);
 
-        // Botones
+        // Botones para insertar, actualizar, eliminar y consultar
         botonInsertar = crearBoton("Insertar", 40, 360, 100, 40, "Insertar nuevo registro",
                 "Iconos/insertar-cuadrado.png");
         botonInsertar.setBackground(new Color(46, 204, 113));
@@ -160,6 +165,7 @@ public class MantenimientoFunciones extends JPanel {
                 // Recargar tabla
                 rs = stmt.executeQuery();
                 while (rs.next()) {
+                    // Obtener datos de cada columna
                     String codigo = rs.getString("codigo");
                     String fecha = rs.getString("fecha");
                     String hora = rs.getString("hora");
@@ -205,6 +211,7 @@ public class MantenimientoFunciones extends JPanel {
 
                 rs = stmt.executeQuery();
                 while (rs.next()) {
+                    // Obtener datos de cada columna
                     String codigo = rs.getString("codigo");
                     String fecha = rs.getString("fecha");
                     String hora = rs.getString("hora");
@@ -243,6 +250,7 @@ public class MantenimientoFunciones extends JPanel {
                         javax.swing.JOptionPane.showMessageDialog(null, "Registro no encontrado");
                         rs = stmt.executeQuery();
                         while (rs.next()) {
+                            // Obtener datos de cada columna
                             String fila[] = {rs.getString("codigo"), rs.getString("fecha"),
                                 rs.getString("hora")};
                             modelo.addRow(fila);
@@ -283,6 +291,7 @@ public class MantenimientoFunciones extends JPanel {
         }
     }
 
+    // Métodos para crear componentes gráficos
     static public JButton crearBoton(String texto, int x, int y, int ancho, int alto, String toolTip, String ruta) {
         JButton boton = new JButton(texto);
         boton.setBounds(x, y, ancho, alto);

@@ -22,6 +22,7 @@ public class PanelFunciones extends JPanel {
     Connection con = null;
 
     public PanelFunciones(MantenimientoFunciones controlOriginal, int funcion, String codigo, VistaPrincipal miVista) throws SQLException, ClassNotFoundException {
+        //Conexion con la base de datos 
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true",
@@ -38,6 +39,7 @@ public class PanelFunciones extends JPanel {
             this.add(lBlcodigo);
         }
 
+        //Campos de texto 
         JLabel lblCodigo = crearEtiqueta("Código de función:", 150, 70, 140, 30);
         JTextField txtCodigo = crearCampoTexto(300, 70, 200, 30, "Ingrese código de función");
         this.add(lblCodigo);
@@ -67,6 +69,7 @@ public class PanelFunciones extends JPanel {
 
         }
 
+        //Botones para cancelar y guardar 
         JButton botonCancelar = crearBoton("Cancelar", 410, 270, 100, 40, "Regresar atras", "Iconos/cancelar.png");
         botonCancelar.setBackground(new Color(240, 128, 128));
         botonCancelar.setForeground(Color.WHITE);
@@ -141,6 +144,7 @@ public class PanelFunciones extends JPanel {
         });
     }
 
+    //Metodo declarados para crear botones
     static public JButton crearBoton(String texto, int x, int y, int ancho, int alto, String toolTip, String ruta) {
         JButton boton = new JButton(texto);
         boton.setBounds(x, y, ancho, alto);

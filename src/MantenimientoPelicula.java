@@ -17,6 +17,8 @@ import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 
 public class MantenimientoPelicula extends JPanel {
+
+    // Variables de conexión
     Statement stmt = null;
     Connection con = null;
     ResultSet rs = null;
@@ -26,6 +28,7 @@ public class MantenimientoPelicula extends JPanel {
     PanelPelicula panel;
 
     public MantenimientoPelicula() throws SQLException, ClassNotFoundException {
+        // Conexión a la base de datos
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true",
@@ -40,9 +43,11 @@ public class MantenimientoPelicula extends JPanel {
         DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
         tabla.setModel(modelo);
 
+        // Cargar datos iniciales en la tabla desde la base de datos con el procedimiento almacenado
         CallableStatement stmt = con.prepareCall("{CALL listar_pelicula_mantenimiento()}");
         ResultSet rs = stmt.executeQuery();
         while (rs.next()) {
+            // Obtener datos de cada columna
             String codigo = rs.getString("codigo");
             String titulo = rs.getString("titulo");
             String iDgenero = rs.getString("nombre_genero");
@@ -56,7 +61,7 @@ public class MantenimientoPelicula extends JPanel {
         scroll.setBounds(30, 70, 700, 200);
         this.add(scroll);
 
-        // Botones alineados horizontalmente
+        // Botones para insertar, actualizar, eliminar y consultar
        botonInsertar = crearBoton("Insertar", 40, 360, 100, 40, "Insertar nuevo registro",
                 "Iconos/insertar-cuadrado.png");
         botonInsertar.setBackground(new Color(46, 204, 113));
@@ -165,6 +170,7 @@ public class MantenimientoPelicula extends JPanel {
         // Acción Eliminar
         botonEliminar.addActionListener(e -> {
             try {
+                // Buscar registro antes de eliminar con el procedimiento almacenado
                 CallableStatement buscar = con.prepareCall("{CALL buscar_pelicula(?)}");
                     buscar.setString(1, campoEliminar.getText());
                     ResultSet resultado = buscar.executeQuery();
@@ -173,6 +179,7 @@ public class MantenimientoPelicula extends JPanel {
                         int eleccion = JOptionPane.showConfirmDialog(null, "¿Desea confirmar la eliminación del registro?",
                                 "Confirmación", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                                 if (eleccion == 0) {
+                                    // Llamar al procedimiento almacenado para eliminar
                                     CallableStatement eliminar = con.prepareCall("{CALL eliminar_pelicula(?)}");
                                     // lo que hace es eliminar un registro de la base de datos
                                     eliminar.setString(1, campoEliminar.getText());
@@ -196,15 +203,18 @@ public class MantenimientoPelicula extends JPanel {
            CallableStatement stmtBuscar;
 
            if(!campoConsultar.getText().isEmpty()){
+            // Buscar por código con el procedimiento almacenado
                stmtBuscar = con.prepareCall("{CALL buscar_pelicula(?)}");
                stmtBuscar.setString(1, campoConsultar.getText());
            } else {
+            // Listar todos los registros si el campo está vacío con el procedimiento almacenado
                stmtBuscar = con.prepareCall("{CALL listar_pelicula_mantenimiento()}");
            }
 
            ResultSet rsBuscar = stmtBuscar.executeQuery();
            while(rsBuscar.next()){
             String fila[] = {
+                // Obtener datos de cada columna
                 rsBuscar.getString("codigo"),
                 rsBuscar.getString("titulo"),
                 rsBuscar.getString("nombre_genero"),
@@ -226,10 +236,12 @@ public class MantenimientoPelicula extends JPanel {
             JTable tabla = (JTable) ((JScrollPane) scroll).getViewport().getView();
             DefaultTableModel modelo = (DefaultTableModel) tabla.getModel();
             modelo.setRowCount(0);
+            // Cargar datos desde la base de datos con el procedimiento almacenado
             CallableStatement stmt = con.prepareCall("{CALL listar_pelicula_mantenimiento()}");
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 String fila[] = {
+                    // Obtener datos de cada columna
                     rs.getString("codigo"),
                     rs.getString("titulo"),
                     rs.getString("nombre_genero"),
@@ -244,6 +256,7 @@ public class MantenimientoPelicula extends JPanel {
         }
     }
 
+    // Métodos para crear componentes
     static public JButton crearBoton(String texto, int x, int y, int ancho, int alto, String toolTip, String ruta) {
         JButton boton = new JButton(texto);
         boton.setBounds(x, y, ancho, alto);

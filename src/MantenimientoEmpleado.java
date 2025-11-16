@@ -11,7 +11,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -19,6 +18,7 @@ import javax.swing.table.DefaultTableModel;
 
 public class MantenimientoEmpleado extends JPanel {
 
+    // Objetos de la clase
     CallableStatement stmt = null;
     CallableStatement stmt1 = null;
     Connection con = null;
@@ -29,17 +29,20 @@ public class MantenimientoEmpleado extends JPanel {
     
 
     public MantenimientoEmpleado(VistaPrincipal miVista) throws SQLException, ClassNotFoundException {
+       // Conexión a la base de datos
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true",
                 "root", "cRojas34");
+                // Preparar la consulta SQL
         stmt = con.prepareCall("{Call listar_empleado_mantenimiento}");
     
-
+        // Configuración del panel principal
         JLabel label = new JLabel("Mantenimiento de tabla empleado");
         label.setBounds(200, 20, 250, 30);
         this.add(label);
 
+        //  Tabla de datos
         JTable tabla = new JTable();
         Object columnas[] = {"ID", "Primer Nombre", "Segundo Nombre", "Primer Apellido", "Segundo Apellido", "ID Puesto"};
         DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
@@ -47,6 +50,7 @@ public class MantenimientoEmpleado extends JPanel {
 
         rs = stmt.executeQuery();
         while (rs.next()) {
+            // Obtener datos de cada columna
             String id = rs.getString("id");
             String primerNombre = rs.getString("primer_nombre");
             String segundoNombre = rs.getString("segundo_nombre");
@@ -54,6 +58,7 @@ public class MantenimientoEmpleado extends JPanel {
             String segundoApellido = rs.getString("segundo_apellido");
             String idPuesto = rs.getString("id_puesto");
 
+            // Agregar fila a la tabla
             String fila[] = {id, primerNombre, segundoNombre, primerApellido, segundoApellido, idPuesto};
             modelo.addRow(fila);
         }
@@ -62,7 +67,7 @@ public class MantenimientoEmpleado extends JPanel {
         scroll.setBounds(30, 70, 700, 200);
         this.add(scroll);
 
-        // Botones
+        // Botones para insertar, actualizar, eliminar y consultar
         botonInsertar = crearBoton("Insertar", 40, 360, 100, 40, "Insertar nuevo registro",
                 "Iconos/insertar-cuadrado.png");
         botonInsertar.setBackground(new Color(46, 204, 113));
@@ -162,6 +167,7 @@ public class MantenimientoEmpleado extends JPanel {
                 // Recargar tabla
                 rs = stmt.executeQuery();
                 while (rs.next()) {
+                    // Obtener datos de cada columna
                     String id = rs.getString("id");
                     String primerNombre = rs.getString("primer_nombre");
                     String segundoNombre = rs.getString("segundo_nombre");
@@ -196,6 +202,7 @@ public class MantenimientoEmpleado extends JPanel {
                     int eleccion = JOptionPane.showConfirmDialog(null, "¿Desea confirmar la eliminación del registro?", "Confirmación",
                             JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                     if (eleccion == 0) {
+                        // Eliminar registro de la base de datos mediante procedimiento almacenado
                         stmt1 = con.prepareCall("{CALL eliminar_empleado(?)}");
                         stmt1.setString(1, campoEliminar.getText());
                         stmt1.executeUpdate();
@@ -207,6 +214,7 @@ public class MantenimientoEmpleado extends JPanel {
                 // Recargar tabla
                 rs = stmt.executeQuery();
                 while (rs.next()) {
+                    // Obtener datos de cada columna 
                     String id = rs.getString("id");
                     String primerNombre = rs.getString("primer_nombre");
                     String segundoNombre = rs.getString("segundo_nombre");
@@ -265,12 +273,14 @@ public class MantenimientoEmpleado extends JPanel {
         });
     }
 
+    // Método para recargar la tabla de datos
     public void recargarTabla() {
         try {
             DefaultTableModel modelo = (DefaultTableModel) ((JTable) ((JScrollPane) scroll).getViewport().getView()).getModel();
             modelo.setRowCount(0);
             rs = stmt.executeQuery();
             while (rs.next()) {
+                // Obtener datos de cada columna
                 String fila[] = {rs.getString("id"), rs.getString("primer_nombre"), rs.getString("segundo_nombre"),
                     rs.getString("primer_apellido"), rs.getString("segundo_apellido"), rs.getString("id_puesto")};
                 modelo.addRow(fila);
@@ -280,6 +290,7 @@ public class MantenimientoEmpleado extends JPanel {
         }
     }
 
+    // Métodos estáticos para los botones, campos de texto y etiquetas
     static public JButton crearBoton(String texto, int x, int y, int ancho, int alto, String toolTip, String ruta) {
         JButton boton = new JButton(texto);
         boton.setBounds(x, y, ancho, alto);

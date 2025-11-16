@@ -12,7 +12,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
@@ -26,6 +25,7 @@ public class PanelCliente extends JPanel {
 
     public PanelCliente(MantenimientoCliente controlOriginal, int funcion, String cedula, VistaPrincipal miVista) throws SQLException, ClassNotFoundException {
         setLayout(null);
+        //Conexion de la base de datos 
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true",
@@ -42,7 +42,7 @@ public class PanelCliente extends JPanel {
         this.add(lBlcodigo);
        }
        
-
+       //campos de texto 
         JLabel lblCedula = crearEtiqueta("Cédula:", 150, 70, 140, 30);
         JTextField txtCedula = crearCampoTexto(300, 70, 200, 30, "Ingrese cédula");
         this.add(lblCedula);
@@ -122,10 +122,10 @@ txtCedula.setText("");
                 try {
                     if(funcion==0){
                          eleccion = JOptionPane.showConfirmDialog(null, "¿Desea confirmar nuevo registro?", "Confirmar acción", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-   stmt = (CallableStatement) con.prepareCall("{CALL insertar_cliente(?, ?, ?, ?, ?)}");
+   stmt = (CallableStatement) con.prepareCall("{CALL insertar_cliente(?, ?, ?, ?, ?)}"); //crea el objeto donde llama el procedimiento almacenado para insertar un cliente 
                 }  else{
                     eleccion = JOptionPane.showConfirmDialog(null, "¿Desea confirmar cambios?", "Confirmar acción", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                    stmt = (CallableStatement) con.prepareCall("{CALL actualizar_cliente(?, ?, ?, ?, ?,?)}");
+                    stmt = (CallableStatement) con.prepareCall("{CALL actualizar_cliente(?, ?, ?, ?, ?,?)}"); ////crea el objeto donde llama el procedimiento almacenado para actualizar un cliente 
                 }           
                     
                     if (eleccion == 0) {

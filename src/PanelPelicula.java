@@ -40,7 +40,7 @@ public class PanelPelicula extends JPanel{
 
     public PanelPelicula(MantenimientoPelicula controlOriginal, int funcion, String codigo) throws SQLException, ClassNotFoundException {
            
-
+        //Conexion con la base datos 
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", 
@@ -57,6 +57,7 @@ public class PanelPelicula extends JPanel{
         this.add(lBlcodigo);
         }
        
+        //Campos de texto 
         JLabel lblCodigo = crearEtiqueta("codigo de pelicula:", 150, 70, 140, 30);
         JTextField txtCodigo = crearCampoTexto(300, 70, 200, 30, "Ingrese codigo de pelicula");
         this.add(lblCodigo);
@@ -87,7 +88,7 @@ public class PanelPelicula extends JPanel{
         //Metodo para llenar los combobox de genero y clasificacion
         cargarCatalogos(comboGenero, comboClasificacion);
 
-
+            //Boton de cancelar
                   JButton botonCancelar = crearBoton("Cancelar", 420, 320, 100, 40, "Regresar atras", "Iconos/cancelar.png");
 botonCancelar.setBackground(new Color(240, 128, 128));
 botonCancelar.setForeground(Color.WHITE);
@@ -110,6 +111,7 @@ botonCancelar.addActionListener(new ActionListener() {
     }
 });
 
+        //Metodo para buscar una pelicula que ya existe en la base de datos 
         if (funcion == 1 && codigo != null && !codigo.isEmpty()) {
             CallableStatement buscar = con.prepareCall("{CALL buscar_pelicula(?)}");
             buscar.setString(1, codigo);
@@ -127,6 +129,7 @@ botonCancelar.addActionListener(new ActionListener() {
             }
         }
        
+        //Boton para guardar
         JButton botonGuardar = crearBoton("Guardar", 300, 320, 100, 40, "Guardar nuevo teléfono", "Iconos/guardar-el-archivo.png");
         botonGuardar.setBackground(new Color(46, 204, 113));
         botonGuardar.setForeground(Color.WHITE);
@@ -186,6 +189,7 @@ botonCancelar.addActionListener(new ActionListener() {
 
     }
 
+    //Metodo para cargar los catalogos del genero y clasificacion, por medio del procedimiento almacenado 
     private void cargarCatalogos(JComboBox<Item> comboGenero, JComboBox<Item> comboClasificacion) {
         try {
         CallableStatement stmtGenero = con.prepareCall("{CALL listar_catalogo_genero()}");
@@ -208,6 +212,7 @@ botonCancelar.addActionListener(new ActionListener() {
     }
 }
 
+    //Metodo declarado para crear botones
     static public JButton crearBoton(String texto, int x, int y, int ancho, int alto, String toolTip, String ruta) {
         JButton boton = new JButton(texto);
         boton.setBounds(x, y, ancho, alto);

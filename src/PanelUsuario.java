@@ -39,7 +39,7 @@ this.add(lblTitulo);
         }
 
 
-
+//Campos de texto
 JLabel lblID = crearEtiqueta("ID:", 150, 70, 140, 30);
 JTextField txtID = crearCampoTexto(300, 70, 200, 30, "Ingrese ID del usuario");
 this.add(lblID);

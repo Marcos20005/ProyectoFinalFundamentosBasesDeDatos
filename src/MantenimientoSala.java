@@ -11,13 +11,13 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 
 public class MantenimientoSala extends JPanel {
+    // Conexión a la base de datos
     Statement stmt = null;
     Connection con = null;
     ResultSet rs = null;
@@ -28,6 +28,7 @@ public class MantenimientoSala extends JPanel {
     PanelSala panel;
 
     public MantenimientoSala(VistaPrincipal miVista) throws SQLException, ClassNotFoundException {
+        // conexión a la base de datos
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true",
@@ -42,6 +43,7 @@ public class MantenimientoSala extends JPanel {
         DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
         tabla.setModel(modelo);
 
+        // Cargar datos iniciales en la tabla desde la base de datos con el procedimiento almacenado
         CallableStatement stmtListar = con.prepareCall("{CALL listar_sala_mantenimiento()}");
         rs = stmtListar.executeQuery();
         while (rs.next()) {
@@ -53,7 +55,7 @@ public class MantenimientoSala extends JPanel {
         scroll.setBounds(30, 70, 700, 200);
         this.add(scroll);
 
-        // Botones alineados horizontalmente
+        // Botones para insertar, actualizar, eliminar y consultar
         botonInsertar = crearBoton("Insertar", 40, 360, 100, 40, "Insertar nuevo registro",
                 "Iconos/insertar-cuadrado.png");
         botonInsertar.setBackground(new Color(46, 204, 113));
@@ -118,6 +120,7 @@ public class MantenimientoSala extends JPanel {
         // Acción Actualizar
         botonActualizar.addActionListener(e -> {
             try {
+                // Verificar si el registro existe antes de actualizar con el procedimiento almacenado
                 CallableStatement buscar = con.prepareCall("{CALL buscar_sala(?)}");
                 buscar.setString(1, campoActualizar.getText());
                 ResultSet resultado = buscar.executeQuery();
@@ -145,6 +148,7 @@ public class MantenimientoSala extends JPanel {
         // Acción Eliminar
         botonEliminar.addActionListener(e -> {
             try {
+                // Verificar si el registro existe antes de eliminar con el procedimiento almacenado
                 CallableStatement buscar = con.prepareCall("{CALL buscar_sala(?)}");
                 buscar.setString(1, campoEliminar.getText());
                 ResultSet resultado = buscar.executeQuery();
@@ -155,6 +159,7 @@ public class MantenimientoSala extends JPanel {
                             JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
     
                     if (eleccion == JOptionPane.YES_OPTION) {
+                        // Eliminar el registro usando el procedimiento almacenado
                         CallableStatement eliminar = con.prepareCall("{CALL eliminar_sala(?)}");
                         eliminar.setString(1, campoEliminar.getText());
                         eliminar.execute();
@@ -178,9 +183,11 @@ public class MantenimientoSala extends JPanel {
             try {
                 CallableStatement stmtBuscar;
                 if (!campoConsultar.getText().isEmpty()) {
+                    // Buscar por ID usando el procedimiento almacenado
                     stmtBuscar = con.prepareCall("{CALL buscar_sala(?)}");
                     stmtBuscar.setString(1, campoConsultar.getText());
                 } else {
+                    // Listar todos los registros si no se proporciona ID usando el procedimiento almacenado
                     stmtBuscar = con.prepareCall("{CALL listar_sala_mantenimiento()}");
                 }
 
@@ -207,6 +214,7 @@ public class MantenimientoSala extends JPanel {
             DefaultTableModel modelo = (DefaultTableModel) tabla.getModel();
             modelo.setRowCount(0);
 
+            //Se utiliza el procedimiento almacenado para listar las salas
             CallableStatement stmt = con.prepareCall("{CALL listar_sala_mantenimiento()}");
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -218,6 +226,7 @@ public class MantenimientoSala extends JPanel {
         }
     }
 
+    // Métodos para crear componentes GUI
     static public JButton crearBoton(String texto, int x, int y, int ancho, int alto, String toolTip, String ruta) {
         JButton boton = new JButton(texto);
         boton.setBounds(x, y, ancho, alto);

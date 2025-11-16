@@ -16,12 +16,14 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 public class PanelEmpleado extends JPanel {
+    //conexion de base de datos 
     CallableStatement stmt = null;
     Connection con = null;
     
 
 
     public PanelEmpleado(MantenimientoEmpleado controlOriginal, int funcion, String id, VistaPrincipal miVista) throws SQLException, ClassNotFoundException {
+        //Conexion con la base de datos
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", 
@@ -71,7 +73,7 @@ JLabel lBlcodigo = crearEtiqueta("Datos de nuevo empleado", 200, 20, 300, 30);
         this.add(lblIDPuesto);
         this.add(comboPuesto);
 
-        // Cargar puestos en el combo box
+        // Cargar puestos en el combo box con el procedimiento almacenado listar puesto 
         java.util.Map<String, String> mapaPuestos = new java.util.HashMap<>();
         CallableStatement stmtPuestos = con.prepareCall("{CALL listar_puesto()}");
         ResultSet rsPuestos = stmtPuestos.executeQuery();
@@ -82,6 +84,7 @@ JLabel lBlcodigo = crearEtiqueta("Datos de nuevo empleado", 200, 20, 300, 30);
             mapaPuestos.put(nombrePuesto, idPuesto);
         }
         if (funcion == 1) {
+            // Cargar los datos del empleado por medio del procedimiento almacenado 
             stmt = (CallableStatement) con.prepareCall("{CALL listar_empleado_mantenimiento()}");
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -103,6 +106,7 @@ JLabel lBlcodigo = crearEtiqueta("Datos de nuevo empleado", 200, 20, 300, 30);
             }
         }
 
+        //Botones para cancelar y guardar
         JButton botonCancelar = crearBoton("Cancelar", 400, 360, 100, 40, "Regresar atras", "Iconos/cancelar.png");
         botonCancelar.setBackground(new Color(240, 128, 128));
         botonCancelar.setForeground(Color.WHITE);
@@ -188,6 +192,7 @@ JLabel lBlcodigo = crearEtiqueta("Datos de nuevo empleado", 200, 20, 300, 30);
         });
     }
 
+    //Métodos utilitarios
     static public JButton crearBoton(String texto, int x, int y, int ancho, int alto, String toolTip, String ruta) {
         JButton boton = new JButton(texto);
         boton.setBounds(x, y, ancho, alto);

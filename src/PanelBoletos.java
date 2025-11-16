@@ -2,7 +2,6 @@ import java.awt.Color;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.JButton;
@@ -118,6 +117,7 @@ public class PanelBoletos extends JPanel {
     TituloPelicula.setText("Película seleccionada: " + titulo);
 }
       public void cargarClientes(Connection con) {
+        //Se utiliza el procedimiento almacenado de listar_cliente para cargar los clientes que ya estan en la base de datos 
     try (java.sql.CallableStatement cstmt = con.prepareCall("{CALL listar_cliente()}");
          ResultSet rs = cstmt.executeQuery()) {
         comboCliente.removeAllItems();
@@ -131,6 +131,7 @@ public class PanelBoletos extends JPanel {
 
 
     public void cargarEmpleados(Connection con) {
+        //Se utiliza el procedimiento almacenado de listar_cliente para cargar los empleados que ya estan en la base de datos
         try (java.sql.CallableStatement stmt = con.prepareCall("{CALL listar_empleado()}");
              ResultSet rs = stmt.executeQuery()) {
             comboEmpleado.removeAllItems();
@@ -143,6 +144,7 @@ public class PanelBoletos extends JPanel {
     }
 
     public void cargarSalas(Connection con) {
+        //Se utiliza el procedimiento almacenado de listar_cliente para cargar las salas que ya estan en la base de datos
         try (java.sql.CallableStatement stmt = con.prepareCall("{CALL listar_sala()}");
              ResultSet rs = stmt.executeQuery()) {
             comboSala.removeAllItems();
@@ -155,6 +157,7 @@ public class PanelBoletos extends JPanel {
     }
 
     public void cargarFunciones(Connection con) {
+        //Se utiliza el procedimiento almacenado de listar_cliente para cargar las funciones que ya estan en la base de datos
         try (java.sql.CallableStatement stmt = con.prepareCall("{CALL listar_funciones()}");
              ResultSet rs = stmt.executeQuery()) {
             comboFuncion.removeAllItems();
@@ -177,6 +180,7 @@ public class PanelBoletos extends JPanel {
         
     }
 
+    //Captura la fecha
     String fecha = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
     String codigoFuncion = comboFuncion.getSelectedItem().toString().split(" - ")[0];
     String cedulaCliente = comboCliente.getSelectedItem().toString().split(" - ")[0];
@@ -184,6 +188,7 @@ public class PanelBoletos extends JPanel {
     String numeroSala = comboSala.getSelectedItem().toString();
 
     try {
+        //Procedimiento para insertar los datos en la base de datos
         System.out.println("Código película enviado: '" + codigoPelicula + "'");
         java.sql.CallableStatement cstmt = con.prepareCall("{CALL insertar_boleto(?, ?, ?, ?, ?, ?, ?, ?, ?)}");
         cstmt.setString(1, campoCodigo.getText());

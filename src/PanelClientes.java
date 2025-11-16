@@ -1,16 +1,13 @@
 
 import java.awt.Color;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
-import java.sql.CallableStatement;
 
 public class PanelClientes extends JPanel {
 
@@ -112,7 +109,7 @@ public class PanelClientes extends JPanel {
         }
 
         try {
-            // === CLIENTE ===
+            // === CLIENTE === , se usa el call para insertar datos a la tabla cliente en la base de datos 
             java.sql.CallableStatement csCliente = con.prepareCall("{CALL insertar_cliente(?, ?, ?, ?, ?)}");
             csCliente.setString(1, campoCedula.getText().trim());
             csCliente.setString(2, campoNombre1.getText().trim());
@@ -122,7 +119,7 @@ public class PanelClientes extends JPanel {
             csCliente.execute();
             csCliente.close();
 
-            // === TELÉFONO ===
+            // === TELÉFONO === , se usa el call para insertar el telefono a un cliente en la base de datos 
             if (!campoTelefono.getText().trim().isEmpty()) {
                 java.sql.CallableStatement csTelefono = con.prepareCall("{CALL insertar_telefono_cliente(?, ?, ?)}");
                 csTelefono.setString(1, campoTelefono.getText().trim());
@@ -132,6 +129,8 @@ public class PanelClientes extends JPanel {
                 csTelefono.close();
             }
 
+            
+            // === Correo === , se usa el call para insertar el correo a un cliente en la base de datos 
             if (!campoCorreo.getText().trim().isEmpty()) {
                 java.sql.CallableStatement csCorreo = con.prepareCall("{CALL insertar_correo_cliente(?, ?, ?)}");
                 csCorreo.setString(1, campoCorreo.getText().trim());

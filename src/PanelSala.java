@@ -27,6 +27,7 @@ public class PanelSala extends JPanel {
     public PanelSala(MantenimientoSala controlOriginal, int funcion, String numeroSala, VistaPrincipal miVista) throws SQLException, ClassNotFoundException {
         //MantenimientoSala control = controlOriginal;
 
+        //Conexion con la base de datos 
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", "root", "cRojas34");
@@ -42,6 +43,7 @@ public class PanelSala extends JPanel {
             this.add(lblTitulo);
         }
 
+        //Campos de texto
         JLabel lblNumeroSala = crearEtiqueta("Numero de Sala:", 150, 70, 140, 30);
         JTextField txtNumeroSala = crearCampoTexto(300, 70, 200, 30, "Ingrese numero de sala");
         this.add(lblNumeroSala);
@@ -57,6 +59,7 @@ public class PanelSala extends JPanel {
         this.add(lbliDtipo);
         this.add(txtIdTipo);
 
+        //Metodo para buscar una pelicula que ya existe en la base de datos 
         if (funcion == 1 && numeroSala != null && !numeroSala.isEmpty()) {
             CallableStatement buscar = con.prepareCall("{CALL buscar_sala(?)}");
             buscar.setString(1, numeroSala);
@@ -69,6 +72,7 @@ public class PanelSala extends JPanel {
             }
         }
 
+        //Boton para cancelar y guardar 
         JButton botonCancelar = crearBoton("Cancelar", 420, 220, 100, 40, "Regresar atras", "Iconos/cancelar.png");
         botonCancelar.setBackground(new Color(240, 128, 128));
         botonCancelar.setForeground(Color.WHITE);
@@ -143,7 +147,7 @@ public class PanelSala extends JPanel {
 
         });
     }
-
+ //Metodo declarado para crear botones
     static public JButton crearBoton(String texto, int x, int y, int ancho, int alto, String toolTip, String ruta) {
         JButton boton = new JButton(texto);
         boton.setBounds(x, y, ancho, alto);

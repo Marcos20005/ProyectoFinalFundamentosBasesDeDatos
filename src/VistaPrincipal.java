@@ -35,6 +35,7 @@ public class VistaPrincipal extends JFrame {
 
     public VistaPrincipal() throws ClassNotFoundException, UnsupportedLookAndFeelException, SQLException {
 
+        //Conexion con la base de datos
         Class.forName("com.mysql.cj.jdbc.Driver");
         con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cine?verifyServerCertificate=false&useSSL=true", "root", "cRojas34");
         //Ajustes flatlaf
@@ -130,6 +131,7 @@ public class VistaPrincipal extends JFrame {
             }
         });
 
+        //Paneles para empleado, cliente, cartelera, cancelar boleto, matenimiento
         panel3 = new PanelBoletos(pestanias, con);
         PanelCartelera panel2 = new PanelCartelera(pestanias, con, panel3);
         PanelEmpleados panel5 = new PanelEmpleados(pestanias, con, this);
@@ -146,6 +148,7 @@ public class VistaPrincipal extends JFrame {
             }
         });
 
+        //Pestañas 
         pestanias.addTab("Opciones", panel1);
         pestanias.addTab("Registrar Empleado", panel5);
         pestanias.addTab("Registrar Cliente", panel6);

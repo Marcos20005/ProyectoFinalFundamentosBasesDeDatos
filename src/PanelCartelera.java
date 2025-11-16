@@ -64,6 +64,7 @@ public class PanelCartelera extends JPanel {
     private void cargarPeliculas(Connection con) {
         try {
             modeloTabla.setRowCount(0); // Limpiar tabla
+            //Procedimieto almacenado para listar las peliculas que se tienen en la base de datos 
            java.sql.CallableStatement cstmt = con.prepareCall("{CALL listar_peliculas_cartelera()}");
             ResultSet rs = cstmt.executeQuery();
             while (rs.next()) {
